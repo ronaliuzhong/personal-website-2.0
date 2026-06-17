@@ -1,13 +1,23 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import OpeningScreen from './components/OpeningScreen'
 import PromptScreen from './components/PromptScreen'
 import WelcomeScreen from './components/WelcomeScreen'
 import './App.css'
 
 function App() {
-  const [screen, setScreen] = useState('opening')
+  const [screen, setScreen] = useState(null)
   const [happiness, setHappiness] = useState('')
   const [name, setName] = useState('')
+
+  useEffect(() => {
+    const visitor = JSON.parse(localStorage.getItem('visitor'))
+    if (visitor?.name) {
+      setName(visitor.name)
+      setScreen('map')
+    } else {
+      setScreen('opening')
+    }
+  }, [])
 
   function handleEnter() {
     setScreen('prompt1')
@@ -21,8 +31,17 @@ function App() {
   function handlePrompt2Submit(answer) {
     const capitalized = answer.charAt(0).toUpperCase() + answer.slice(1)
     setName(capitalized)
+    const visitor = {
+      name: capitalized,
+      answers: {
+        happiness: happiness
+      }
+    }
+    localStorage.setItem('visitor', JSON.stringify(visitor))
     setScreen('welcome')
   }
+
+  if (screen === null) return null
 
   return (
     <div className="app">
@@ -43,6 +62,11 @@ function App() {
       )}
       {screen === 'welcome' && (
         <WelcomeScreen name={name} />
+      )}
+      {screen === 'map' && (
+        <div style={{ background: '#EAF3DE', width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <p style={{ fontFamily: 'Caveat Brush', fontSize: '48px', color: '#27500A' }}>Welcome back, {name}.</p>
+        </div>
       )}
     </div>
   )
