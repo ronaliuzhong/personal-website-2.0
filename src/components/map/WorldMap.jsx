@@ -18,7 +18,7 @@ const locations = [
   { id: 'field', label: 'The Field', sub: 'movement · sport', x: 64, y: 390, color: '#C0DD97' },
 ]
 
-function WorldMap({ name, onEnterLocation }) {
+function WorldMap({ name, returning, onEnterLocation }) {
   const [hovered, setHovered] = useState(null)
 
   return (
@@ -86,9 +86,11 @@ function WorldMap({ name, onEnterLocation }) {
       </svg>
 
       {/* welcome back name top center */}
-      <div className="worldmap-greeting">
-        welcome back, {name}.
-      </div>
+      {returning && (
+        <div className="worldmap-greeting">
+          Welcome back, {name}.
+        </div>
+      )}
     </div>
   )
 }

@@ -10,6 +10,7 @@ function App() {
   const {
     screen,
     name,
+    returning,
     handleEnter,
     handlePrompt1Submit,
     handlePrompt2Submit,
@@ -41,6 +42,7 @@ function App() {
       {screen === SCREENS.map && (
         <WorldMap
           name={name}
+          returning={returning}
           onEnterLocation={handleEnterLocation}
         />
       )}
