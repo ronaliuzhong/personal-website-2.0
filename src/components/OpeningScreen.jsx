@@ -1,10 +1,11 @@
+import { useSounds } from '../hooks/useSounds'
 import './OpeningScreen.css'
 
-import { sounds } from '../utils/sounds'
-
 function OpeningScreen({ onEnter }) {
+  const { playEnter } = useSounds()
+
   function handleClick() {
-    sounds.chime()
+    playEnter()
     onEnter()
   }
 

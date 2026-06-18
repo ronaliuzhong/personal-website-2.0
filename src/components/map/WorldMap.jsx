@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import './WorldMap.css'
+import { useSounds } from '../../hooks/useSounds'
+
+// image imports
 import Ground from './Ground'
 import Beach from './Beach'
 import Bluff from './Bluff'
@@ -20,6 +23,7 @@ const locations = [
 
 function WorldMap({ name, returning, onEnterLocation }) {
   const [hovered, setHovered] = useState(null)
+  const { playTransition } = useSounds()
 
   return (
     <div className="worldmap-container">
@@ -54,7 +58,8 @@ function WorldMap({ name, returning, onEnterLocation }) {
             style={{ transformOrigin: `${loc.x + 61}px ${loc.y + 45}px` }}
             onMouseEnter={() => setHovered(loc.id)}
             onMouseLeave={() => setHovered(null)}
-            onClick={() => onEnterLocation(loc.id)}
+            onClick={() => { playTransition(); onEnterLocation(loc.id) }}
+
           >
             <rect
               width="122"

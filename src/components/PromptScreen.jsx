@@ -1,11 +1,14 @@
+import { useSounds } from '../hooks/useSounds'
 import { useState } from 'react'
 import './PromptScreen.css'
 
 function PromptScreen({ prompt, onSubmit }) {
   const [answer, setAnswer] = useState('')
+  const { playSubmit } = useSounds()
 
   function handleKeyDown(e) {
     if (e.key === 'Enter' && answer.trim() !== '') {
+      playSubmit()
       onSubmit(answer)
     }
   }
