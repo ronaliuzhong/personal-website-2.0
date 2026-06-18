@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import OpeningScreen from './components/OpeningScreen'
 import PromptScreen from './components/PromptScreen'
 import WelcomeScreen from './components/WelcomeScreen'
+import WorldMap from './components/WorldMap'
 import './App.css'
 
 function App() {
@@ -33,12 +34,11 @@ function App() {
     setName(capitalized)
     const visitor = {
       name: capitalized,
-      answers: {
-        happiness: happiness
-      }
+      answers: { happiness: happiness }
     }
     localStorage.setItem('visitor', JSON.stringify(visitor))
     setScreen('welcome')
+    setTimeout(() => setScreen('map'), 2500)
   }
 
   if (screen === null) return null
@@ -64,9 +64,10 @@ function App() {
         <WelcomeScreen name={name} />
       )}
       {screen === 'map' && (
-        <div style={{ background: '#EAF3DE', width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <p style={{ fontFamily: 'Caveat Brush', fontSize: '48px', color: '#27500A' }}>Welcome back, {name}.</p>
-        </div>
+        <WorldMap
+          name={name}
+          onEnterLocation={(id) => console.log('entering', id)}
+        />
       )}
     </div>
   )

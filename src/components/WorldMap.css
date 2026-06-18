@@ -1,0 +1,43 @@
+.worldmap-container {
+  width: 100vw;
+  height: 100vh;
+  background-color: #EAF3DE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.worldmap-svg {
+  width: 90vw;
+  max-width: 900px;
+  height: auto;
+}
+
+.location-group {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.worldmap-greeting {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Caveat Brush', cursive;
+  font-size: 28px;
+  color: #27500A;
+  opacity: 0;
+  animation: fadeInOut 3s ease forwards;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.location-group:hover rect {
+  filter: drop-shadow(0 0 8px rgba(39, 80, 10, 0.35));
+}
