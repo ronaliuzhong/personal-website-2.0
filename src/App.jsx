@@ -1,20 +1,24 @@
 import OpeningScreen from './components/OpeningScreen'
 import PromptScreen from './components/PromptScreen'
 import WelcomeScreen from './components/WelcomeScreen'
+import LocationScreen from './components/locations/LocationScreen'
 import WorldMap from './components/map/WorldMap'
 import { useAppState } from './hooks/useAppState'
 import { SCREENS } from './constants'
 import './App.css'
+
 
 function App() {
   const {
     screen,
     name,
     returning,
+    currentLocation,
     handleEnter,
     handlePrompt1Submit,
     handlePrompt2Submit,
     handleEnterLocation,
+    handleExitLocation,
   } = useAppState()
 
   if (screen === null) return null
@@ -44,6 +48,12 @@ function App() {
           name={name}
           returning={returning}
           onEnterLocation={handleEnterLocation}
+        />
+      )}
+      {screen === SCREENS.location && (
+        <LocationScreen
+          locationId={currentLocation}
+          onExit={handleExitLocation}
         />
       )}
     </div>

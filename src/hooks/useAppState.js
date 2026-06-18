@@ -6,6 +6,7 @@ export function useAppState() {
   const [happiness, setHappiness] = useState('')
   const [name, setName] = useState('')
   const [returning, setReturning] = useState(false)
+  const [currentLocation, setCurrentLocation] = useState(null)
 
   useEffect(() => {
     const visitor = JSON.parse(localStorage.getItem('visitor'))
@@ -49,13 +50,25 @@ export function useAppState() {
     console.log('entering', id)
   }
 
+  function handleEnterLocation(id) {
+    setCurrentLocation(id)
+    setScreen(SCREENS.location)
+  }
+
+  function handleExitLocation() {
+    setCurrentLocation(null)
+    setScreen(SCREENS.map)
+  }
+
   return {
     screen,
     name,
     returning,
+    currentLocation,
     handleEnter,
     handlePrompt1Submit,
     handlePrompt2Submit,
     handleEnterLocation,
+    handleExitLocation,
   }
 }

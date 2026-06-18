@@ -26,4 +26,5 @@ export const SCREENS = {
   prompt2: 'prompt2',
   welcome: 'welcome',
   map: 'map',
+  location: 'location',
 }
