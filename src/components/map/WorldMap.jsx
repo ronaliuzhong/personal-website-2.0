@@ -1,5 +1,14 @@
 import { useState } from 'react'
 import './WorldMap.css'
+import Ground from './Ground'
+import Beach from './Beach'
+import Bluff from './Bluff'
+import Forest from './Forest'
+import Stream from './Stream'
+import Paths from './Paths'
+import Trees from './Trees'
+import TownDetails from './TownDetails'
+import FieldDetails from './FieldDetails'
 
 const locations = [
   { id: 'cafe', label: 'The Café', sub: 'reflection · reading', x: 112, y: 166, color: '#FAC775' },
@@ -23,6 +32,18 @@ function WorldMap({ name, onEnterLocation }) {
         <rect width="680" height="580" fill="#EAF3DE"/>
 
         {/* we'll add all decorative elements next */}
+        <Ground />
+        <Beach />
+        <Bluff />
+        <Forest />
+        <Stream />
+        <Paths />
+        <Trees />
+        <TownDetails />
+        <FieldDetails />
+
+        {/* title */}
+        <text x="330" y="38" textAnchor="middle" fontFamily="'Caveat Brush', cursive" fontSize="22" fill="#27500A">Rona's World</text>
 
         {/* clickable locations */}
         {locations.map((loc) => (

@@ -1,7 +1,7 @@
 import OpeningScreen from './components/OpeningScreen'
 import PromptScreen from './components/PromptScreen'
 import WelcomeScreen from './components/WelcomeScreen'
-import WorldMap from './components/WorldMap'
+import WorldMap from './components/map/WorldMap'
 import { useAppState } from './hooks/useAppState'
 import { SCREENS } from './constants'
 import './App.css'
