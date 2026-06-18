@@ -8,3 +8,23 @@ body {
   background-color: #0a0a0a;
   overflow: hidden;
 }
+
+:root {
+  --color-black: #0A0A0A;
+  --color-white: #FFFFFF;
+  --color-cream: #F5F0E8;
+  --color-soft-green: #EAF3DE;
+  --color-light-green: #C0DD97;
+  --color-mid-green: #97C459;
+  --color-deep-green: #27500A;
+  --color-forest-green: #3B6D11;
+  --color-warm-gray: #D3D1C7;
+  --color-amber: #FAC775;
+  --color-pink: #ED93B1;
+  --color-blue: #B5D4F4;
+
+  --font-stark: 'Bebas Neue', sans-serif;
+  --font-warm: 'Caveat Brush', cursive;
+  --font-user: 'Kalam', cursive;
+  --font-ui: 'DM Sans', sans-serif;
+}

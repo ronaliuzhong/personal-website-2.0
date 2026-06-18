@@ -1,7 +1,7 @@
 .worldmap-container {
   width: 100vw;
   height: 100vh;
-  background-color: #EAF3DE;
+  background-color: var(--color-soft-green);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,16 +19,21 @@
   transition: transform 0.2s ease;
 }
 
+.location-group:hover rect {
+  filter: drop-shadow(0 0 8px rgba(39, 80, 10, 0.35));
+}
+
 .worldmap-greeting {
   position: absolute;
   top: 24px;
   left: 50%;
   transform: translateX(-50%);
-  font-family: 'Caveat Brush', cursive;
+  font-family: var(--font-warm);
   font-size: 28px;
-  color: #27500A;
+  color: var(--color-deep-green);
   opacity: 0;
   animation: fadeInOut 3s ease forwards;
+  white-space: nowrap;
 }
 
 @keyframes fadeInOut {
@@ -36,8 +41,4 @@
   20% { opacity: 1; }
   70% { opacity: 1; }
   100% { opacity: 0; }
-}
-
-.location-group:hover rect {
-  filter: drop-shadow(0 0 8px rgba(39, 80, 10, 0.35));
 }

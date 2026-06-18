@@ -3,6 +3,7 @@ import OpeningScreen from './components/OpeningScreen'
 import PromptScreen from './components/PromptScreen'
 import WelcomeScreen from './components/WelcomeScreen'
 import WorldMap from './components/WorldMap'
+import { SCREENS } from './constants'
 import './App.css'
 
 function App() {
@@ -14,19 +15,19 @@ function App() {
     const visitor = JSON.parse(localStorage.getItem('visitor'))
     if (visitor?.name) {
       setName(visitor.name)
-      setScreen('map')
+      setScreen(SCREENS.map)
     } else {
-      setScreen('opening')
+      setScreen(SCREENS.opening)
     }
   }, [])
 
   function handleEnter() {
-    setScreen('prompt1')
+    setScreen(SCREENS.prompt1)
   }
 
   function handlePrompt1Submit(answer) {
     setHappiness(answer)
-    setScreen('prompt2')
+    setScreen(SCREENS.prompt2)
   }
 
   function handlePrompt2Submit(answer) {
@@ -37,33 +38,33 @@ function App() {
       answers: { happiness: happiness }
     }
     localStorage.setItem('visitor', JSON.stringify(visitor))
-    setScreen('welcome')
-    setTimeout(() => setScreen('map'), 2500)
+    setScreen(SCREENS.welcome)
+    setTimeout(() => setScreen(SCREENS.map), 2500)
   }
 
   if (screen === null) return null
 
   return (
     <div className="app">
-      {screen === 'opening' && (
+      {screen === SCREENS.opening && (
         <OpeningScreen onEnter={handleEnter} />
       )}
-      {screen === 'prompt1' && (
+      {screen === SCREENS.prompt1 && (
         <PromptScreen
           prompt="To know me, let me get to know you—what makes you happy?"
           onSubmit={handlePrompt1Submit}
         />
       )}
-      {screen === 'prompt2' && (
+      {screen === SCREENS.prompt2 && (
         <PromptScreen
           prompt="I love that. What should I call you?"
           onSubmit={handlePrompt2Submit}
         />
       )}
-      {screen === 'welcome' && (
+      {screen === SCREENS.welcome && (
         <WelcomeScreen name={name} />
       )}
-      {screen === 'map' && (
+      {screen === SCREENS.map && (
         <WorldMap
           name={name}
           onEnterLocation={(id) => console.log('entering', id)}

@@ -1,15 +1,15 @@
 .welcome-screen {
   width: 100vw;
   height: 100vh;
-  background-color: #F5F0E8;
+  background-color: var(--color-cream);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .welcome-text {
-  font-family: 'Caveat Brush', cursive;
+  font-family: var(--font-warm);
   font-size: clamp(48px, 7vw, 100px);
-  color: #27500A;
+  color: var(--color-deep-green);
   text-align: center;
 }
