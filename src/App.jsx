@@ -1,46 +1,20 @@
-import { useState, useEffect } from 'react'
 import OpeningScreen from './components/OpeningScreen'
 import PromptScreen from './components/PromptScreen'
 import WelcomeScreen from './components/WelcomeScreen'
 import WorldMap from './components/WorldMap'
+import { useAppState } from './hooks/useAppState'
 import { SCREENS } from './constants'
 import './App.css'
 
 function App() {
-  const [screen, setScreen] = useState(null)
-  const [happiness, setHappiness] = useState('')
-  const [name, setName] = useState('')
-
-  useEffect(() => {
-    const visitor = JSON.parse(localStorage.getItem('visitor'))
-    if (visitor?.name) {
-      setName(visitor.name)
-      setScreen(SCREENS.map)
-    } else {
-      setScreen(SCREENS.opening)
-    }
-  }, [])
-
-  function handleEnter() {
-    setScreen(SCREENS.prompt1)
-  }
-
-  function handlePrompt1Submit(answer) {
-    setHappiness(answer)
-    setScreen(SCREENS.prompt2)
-  }
-
-  function handlePrompt2Submit(answer) {
-    const capitalized = answer.charAt(0).toUpperCase() + answer.slice(1)
-    setName(capitalized)
-    const visitor = {
-      name: capitalized,
-      answers: { happiness: happiness }
-    }
-    localStorage.setItem('visitor', JSON.stringify(visitor))
-    setScreen(SCREENS.welcome)
-    setTimeout(() => setScreen(SCREENS.map), 2500)
-  }
+  const {
+    screen,
+    name,
+    handleEnter,
+    handlePrompt1Submit,
+    handlePrompt2Submit,
+    handleEnterLocation,
+  } = useAppState()
 
   if (screen === null) return null
 
@@ -67,7 +41,7 @@ function App() {
       {screen === SCREENS.map && (
         <WorldMap
           name={name}
-          onEnterLocation={(id) => console.log('entering', id)}
+          onEnterLocation={handleEnterLocation}
         />
       )}
     </div>
