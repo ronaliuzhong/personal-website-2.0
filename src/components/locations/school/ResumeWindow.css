@@ -1,0 +1,74 @@
+.resume-window {
+  position: fixed;
+  inset: 40px;
+  background: #0d1a0d;
+  border: 1.5px solid #27500A;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  animation: windowOpen 0.3s ease forwards;
+}
+
+@keyframes windowOpen {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.resume-window__titlebar {
+  background: linear-gradient(to right, #27500A, #FAC775);
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 8px 8px 0 0;
+  flex-shrink: 0;
+}
+
+.resume-window__title {
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  color: #EAF3DE;
+  letter-spacing: 0.05em;
+}
+
+.resume-window__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.resume-window__btn {
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+  color: #EAF3DE;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #EAF3DE;
+  padding: 2px 8px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+}
+
+.resume-window__btn:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.resume-window__close {
+  width: 16px;
+  height: 16px;
+  background: #0d1a0d;
+  border: 1px solid #EAF3DE;
+  color: #EAF3DE;
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.resume-window__body {
+  flex: 1;
+  overflow: hidden;
+}

@@ -1,42 +1,71 @@
 import { questions } from '../data/questions'
 
+const REST_AFTER = 2 // show rest message after every N intentional questions
+
 export function useQuestions() {
+
+  function getVisitor() {
+    return JSON.parse(localStorage.getItem('visitor')) || {}
+  }
+
+  function saveVisitor(visitor) {
+    localStorage.setItem('visitor', JSON.stringify(visitor))
+  }
+
   function getSeenQuestions() {
-    const visitor = JSON.parse(localStorage.getItem('visitor')) || {}
-    return visitor.seenQuestions || []
+    return getVisitor().seenQuestions || []
   }
 
   function markSeen(questionId) {
-    const visitor = JSON.parse(localStorage.getItem('visitor')) || {}
+    const visitor = getVisitor()
     const seenQuestions = visitor.seenQuestions || []
     if (!seenQuestions.includes(questionId)) {
       seenQuestions.push(questionId)
     }
-    localStorage.setItem('visitor', JSON.stringify({ ...visitor, seenQuestions }))
+    saveVisitor({ ...visitor, seenQuestions })
   }
 
   function saveAnswer(questionId, answer) {
-    const visitor = JSON.parse(localStorage.getItem('visitor')) || {}
+    const visitor = getVisitor()
     const answers = visitor.answers || {}
     answers[questionId] = answer
-    localStorage.setItem('visitor', JSON.stringify({ ...visitor, answers }))
+    saveVisitor({ ...visitor, answers })
+  }
+
+  function incrementIntentionalCount() {
+    const visitor = getVisitor()
+    const count = (visitor.intentionalQuestionCount || 0) + 1
+    saveVisitor({ ...visitor, intentionalQuestionCount: count })
+    return count
+  }
+
+  function getIntentionalCount() {
+    return getVisitor().intentionalQuestionCount || 0
+  }
+
+  function shouldRest() {
+    const count = getIntentionalCount()
+    return count > 0 && count % REST_AFTER === 0
   }
 
   function getTriggeredQuestion(location, trigger) {
     const seen = getSeenQuestions()
-    const triggered = questions.filter(
-      q => q.type === 'triggered' &&
-      q.location === location &&
-      q.trigger === trigger
-    ).sort((a, b) => a.sequence - b.sequence)
+    const triggered = questions
+      .filter(q =>
+        q.type === 'triggered' &&
+        q.location === location &&
+        q.trigger === trigger &&
+        !seen.includes(q.id)
+      )
+      .sort((a, b) => a.sequence - b.sequence)
 
-    return triggered.find(q => !seen.includes(q.id)) || null
+    return triggered[0] || null
   }
 
   function getAmbientQuestion(location) {
     const seen = getSeenQuestions()
-    const ambient = questions.filter(
-      q => q.type === 'ambient' &&
+    const ambient = questions.filter(q =>
+      q.type === 'ambient' &&
       (q.location === null || q.location === location) &&
       !seen.includes(q.id)
     )
@@ -45,10 +74,24 @@ export function useQuestions() {
     return ambient[Math.floor(Math.random() * ambient.length)]
   }
 
+  function getIntentionalQuestion(location, trigger) {
+    // check rest first
+    if (shouldRest()) return { isRest: true }
+
+    const question = getTriggeredQuestion(location, trigger)
+    if (question) {
+      incrementIntentionalCount()
+      return question
+    }
+    return null
+  }
+
   return {
     getTriggeredQuestion,
+    getIntentionalQuestion,
     getAmbientQuestion,
     markSeen,
     saveAnswer,
+    shouldRest,
   }
 }

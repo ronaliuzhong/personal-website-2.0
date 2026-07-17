@@ -175,3 +175,33 @@
 .question-card__choice-btn:hover {
   background: rgba(0, 0, 0, 0.08);
 }
+
+.question-card__maybe-later {
+  margin-top: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+  font-size: 12px;
+}
+
+.question-card--school .question-card__maybe-later {
+  font-family: 'VT323', monospace;
+  color: #97C459;
+  font-size: 14px;
+}
+
+.question-card--warm .question-card__maybe-later {
+  font-family: var(--font-ui);
+  color: var(--color-deep-green);
+}
+
+.question-card__maybe-later:hover {
+  opacity: 1;
+}
+
+.question-card__rest {
+  font-style: italic;
+  opacity: 0.8;
+}
