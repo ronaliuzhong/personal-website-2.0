@@ -8,6 +8,8 @@ function QuestionCard({ question, location, onClose }) {
   const [visible, setVisible] = useState(false)
   const { markSeen, saveAnswer } = useQuestions()
   const theme = themes[location] || themes.cafe
+  const isSchool = theme.type === 'school'
+  const isRest = question?.isRest
 
   useEffect(() => {
     setTimeout(() => setVisible(true), 50)
@@ -35,7 +37,10 @@ function QuestionCard({ question, location, onClose }) {
     handleClose()
   }
 
-  const isSchool = theme.type === 'school'
+  function handleMaybeLater() {
+    // close without marking seen — question stays in pool
+    handleClose()
+  }
 
   return (
     <div className={`question-card-overlay ${visible ? 'visible' : ''}`}>
@@ -45,7 +50,9 @@ function QuestionCard({ question, location, onClose }) {
       >
         {isSchool ? (
           <div className="question-card__header">
-            <span className="question-card__header-title">{theme.headerText}</span>
+            <span className="question-card__header-title">
+              {isRest ? 'RonalzOS — system_message.exe' : theme.headerText}
+            </span>
             <button className="question-card__close--school" onClick={handleClose}>×</button>
           </div>
         ) : (
@@ -53,38 +60,53 @@ function QuestionCard({ question, location, onClose }) {
         )}
 
         <div className="question-card__body">
-          <p className="question-card__text">{question.text}</p>
+          {isRest ? (
+            <p className="question-card__text question-card__rest">
+              let your brain rest for now. we can ponder again soon.
+            </p>
+          ) : (
+            <>
+              <p className="question-card__text">{question.text}</p>
 
-          {question.inputType === 'text' && (
-            <div className="question-card__input-wrap">
-              <input
-                className="question-card__input"
-                type="text"
-                value={answer}
-                onChange={e => setAnswer(e.target.value)}
-                onKeyDown={handleKeyDown}
-                autoFocus
-              />
-              <div
-                className="question-card__line"
-                style={!isSchool ? { background: 'var(--color-warm-gray)' } : {}}
-              />
-            </div>
-          )}
+              {question.inputType === 'text' && (
+                <div className="question-card__input-wrap">
+                  <input
+                    className="question-card__input"
+                    type="text"
+                    value={answer}
+                    onChange={e => setAnswer(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    autoFocus
+                  />
+                  <div
+                    className="question-card__line"
+                    style={!isSchool ? { background: 'var(--color-warm-gray)' } : {}}
+                  />
+                </div>
+              )}
 
-          {question.inputType === 'choice' && (
-            <div className="question-card__choices">
-              {question.options.map(option => (
-                <button
-                  key={option}
-                  className="question-card__choice-btn"
-                  onClick={() => handleChoice(option)}
-                  style={!isSchool ? { borderColor: theme.accentColor } : {}}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
+              {question.inputType === 'choice' && (
+                <div className="question-card__choices">
+                  {question.options.map(option => (
+                    <button
+                      key={option}
+                      className="question-card__choice-btn"
+                      onClick={() => handleChoice(option)}
+                      style={!isSchool ? { borderColor: theme.accentColor } : {}}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <button
+                className="question-card__maybe-later"
+                onClick={handleMaybeLater}
+              >
+                maybe another time
+              </button>
+            </>
           )}
         </div>
       </div>

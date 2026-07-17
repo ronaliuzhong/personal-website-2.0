@@ -19,15 +19,26 @@ export const questions = [
     inputType: 'text',
     sequence: 2,
   },
+
+  // TRIGGERED -- Qexe (question mark icon) in School
   {
-    id: 'school_t3',
-    text: 'What would you do if money wasn\'t a question?',
-    type: 'triggered',
-    location: 'school',
-    trigger: 'projects',
-    inputType: 'text',
-    sequence: 3,
-  },
+  id: 'school_qexe_1',
+  text: 'What would you do if money wasn\'t a question?',
+  type: 'triggered',
+  location: 'school',
+  trigger: 'question_exe',
+  inputType: 'text',
+  sequence: 1,
+},
+{
+  id: 'school_qexe_2',
+  text: 'Should people work for money or for passion?',
+  type: 'triggered',
+  location: 'school',
+  trigger: 'question_exe',
+  inputType: 'text',
+  sequence: 2,
+},
 
   // TRIGGERED — Café
   {
