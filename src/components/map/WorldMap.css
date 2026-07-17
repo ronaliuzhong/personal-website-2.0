@@ -1,12 +1,18 @@
 .worldmap-container {
   width: 100vw;
   height: 100vh;
-  background-color: var(--color-soft-green);
+  background-color: #F5F0E8;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  overflow: hidden;
   animation: fadeIn 0.8s ease forwards;
+}
+
+.worldmap-svg {
+  width: 100vw;
+  height: 100vh;
 }
 
 @keyframes fadeIn {
@@ -14,11 +20,6 @@
   to { opacity: 1; }
 }
 
-.worldmap-svg {
-  width: 90vw;
-  max-width: 900px;
-  height: auto;
-}
 
 .location-group {
   cursor: pointer;

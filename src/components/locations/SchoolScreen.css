@@ -1,0 +1,26 @@
+.school-screen {
+  width: 100vw;
+  height: 100vh;
+  background: #0a0a1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.school-screen__placeholder {
+  font-family: 'VT323', monospace;
+  font-size: 32px;
+  color: #97C459;
+}
+
+.school-screen__test-btn {
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  color: #97C459;
+  background: transparent;
+  border: 1.5px solid #27500A;
+  padding: 8px 20px;
+  cursor: pointer;
+}

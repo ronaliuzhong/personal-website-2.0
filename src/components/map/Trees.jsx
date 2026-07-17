@@ -1,14 +1,15 @@
 function Trees() {
   return (
     <g id="trees">
-      <circle cx="390" cy="72" r="12" fill="#97C459"/>
-      <circle cx="402" cy="62" r="8" fill="#3B6D11" opacity="0.4"/>
-      <circle cx="460" cy="480" r="14" fill="#97C459"/>
-      <circle cx="474" cy="470" r="9" fill="#3B6D11" opacity="0.4"/>
-      <circle cx="80" cy="360" r="12" fill="#97C459"/>
-      <circle cx="92" cy="350" r="8" fill="#3B6D11" opacity="0.38"/>
-      <circle cx="560" cy="440" r="13" fill="#97C459"/>
-      <circle cx="574" cy="430" r="9" fill="#3B6D11" opacity="0.38"/>
+      <circle cx="460" cy="100" r="8" fill="#97C459" opacity="0.35"/>
+      <circle cx="474" cy="90" r="5" fill="#3B6D11" opacity="0.25"/>
+      <circle cx="520" cy="460" r="8" fill="#97C459" opacity="0.3"/>
+      <circle cx="534" cy="450" r="5" fill="#3B6D11" opacity="0.25"/>
+      <circle cx="120" cy="500" r="7" fill="#97C459" opacity="0.3"/>
+      <circle cx="580" cy="380" r="6" fill="#97C459" opacity="0.25"/>
+      <circle cx="340" cy="500" r="7" fill="#97C459" opacity="0.28"/>
+      <circle cx="240" cy="520" r="6" fill="#97C459" opacity="0.25"/>
+      <circle cx="80" cy="180" r="7" fill="#97C459" opacity="0.28"/>
     </g>
   )
 }
