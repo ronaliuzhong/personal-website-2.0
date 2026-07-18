@@ -29,16 +29,16 @@ export const questions = [
   trigger: 'question_exe',
   inputType: 'text',
   sequence: 1,
-},
-{
-  id: 'school_qexe_2',
-  text: 'Should people work for money or for passion?',
-  type: 'triggered',
-  location: 'school',
-  trigger: 'question_exe',
-  inputType: 'text',
-  sequence: 2,
-},
+  },
+  {
+    id: 'school_qexe_2',
+    text: 'Should people work for money or for passion?',
+    type: 'triggered',
+    location: 'school',
+    trigger: 'question_exe',
+    inputType: 'text',
+    sequence: 2,
+  },
 
   // TRIGGERED — Café
   {
@@ -76,13 +76,7 @@ export const questions = [
     location: null,
     inputType: 'text',
   },
-  {
-    id: 'ambient_3',
-    text: 'Why do you think people search for a lifelong partner?',
-    type: 'ambient',
-    location: null,
-    inputType: 'text',
-  },
+
   {
     id: 'ambient_4',
     text: 'Rate your life out of 10.',
