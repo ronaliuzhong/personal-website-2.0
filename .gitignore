@@ -25,4 +25,4 @@ dist-ssr
 
 notes.txt
 backend/venv
-
+backend/.env
