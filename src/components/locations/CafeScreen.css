@@ -1,0 +1,74 @@
+.cafe-screen {
+  width: 100vw;
+  height: 100vh;
+  background: #F5F0E8;
+  position: relative;
+  overflow: hidden;
+}
+
+.cafe-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.cafe-drink-picker {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #F5F0E8;
+  border: 1.5px solid #FAC775;
+  border-radius: 8px;
+  padding: 24px 32px;
+  z-index: 200;
+  text-align: center;
+}
+
+.cafe-drink-picker__label {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 28px;
+  color: #27500A;
+  margin-bottom: 16px;
+}
+
+.cafe-drink-picker__options {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.cafe-drink-picker__btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #27500A;
+  background: transparent;
+  border: 1px solid #D3D1C7;
+  border-radius: 20px;
+  padding: 6px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.cafe-drink-picker__btn:hover {
+  background: rgba(39, 80, 10, 0.05);
+}
+
+.cafe-drink-picker__swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid #D3D1C7;
+  display: inline-block;
+}
+
+.book-spine {
+  transition: filter 0.2s ease;
+}
+
+.book-spine:hover {
+  filter: brightness(1.3) drop-shadow(0 0 6px rgba(250, 199, 117, 0.7));
+}

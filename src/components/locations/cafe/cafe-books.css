@@ -1,0 +1,197 @@
+/* reading list */
+.reading-list__intro {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 20px;
+  color: #27500A;
+  margin-bottom: 20px;
+}
+
+.reading-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.reading-list__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #E8DFD0;
+}
+
+.reading-list__title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #27500A;
+}
+
+.reading-list__author {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: #888780;
+}
+
+.reading-list__status {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 14px;
+  color: #FAC775;
+}
+
+/* witness book */
+.witness-book__subtitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: #888780;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.witness-book__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.witness-book__body p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #444441;
+  line-height: 1.7;
+}
+
+.witness-book__quote {
+  border-left: 3px solid #FAC775;
+  padding-left: 16px;
+  margin: 8px 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #444441;
+  line-height: 1.7;
+  font-style: italic;
+}
+
+.witness-book__quote cite {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #888780;
+  font-style: normal;
+}
+
+.witness-book__question {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 22px;
+  color: #27500A;
+}
+
+.witness-book__input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.witness-book__input {
+  font-family: 'Kalam', cursive;
+  font-size: 16px;
+  color: #27500A;
+  background: transparent;
+  border: 1px solid #D3D1C7;
+  border-radius: 4px;
+  padding: 10px;
+  resize: none;
+  outline: none;
+}
+
+.witness-book__submit {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 18px;
+  color: #27500A;
+  background: transparent;
+  border: 1.5px solid #27500A;
+  border-radius: 20px;
+  padding: 6px 20px;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background 0.2s ease;
+}
+
+.witness-book__submit:hover {
+  background: rgba(39, 80, 10, 0.05);
+}
+
+.witness-book__thanks {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 22px;
+  color: #27500A;
+}
+
+/* ugly art */
+.ugly-art-book__intro {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #444441;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.ugly-art-book__coming {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 20px;
+  color: #D3D1C7;
+  margin-top: 24px;
+}
+
+.ugly-art__grid {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.ugly-art__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 140px;
+}
+
+.ugly-art__img {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #E8DFD0;
+  pointer-events: none;
+}
+
+.ugly-art-book__hint {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: #888780;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+.ugly-art__rank {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 18px;
+  color: #27500A;
+}
+
+.ugly-art__title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  color: #888780;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.ugly-art__reveal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
