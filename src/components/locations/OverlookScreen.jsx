@@ -17,7 +17,7 @@ const SIMPLE_JOYS = [
   'golden hour light',
 ]
 
-const MOON_COOLDOWN_MS = 2 * 60 * 60 * 1000
+const MOON_COOLDOWN_MS = 15 * 60 * 1000 //15 min
 
 const lightPositions = [
   { cx: 140, cy: 248 },
@@ -152,12 +152,13 @@ export default function OverlookScreen() {
         <circle cx="586" cy="63" r="20" fill="#0d0d1a" opacity="0.9"/>
         {moonGlowing && (
           <>
-            <circle cx="575" cy="68" r="32" fill="#FAC775" opacity="0.08"/>
-            <circle cx="575" cy="68" r="40" fill="#FAC775" opacity="0.04"/>
+            <circle cx="575" cy="68" r="32" fill="#FAC775" opacity="0.2"/>
+            <circle cx="575" cy="68" r="40" fill="#FAC775" opacity="0.1"/>
+            <circle cx="575" cy="68" r="50" fill="#FAC775" opacity="0.05"/>
           </>
         )}
         <circle
-          cx="575" cy="68" r="24"
+          cx="575" cy="68" r="40"
           fill="transparent"
           style={{ cursor: moonGlowing ? 'pointer' : 'default' }}
           onClick={handleMoonClick}
