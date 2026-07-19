@@ -9,6 +9,8 @@ function QuestionCard({ question, location, onClose }) {
   const { markSeen, saveAnswer } = useQuestions()
   const theme = themes[location] || themes.cafe
   const isSchool = theme.type === 'school'
+  const isOverlook = theme.type === 'overlook'
+  const isDark = isSchool || isOverlook
   const isRest = question?.isRest
 
   useEffect(() => {
@@ -38,7 +40,6 @@ function QuestionCard({ question, location, onClose }) {
   }
 
   function handleMaybeLater() {
-    // close without marking seen — question stays in pool
     handleClose()
   }
 
@@ -46,8 +47,9 @@ function QuestionCard({ question, location, onClose }) {
     <div className={`question-card-overlay ${visible ? 'visible' : ''}`}>
       <div
         className={`question-card ${theme.cardClass} ${visible ? 'flipped' : ''}`}
-        style={!isSchool ? { borderColor: theme.accentColor } : {}}
+        style={!isDark ? { borderColor: theme.accentColor } : {}}
       >
+        {/* school gets full title bar */}
         {isSchool ? (
           <div className="question-card__header">
             <span className="question-card__header-title">
@@ -80,7 +82,7 @@ function QuestionCard({ question, location, onClose }) {
                   />
                   <div
                     className="question-card__line"
-                    style={!isSchool ? { background: 'var(--color-warm-gray)' } : {}}
+                    style={!isDark ? { background: 'var(--color-warm-gray)' } : {}}
                   />
                 </div>
               )}
@@ -92,7 +94,7 @@ function QuestionCard({ question, location, onClose }) {
                       key={option}
                       className="question-card__choice-btn"
                       onClick={() => handleChoice(option)}
-                      style={!isSchool ? { borderColor: theme.accentColor } : {}}
+                      style={!isDark ? { borderColor: theme.accentColor } : {}}
                     >
                       {option}
                     </button>

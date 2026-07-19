@@ -16,9 +16,9 @@ export const themes = {
     accentColor: '#ED93B1',
   },
   overlook: {
-    type: 'warm',
-    cardClass: 'question-card--warm',
-    accentColor: '#97C459',
+    type: 'overlook',
+    cardClass: 'question-card--overlook',
+    accentColor: '#FAC775',
   },
   field: {
     type: 'warm',

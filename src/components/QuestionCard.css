@@ -205,3 +205,44 @@
   font-style: italic;
   opacity: 0.8;
 }
+
+.question-card--overlook {
+  background: #1a1235;
+  border: 1.5px solid #FAC775;
+  border-bottom: none;
+}
+
+.question-card--overlook .question-card__text {
+  font-family: var(--font-warm);
+  font-size: 30px;
+  color: #FAC775;
+  margin-bottom: 20px;
+}
+
+.question-card--overlook .question-card__input {
+  font-family: var(--font-user);
+  font-size: 20px;
+  color: #EAF3DE;
+  caret-color: #FAC775;
+}
+
+.question-card--overlook .question-card__line {
+  background: #FAC775;
+  opacity: 0.3;
+}
+
+.question-card--overlook .question-card__choice-btn {
+  border-color: #FAC775;
+  color: #FAC775;
+}
+
+.question-card--overlook .question-card__maybe-later {
+  font-family: var(--font-ui);
+  color: #FAC775;
+  opacity: 0.5;
+}
+
+.question-card--overlook .question-card__close {
+  color: #FAC775;
+  opacity: 0.5;
+}

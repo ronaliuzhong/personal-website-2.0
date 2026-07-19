@@ -93,5 +93,6 @@ export function useQuestions() {
     markSeen,
     saveAnswer,
     shouldRest,
+    getSeenQuestions,
   }
 }
