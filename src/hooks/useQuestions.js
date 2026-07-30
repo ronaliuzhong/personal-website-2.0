@@ -1,4 +1,5 @@
 import { questions } from '../data/questions'
+import { saveAnswerToBackend } from '../utils/api'
 
 const REST_AFTER = 2 // show rest message after every N intentional questions
 
