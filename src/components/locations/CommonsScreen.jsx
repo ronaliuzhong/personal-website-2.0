@@ -3,6 +3,7 @@ import { useRive } from '@rive-app/react-canvas';
 import CommonsSceneModal from './commons/CommonsSceneModal';
 import { useSounds } from '../../hooks/useSounds';
 import { useQuestions } from '../../hooks/useQuestions';
+import { useAmbientQuestion } from '../../hooks/useAmbientQuestion';
 import QuestionCard from '../QuestionCard';
 import './CommonsScreen.css';
 
@@ -57,15 +58,17 @@ const SCENES = [
 function CommonsScreen() {
   const [sceneIndex, setSceneIndex] = useState(0);
   const [activeModalId, setActiveModalId] = useState(null);
-  const [walkQuestion, setWalkQuestion] = useState(null);
   const [triggeredQuestion, setTriggeredQuestion] = useState(null);
   const wrapRef = useRef(null);
-  const walkTimerRef = useRef(null);
   const { playTransition, playClick } = useSounds();
-  const { getAmbientQuestion, getGlobalAmbientQuestion, getTriggeredQuestion } = useQuestions();
+  const { getTriggeredQuestion } = useQuestions();
 
   const scene = SCENES[sceneIndex];
   const isFirstRender = useRef(true);
+  const { question: walkQuestion, close: closeWalkQuestion } = useAmbientQuestion('commons', {
+    active: scene.id === 'walking',
+    suppress: !!activeModalId || !!triggeredQuestion,
+  });
 
   const { rive, RiveComponent } = useRive({
     src: SCENES[0].src,
@@ -85,62 +88,6 @@ function CommonsScreen() {
       autoplay: true,
     });
   }, [sceneIndex, rive]);
-
-  // Ambient, unprompted questions while viewing the walking scene —
-  // no click required. Schedules a random short delay, shows a
-  // question if one's available, and reschedules once it's closed
-  // (as long as we're still on the walking scene).
-  // Two separate ambient rhythms while viewing the walking scene:
-  // - frequent, Commons-specific questions (the "conversation on a walk" feel)
-  // - rare, truly-global questions (the ones that could show up anywhere,
-  //   so they should feel like a special, occasional occurrence here)
-  const globalTimerRef = useRef(null);
-
-  useEffect(() => {
-    function scheduleNext() {
-      const delay = 20000 + Math.random() * 25000; // 20–45 seconds
-      walkTimerRef.current = setTimeout(() => {
-        const q = getAmbientQuestion('commons', { includeGlobal: false });
-        if (q) {
-          setWalkQuestion(q);
-        } else {
-          scheduleNext();
-        }
-      }, delay);
-    }
-
-    function scheduleGlobal() {
-      const delay = 180000 + Math.random() * 180000; // 3–6 minutes
-      globalTimerRef.current = setTimeout(() => {
-        const q = getGlobalAmbientQuestion();
-        if (q) {
-          setWalkQuestion(q);
-        }
-        scheduleGlobal();
-      }, delay);
-    }
-
-    if (scene.id === 'walking') {
-      scheduleNext();
-      scheduleGlobal();
-    }
-
-    return () => {
-      clearTimeout(walkTimerRef.current);
-      clearTimeout(globalTimerRef.current);
-    };
-  }, [sceneIndex]);
-
-  function handleWalkQuestionClose() {
-    setWalkQuestion(null);
-    if (scene.id === 'walking') {
-      const delay = 20000 + Math.random() * 25000;
-      walkTimerRef.current = setTimeout(() => {
-        const q = getAmbientQuestion('commons', { includeGlobal: false });
-        if (q) setWalkQuestion(q);
-      }, delay);
-    }
-  }
 
   const goPrev = () => {
     playTransition();
@@ -240,7 +187,7 @@ function CommonsScreen() {
         <QuestionCard
           question={walkQuestion}
           location="commons"
-          onClose={handleWalkQuestionClose}
+          onClose={closeWalkQuestion}
         />
       )}
     </>

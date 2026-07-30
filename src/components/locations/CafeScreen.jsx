@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuestions } from '../../hooks/useQuestions'
 import { useSounds } from '../../hooks/useSounds'
+import { useAmbientQuestion } from '../../hooks/useAmbientQuestion'
 import { cafeBooks } from '../../data/cafeBooks'
 import QuestionCard from '../QuestionCard'
 import BookModal from './cafe/BookModal'
@@ -28,6 +29,9 @@ function CafeScreen() {
   const { getTriggeredQuestion } = useQuestions()
   const { playClick } = useSounds()
   const [showJournal, setShowJournal] = useState(false)
+  const { question: ambientQuestion, close: closeAmbientQuestion } = useAmbientQuestion('cafe', {
+    suppress: !!activeBook || !!activeQuestion || showJournal || showDrinkPicker,
+  })
 
 
   function handleBookClick(book) {
@@ -298,6 +302,14 @@ function CafeScreen() {
           question={activeQuestion}
           location="cafe"
           onClose={handleCloseQuestion}
+        />
+      )}
+
+      {ambientQuestion && (
+        <QuestionCard
+          question={ambientQuestion}
+          location="cafe"
+          onClose={closeAmbientQuestion}
         />
       )}
 
