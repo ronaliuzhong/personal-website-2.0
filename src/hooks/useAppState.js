@@ -47,10 +47,6 @@ export function useAppState() {
   }
 
   function handleEnterLocation(id) {
-    console.log('entering', id)
-  }
-
-  function handleEnterLocation(id) {
     setCurrentLocation(id)
     setScreen(SCREENS.location)
   }

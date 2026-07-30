@@ -30,7 +30,7 @@ function WitnessBook() {
           "We need a witness to our lives. There's a billion people on the planet... I mean, what does any one life really mean? But in a marriage, you're promising to care about everything. The good things, the bad things, the terrible things, the mundane things... all of it, all of the time, every day. You're saying 'Your life will not go unnoticed because I will notice it. Your life will not go un-witnessed because I will be your witness.'" <br/>
           — from the movie "Shall We Dance?"
         </blockquote>
-        <p className="witness-book__question">Now let me ask you—why do you think people look for a lifelong partner?</p>
+        <p className="witness-book__question">Why do you think people look for a lifelong partner?</p>
 
         {!submitted ? (
           <div className="witness-book__input-wrap">

@@ -103,6 +103,11 @@ export const questions = [
   sequence: 3,
 },
 
+// triggered -- commons
+{ id: 'commons_card', text: 'What do you want to do with your life?', type: 'triggered', location: 'commons', trigger: 'card_scene', inputType: 'text', sequence: 1 },
+{ id: 'commons_walk', text: 'What is your biggest dream?', type: 'triggered', location: 'commons', trigger: 'walking_scene', inputType: 'text', sequence: 1 },
+{ id: 'commons_room', text: 'What makes you feel at home?', type: 'triggered', location: 'commons', trigger: 'room_scene', inputType: 'text', sequence: 1 },
+
   // AMBIENT — anywhere
   {
     id: 'ambient_1',

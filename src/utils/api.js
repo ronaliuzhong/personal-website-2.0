@@ -21,3 +21,4 @@ export async function createJournalEntry({ content, isAnonymous, nickname }) {
   if (!res.ok) throw new Error('Failed to save journal entry')
   return res.json()
 }
+

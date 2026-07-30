@@ -1,0 +1,48 @@
+.commons-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.commons-modal {
+  position: relative;
+  background: var(--cream, #f5f0e8);
+  border-radius: 12px;
+  padding: 2.5rem;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.commons-modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: var(--black, #0a0a0a);
+}
+
+.commons-modal-title {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--pink, #ed93b1); /* Commons' accent color */
+  margin-bottom: 0.75rem;
+}
+
+
+.commons-modal-intro {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--black, #0a0a0a);
+}

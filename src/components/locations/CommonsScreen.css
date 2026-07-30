@@ -1,0 +1,58 @@
+.commons-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(237, 147, 177, 0.15) 0%,
+    transparent 70%
+  );
+}
+
+.commons-canvas-wrap {
+  position: relative;
+  height: 85vh;
+  max-height: 900px;
+  aspect-ratio: 0.62; /* tune this to match your card's actual proportions */
+}
+
+.commons-canvas-wrap canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.commons-hotspot {
+  position: absolute;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.commons-arrow {
+  background: none;
+  border: none;
+  font-size: 2.5rem;
+  color: var(--warm-gray, #d3d1c7);
+  cursor: pointer;
+  padding: 0 1rem;
+  transition: color 0.2s ease;
+}
+
+.commons-arrow:hover {
+  color: var(--pink, #ed93b1);
+}
+
+.commons-scene-label {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Caveat Brush', cursive;
+  font-size: 1.2rem;
+  color: var(--warm-gray, #d3d1c7);
+}

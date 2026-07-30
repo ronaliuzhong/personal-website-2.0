@@ -5,16 +5,16 @@ import QuestionCard from '../QuestionCard'
 import './OverlookScreen.css'
 
 const SIMPLE_JOYS = [
-  'a perfect cup of coffee',
-  'the first warm day of spring',
-  'a song you forgot you loved',
-  'laughing until it hurts',
-  'finding the perfect seat',
-  'the smell of rain on pavement',
-  'a beautiful view that stops you',
-  'when a stranger smiles at you',
-  'finishing something you started',
-  'golden hour light',
+  'super salty food',
+  'first week of fall/last week of spring',
+  'binging a show',
+  'laughing til my back hurts',
+  'catching a firefly',
+  'the start and end of a journal',
+  'the clinking of ice in a glass',
+  'the smell of a campfire',
+  'a cute fit',
+  'buzzfeed-esq quizzes',
 ]
 
 const MOON_COOLDOWN_MS = 15 * 60 * 1000 //15 min
@@ -300,7 +300,7 @@ export default function OverlookScreen() {
             <button className="overlook-book__close" onClick={() => setShowBook(false)}>×</button>
             <p className="overlook-book__title">on happiness</p>
             <div className="overlook-book__body">
-              <p>[ your happiness essay will go here ]</p>
+              <p>[ coming soon ]</p>
             </div>
           </div>
         </div>
