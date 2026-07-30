@@ -22,3 +22,26 @@ export async function createJournalEntry({ content, isAnonymous, nickname }) {
   return res.json()
 }
 
+export async function createVisitor(nickname) {
+  const res = await fetch(`${API_URL}/visitors`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nickname }),
+  })
+  if (!res.ok) throw new Error('Failed to create visitor')
+  return res.json()
+}
+
+export async function saveAnswerToBackend(visitorId, questionId, answer) {
+  const res = await fetch(`${API_URL}/answers`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      visitor_id: visitorId,
+      question_id: questionId,
+      answer,
+    }),
+  })
+  if (!res.ok) throw new Error('Failed to save answer')
+  return res.json()
+}
