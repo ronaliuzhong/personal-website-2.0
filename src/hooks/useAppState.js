@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { SCREENS } from '../constants'
+import { createVisitor, saveAnswerToBackend } from '../utils/api'
 
 export function useAppState() {
   const [screen, setScreen] = useState(null)
@@ -7,6 +8,7 @@ export function useAppState() {
   const [name, setName] = useState('')
   const [returning, setReturning] = useState(false)
   const [currentLocation, setCurrentLocation] = useState(null)
+  const hasBackfilled = useRef(false)
 
   useEffect(() => {
     const visitor = JSON.parse(localStorage.getItem('visitor'))
@@ -14,6 +16,21 @@ export function useAppState() {
       setName(visitor.name)
       setReturning(visitor.returning)
       setScreen(SCREENS.map)
+
+      if (!visitor.id && !hasBackfilled.current) {
+        hasBackfilled.current = true
+        createVisitor(visitor.name)
+          .then((backendVisitor) => {
+            localStorage.setItem('visitor', JSON.stringify({ ...visitor, id: backendVisitor.id }))
+
+            if (visitor.answers?.happiness) {
+              saveAnswerToBackend(backendVisitor.id, 'happiness', visitor.answers.happiness).catch((err) =>
+                console.error('Failed to sync happiness answer to backend:', err)
+              )
+            }
+          })
+          .catch((err) => console.error('Failed to backfill visitor id:', err))
+      }
     } else {
       setScreen(SCREENS.opening)
     }
@@ -38,10 +55,26 @@ export function useAppState() {
     }
     localStorage.setItem('visitor', JSON.stringify(visitor))
     setScreen(SCREENS.welcome)
+
+    // Sync to backend in the background — doesn't block the UI.
+    createVisitor(capitalized)
+      .then((backendVisitor) => {
+        const current = JSON.parse(localStorage.getItem('visitor')) || {}
+        localStorage.setItem('visitor', JSON.stringify({ ...current, id: backendVisitor.id }))
+
+        // The happiness answer is captured before a visitor id exists,
+        // so it isn't caught by useQuestions' saveAnswer — sync it here
+        // instead, now that we finally have an id to attach it to.
+        saveAnswerToBackend(backendVisitor.id, 'happiness', happiness).catch((err) =>
+          console.error('Failed to sync happiness answer to backend:', err)
+        )
+      })
+      .catch((err) => console.error('Failed to sync visitor to backend:', err))
+
     setTimeout(() => {
         // mark as returning for next visit
-        const updated = { ...visitor, returning: true }
-        localStorage.setItem('visitor', JSON.stringify(updated))
+        const updated = JSON.parse(localStorage.getItem('visitor')) || visitor
+        localStorage.setItem('visitor', JSON.stringify({ ...updated, returning: true }))
         setScreen(SCREENS.map)
     }, 2000)
   }

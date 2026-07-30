@@ -1,4 +1,5 @@
 import { questions } from '../data/questions'
+import { saveAnswerToBackend } from '../utils/api'
 
 const REST_AFTER = 2 // show rest message after every N intentional questions
 
@@ -86,6 +87,22 @@ export function useQuestions() {
     return null
   }
 
+  function saveAnswer(questionId, answer) {
+    const visitor = getVisitor()
+    const answers = visitor.answers || {}
+    answers[questionId] = answer
+    saveVisitor({ ...visitor, answers })
+
+    // Sync to backend in the background. If the visitor doesn't have
+    // a backend id yet (e.g. the create-visitor call is still in
+    // flight, or failed), just skip — the answer's still saved locally.
+    if (visitor.id) {
+      saveAnswerToBackend(visitor.id, questionId, answer).catch((err) =>
+        console.error('Failed to sync answer to backend:', err)
+      )
+    }
+  }
+
   return {
     getTriggeredQuestion,
     getIntentionalQuestion,
@@ -96,3 +113,4 @@ export function useQuestions() {
     getSeenQuestions,
   }
 }
+

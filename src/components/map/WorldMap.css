@@ -32,7 +32,7 @@
 
 .worldmap-greeting {
   position: absolute;
-  top: 24px;
+  top: 90px;
   left: 50%;
   transform: translateX(-50%);
   font-family: var(--font-warm);
