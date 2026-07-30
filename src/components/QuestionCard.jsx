@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useQuestions } from '../hooks/useQuestions'
 import { themes } from '../data/themes'
+import KissMarryKill from './questionInputs/KissMarryKill'
 import './QuestionCard.css'
 
 function QuestionCard({ question, location, onClose }) {
   const [answer, setAnswer] = useState('')
   const [visible, setVisible] = useState(false)
+  const [guessed, setGuessed] = useState(null)
   const { markSeen, saveAnswer } = useQuestions()
   const theme = themes[location] || themes.cafe
   const isSchool = theme.type === 'school'
@@ -35,6 +37,22 @@ function QuestionCard({ question, location, onClose }) {
 
   function handleChoice(option) {
     saveAnswer(question.id, option)
+    markSeen(question.id)
+    handleClose()
+  }
+
+  function handleKmkComplete(result) {
+    saveAnswer(question.id, result)
+    markSeen(question.id)
+    handleClose()
+  }
+
+  function handleGuess(option) {
+    setGuessed(option)
+  }
+
+  function handleRevealContinue() {
+    saveAnswer(question.id, guessed)
     markSeen(question.id)
     handleClose()
   }
@@ -102,12 +120,63 @@ function QuestionCard({ question, location, onClose }) {
                 </div>
               )}
 
-              <button
-                className="question-card__maybe-later"
-                onClick={handleMaybeLater}
-              >
-                maybe another time
-              </button>
+              {question.inputType === 'kmk' && (
+                <KissMarryKill options={question.options} onComplete={handleKmkComplete} />
+              )}
+
+              {question.inputType === 'twoTruths' && (
+                <div className="question-card__two-truths">
+                  {!guessed ? (
+                    <div className="question-card__choices">
+                      {question.options.map(option => (
+                        <button
+                          key={option}
+                          className="question-card__choice-btn"
+                          onClick={() => handleGuess(option)}
+                          style={!isDark ? { borderColor: theme.accentColor } : {}}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <>
+                      <p className="question-card__reveal-message">
+                        {guessed === question.correctAnswer
+                          ? "You caught it! That was the lie."
+                          : `Nope—actually, this was the lie: "${question.correctAnswer}"`}
+                      </p>
+                      <div className="question-card__choices">
+                        {question.options.map(option => {
+                          const isLie = option === question.correctAnswer
+                          const wasGuessed = option === guessed
+                          return (
+                            <button
+                              key={option}
+                              className={`question-card__choice-btn ${isLie ? 'question-card__choice-btn--lie' : ''} ${wasGuessed && !isLie ? 'question-card__choice-btn--wrong' : ''}`}
+                              disabled
+                            >
+                              {option}
+                            </button>
+                          )
+                        })}
+                      </div>
+                      <button className="question-card__maybe-later" onClick={handleRevealContinue}>
+                        continue
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {!(question.inputType === 'twoTruths' && guessed) && (
+                <button
+                  className="question-card__maybe-later"
+                  onClick={handleMaybeLater}
+                >
+                  maybe another time
+                </button>
+              )}
             </>
           )}
         </div>

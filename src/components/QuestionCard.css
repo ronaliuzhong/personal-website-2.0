@@ -246,3 +246,80 @@
   color: #FAC775;
   opacity: 0.5;
 }
+
+.kmk-pool {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 1rem 0;
+  min-height: 3rem;
+}
+
+.kmk-zones {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.kmk-zone {
+  flex: 1;
+  min-height: 80px;
+  border: 2px dashed var(--color-warm-gray, #d3d1c7);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.kmk-zone--over {
+  border-color: var(--pink, #ed93b1);
+  background: rgba(237, 147, 177, 0.1);
+}
+
+.kmk-zone-label {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 1rem;
+  color: var(--color-deep-green);
+}
+
+.kmk-chip {
+  background: var(--cream, #f5f0e8);
+  border: 1px solid var(--color-warm-gray, #d3d1c7);
+  border-radius: 20px;
+  padding: 0.4rem 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  cursor: grab;
+  touch-action: none;
+}
+
+.kmk-chip--placed {
+  cursor: default;
+  background: var(--pink, #ed93b1);
+  color: white;
+  border-color: var(--pink, #ed93b1);
+}
+
+.question-card__reveal-message {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.question-card__choice-btn--lie {
+  border-color: var(--pink, #ed93b1) !important;
+  background: rgba(237, 147, 177, 0.15);
+  font-weight: 600;
+}
+
+.question-card__choice-btn--wrong {
+  opacity: 0.5;
+  text-decoration: line-through;
+}

@@ -1,17 +1,34 @@
-import QuestionCard from '../../QuestionCard';
+import { useState } from 'react';
+import { useQuestions } from '../../../hooks/useQuestions';
 
-// Generic "question only" modal content — no intro blurb, just the
-// QuestionCard itself. Use this for hotspots that don't need their own
-// written content (e.g. background characters), by passing the right
-// trigger name in via CommonsSceneModal.
-//
-// To use: register a wrapper in CommonsSceneModal.jsx like:
-//   left_girl: () => <QuestionOnlyContent trigger="left_girl_scene" />,
+// Same fix as FamilyContent — hand off to onRevealQuestion rather than
+// rendering QuestionCard nested inside this modal's box.
 
-function QuestionOnlyContent({ trigger }) {
+function QuestionOnlyContent({ trigger, onClose, onRevealQuestion }) {
+  const { getTriggeredQuestion } = useQuestions();
+  const [nothingLeft, setNothingLeft] = useState(false);
+
+  function handleReveal() {
+    const q = getTriggeredQuestion('commons', trigger);
+    if (q) {
+      onRevealQuestion(q);
+    } else {
+      setNothingLeft(true);
+    }
+  }
+
   return (
     <div className="commons-content">
-      <QuestionCard trigger={trigger} theme="commons" />
+      <button className="commons-modal-close" onClick={onClose} aria-label="Close">
+        ×
+      </button>
+      {!nothingLeft ? (
+        <button className="commons-reveal-question" onClick={handleReveal}>
+          uncover a question →
+        </button>
+      ) : (
+        <p className="commons-modal-intro">nothing more to uncover here yet.</p>
+      )}
     </div>
   );
 }

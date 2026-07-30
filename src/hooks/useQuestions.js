@@ -1,5 +1,4 @@
 import { questions } from '../data/questions'
-import { saveAnswerToBackend } from '../utils/api'
 
 const REST_AFTER = 2 // show rest message after every N intentional questions
 
@@ -63,11 +62,23 @@ export function useQuestions() {
     return triggered[0] || null
   }
 
-  function getAmbientQuestion(location) {
+  function getAmbientQuestion(location, { includeGlobal = true } = {}) {
     const seen = getSeenQuestions()
     const ambient = questions.filter(q =>
       q.type === 'ambient' &&
-      (q.location === null || q.location === location) &&
+      (includeGlobal ? (q.location === null || q.location === location) : q.location === location) &&
+      !seen.includes(q.id)
+    )
+
+    if (ambient.length === 0) return null
+    return ambient[Math.floor(Math.random() * ambient.length)]
+  }
+
+  function getGlobalAmbientQuestion() {
+    const seen = getSeenQuestions()
+    const ambient = questions.filter(q =>
+      q.type === 'ambient' &&
+      q.location === null &&
       !seen.includes(q.id)
     )
 
@@ -87,30 +98,14 @@ export function useQuestions() {
     return null
   }
 
-  function saveAnswer(questionId, answer) {
-    const visitor = getVisitor()
-    const answers = visitor.answers || {}
-    answers[questionId] = answer
-    saveVisitor({ ...visitor, answers })
-
-    // Sync to backend in the background. If the visitor doesn't have
-    // a backend id yet (e.g. the create-visitor call is still in
-    // flight, or failed), just skip — the answer's still saved locally.
-    if (visitor.id) {
-      saveAnswerToBackend(visitor.id, questionId, answer).catch((err) =>
-        console.error('Failed to sync answer to backend:', err)
-      )
-    }
-  }
-
   return {
     getTriggeredQuestion,
     getIntentionalQuestion,
     getAmbientQuestion,
+    getGlobalAmbientQuestion,
     markSeen,
     saveAnswer,
     shouldRest,
     getSeenQuestions,
   }
 }
-

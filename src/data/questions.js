@@ -95,7 +95,7 @@ export const questions = [
 },
 {
   id: 'moon_q3',
-  text: 'What does a perfect day look like to you?',
+  text: 'What is one de-stress method you use?',
   type: 'triggered',
   location: 'overlook',
   trigger: 'moon',
@@ -104,9 +104,80 @@ export const questions = [
 },
 
 // triggered -- commons
-{ id: 'commons_card', text: 'What do you want to do with your life?', type: 'triggered', location: 'commons', trigger: 'card_scene', inputType: 'text', sequence: 1 },
-{ id: 'commons_walk', text: 'What is your biggest dream?', type: 'triggered', location: 'commons', trigger: 'walking_scene', inputType: 'text', sequence: 1 },
-{ id: 'commons_room', text: 'What makes you feel at home?', type: 'triggered', location: 'commons', trigger: 'room_scene', inputType: 'text', sequence: 1 },
+{ id: 'commons_family', 
+  text: "What is your family's go-to activity?", 
+  type: 'triggered', 
+  location: 'commons', 
+  trigger: 'family_scene', 
+  inputType: 'text', 
+  sequence: 1 
+},
+
+{
+  id: 'commons_room_frame1',
+  text: 'What\'s a memory you\'re afraid you\'ll forget one day?',
+  type: 'triggered',
+  location: 'commons',
+  trigger: 'frames_scene',
+  inputType: 'text',
+  sequence: 1,
+},
+
+{ id: 'commons_room_grapes1', 
+  text: 'Favorite movie snack: ', 
+  type: 'triggered', 
+  location: 'commons', 
+  trigger: 'grapes_scene', 
+  inputType: 'text', 
+  sequence: 1 },
+
+{ id: 'commons_room_light1', 
+  text: 'Your house is burning, what do you grab?', 
+  type: 'triggered', 
+  location: 'commons', 
+  trigger: 'light_scene', 
+  inputType: 'text', 
+  sequence: 1 },
+
+{
+  id: 'commons_light_kmk',
+  text: 'Kiss, Marry, Kill:',
+  type: 'triggered',
+  location: 'commons',
+  trigger: 'light_scene',
+  inputType: 'kmk',
+  options: ['Pineapple on pizza', 'Ketchup on eggs', 'Mayo on fries'],
+  sequence: 2,
+},
+{
+  id: 'commons_light_2truths',
+  text: 'Two Truths and a Lie: Select the Lie',
+  type: 'triggered',
+  location: 'commons',
+  trigger: 'light_scene',
+  inputType: 'twoTruths',
+  options: ['I average a banana a day', 'I like my drinking water hot', 'I hate milk'],
+  correctAnswer: 'I average a banana a day', // whichever one is actually the lie
+  sequence: 3,
+},
+
+{
+  id: 'commons_room_light4',
+  text: 'Would you rather:',
+  type: 'triggered',
+  location: 'commons',
+  trigger: 'light_scene',
+  inputType: 'choice',
+  options: ['never wear socks', 'always wear shoes'],
+  sequence: 4,
+},
+
+// ambient -- commons (walk)
+{ id: 'commons_walk_ambient', 
+  text: 'What is one thing you refuse to be frugal about?', 
+  type: 'ambient', 
+  location: 'commons', 
+  inputType: 'text' },
 
   // AMBIENT — anywhere
   {
@@ -116,17 +187,9 @@ export const questions = [
     location: null,
     inputType: 'text',
   },
+
   {
     id: 'ambient_2',
-    text: 'What is one thing you refuse to be frugal about?',
-    type: 'ambient',
-    location: null,
-    inputType: 'text',
-  },
-
-
-  {
-    id: 'ambient_4',
     text: 'What\'s your favorite icebreaker question?',
     type: 'ambient',
     location: null,

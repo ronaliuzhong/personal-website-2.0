@@ -46,6 +46,14 @@ class JournalEntryCreate(BaseModel):
 def root():
     return {"message": "rona-world backend is running"}
 
+@app.get("/ping")
+def ping():
+    # Lightweight route for an external uptime monitor (e.g. UptimeRobot)
+    # to hit every few minutes. Actually touches Supabase, not just a
+    # static response, so this keeps both Render and Supabase warm.
+    supabase.table("visitors").select("id").limit(1).execute()
+    return {"status": "ok"}
+
 @app.post("/visitors")
 def create_visitor(visitor: VisitorCreate):
     result = supabase.table("visitors").insert({
