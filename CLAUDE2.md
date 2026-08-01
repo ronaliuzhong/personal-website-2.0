@@ -550,32 +550,33 @@ All sounds in `src/utils/sounds.js`, mapped in `src/hooks/useSounds.js`:
 - ✅ Opening screen → prompts → welcome → map
 - ✅ World map Direction B (greeting spacing/logic fixed)
 - ✅ The School (RonalzOS desktop)
-- ✅ The Café (books, community journal, drink picker, **ambient questions now wired**)
-- ✅ The Overlook (string lights **with joys written**, moon questions, bouquet, book)
-- ✅ Question card system with themes, cooldown, maybe later, **now also kmk/twoTruths input types**
+- ✅ The Café (books, community journal, drink picker, ambient questions wired)
+- ✅ The Overlook (string lights with joys written, moon questions, bouquet, book)
+- ✅ Question card system with themes, cooldown, maybe later, kmk/twoTruths input types
 - ✅ localStorage for returning visitors
 - ✅ Sound system
-- ✅ FastAPI + Supabase backend (journal entries **+ visitor creation + answers**, all working)
-- ✅ **The Commons interior** (3 Rive scenes, hotspots, cursor regions, blurbs, questions)
+- ✅ FastAPI + Supabase backend (journal entries + visitor creation + answers, all working)
+- ✅ The Commons interior (3 Rive scenes, hotspots, cursor regions, blurbs, questions)
+- ⬜ Café — 3 new book entries: "Good at Life," "New Words," Ethics Game (likely only 1 gets done in the near term)
 - ⬜ Write happiness essay for Overlook book
-- ⬜ The Field interior
-- ⬜ Professor Layton puzzle
-- ⬜ Deploy (Vercel for frontend, Render for backend) — plan finalized, not yet executed
+- ⬜ Professor Layton puzzle — want multiple eventually, at least 1 to start
+- ⬜ The Field — at least 1 workout + some clickable characters saying "workout coming soon" (waiting on Illustrator artwork)
+- ⬜ Add more questions across all locations
+- ⬜ Deploy (Vercel for frontend, Render for backend)
 - ⬜ Set up UptimeRobot (or similar) for keep-warm pinging
 
 ### Phase 2 — Enrichment
+Originally broader — most of what was here has since been pulled forward into Phase 1 or partially completed:
+
 - Optional login / account creation
-- Backend sync for localStorage answers — **partially done** (visitors + answers now sync; still local-first with backend as async layer)
-- Cross-device experience
-- More questions added over time
-- Illustrated assets if drawing happens
+- Cross-device experience (this is really the natural follow-on once login exists — right now synced answers exist in Supabase but there's no way for a visitor to retrieve them on a different device without an account system)
 
 ### Phase 3 — Intelligence
 - AI-generated questions based on visitor answers
 - "Talk to Rona" — RAG system, click figure on Overlook bench
 - Map personalization — elements appear based on visitor answers
 - Moon on Overlook — TBD interaction
-- Commons NPCs from visitor's own life — **partially realized already**: the card scene's left/right girl, cat, house-top flower, and lake flower all have `cursorRegions` defined (cursor feedback only, no question yet) — a natural next step is promoting any of these to real `hotspots` with `directQuestion: true`, following the exact same pattern used for Light/Grapes/Frames.
+- Commons NPCs from visitor's own life — **a lightweight bridge toward this already exists**: the card scene's left/right girl, cat, house-top flower, and lake flower all have `cursorRegions` defined (cursor feedback only, no question yet). Promoting any of these to a real `hotspot` with `directQuestion: true` + a `questions.js` entry is mechanically identical to how Light/Grapes/Frames were built — a small, well-understood step, though still a step short of the full "NPCs personalized to the visitor's own life" vision, which would need actual dynamic/AI-driven content.
 
 ### Phase 4
 - Playable card game with family NPCs

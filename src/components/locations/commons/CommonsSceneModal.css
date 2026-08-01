@@ -47,20 +47,3 @@
   color: var(--black, #0a0a0a);
 }
 
-.commons-reveal-question {
-  background: none;
-  border: 1px solid var(--pink, #ed93b1);
-  color: var(--pink, #ed93b1);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.9rem;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  cursor: pointer;
-  margin-top: 1rem;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-.commons-reveal-question:hover {
-  background: var(--pink, #ed93b1);
-  color: white;
-}

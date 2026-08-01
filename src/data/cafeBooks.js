@@ -29,4 +29,13 @@ export const cafeBooks = [
     svgWidth: 14,
     svgHeight: 54,
   },
+  {
+  id: 'book_ethics_game',
+  title: 'The Ethics Game',
+  color: '#D4537E', // or whatever fits your existing palette pattern
+  svgX: 60, // placeholder — position on your bookshelf
+  svgY: 122,
+  svgWidth: 14,
+  svgHeight: 58,
+},
 ]

@@ -82,6 +82,28 @@ def get_answers(visitor_id: str):
     result = supabase.table("answers").select("*").eq("visitor_id", visitor_id).execute()
     return result.data
 
+@app.get("/answers/aggregate/{question_id}")
+def get_answer_aggregate(question_id: str):
+    result = supabase.table("answers").select("answer").eq("question_id", question_id).execute()
+    rows = result.data
+
+    total = len(rows)
+    if total == 0:
+        return {"question_id": question_id, "total": 0, "breakdown": []}
+
+    counts = {}
+    for row in rows:
+        answer = row["answer"]
+        counts[answer] = counts.get(answer, 0) + 1
+
+    breakdown = [
+        {"answer": answer, "count": count, "percentage": round((count / total) * 100, 1)}
+        for answer, count in counts.items()
+    ]
+    breakdown.sort(key=lambda x: x["count"], reverse=True)
+
+    return {"question_id": question_id, "total": total, "breakdown": breakdown}
+
 @app.post("/journal")
 def create_journal_entry(entry: JournalEntryCreate):
     result = supabase.table("journal_entries").insert({

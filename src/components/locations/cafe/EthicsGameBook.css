@@ -1,0 +1,196 @@
+/* ETHICS GAME BOOK */
+
+.ethics-content {
+  text-align: center;
+}
+
+.ethics-progress {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  color: var(--warm-gray, #d3d1c7);
+  margin-bottom: 1rem;
+}
+
+.ethics-dilemma-text {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 1.4rem;
+  color: var(--deep-green, #27500a);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.ethics-ring-wrap {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 1.5rem;
+}
+
+.ethics-ring-wrap svg {
+  transform: rotate(-90deg);
+}
+
+.ethics-ring-bg {
+  fill: none;
+  stroke: #e8dfd0;
+  stroke-width: 6;
+}
+
+.ethics-ring-fg {
+  fill: none;
+  stroke: var(--amber, #fac775);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke 0.3s ease, stroke-dashoffset 1s linear;
+}
+
+.ethics-ring-fg--warn {
+  stroke: #e8a23a;
+}
+
+.ethics-ring-fg--danger {
+  stroke: #d4537e;
+}
+
+.ethics-ring-number {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--deep-green, #27500a);
+}
+
+.ethics-shake {
+  animation: ethics-shake 0.3s ease-in-out infinite;
+}
+
+@keyframes ethics-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+.ethics-choices {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ethics-choice-btn {
+  padding: 0.6rem 1.2rem;
+  border: 1.5px solid var(--deep-green, #27500a);
+  background: transparent;
+  color: var(--deep-green, #27500a);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.ethics-choice-btn:hover {
+  background: var(--deep-green, #27500a);
+  color: white;
+}
+
+.ethics-transition {
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: ethics-fade-in 0.6s ease;
+}
+
+.ethics-transition-text {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 1.6rem;
+  color: var(--deep-green, #27500a);
+}
+
+@keyframes ethics-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ethics-results-heading {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 1.6rem;
+  color: var(--amber, #fac775);
+  margin-bottom: 1.5rem;
+  animation: ethics-fade-in 0.8s ease;
+}
+
+.ethics-result-row {
+  text-align: left;
+  margin-bottom: 1.25rem;
+  animation: ethics-fade-in 0.8s ease;
+}
+
+.ethics-result-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--deep-green, #27500a);
+  margin-bottom: 0.4rem;
+}
+
+.ethics-result-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ethics-result-bar-line {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  color: var(--black, #0a0a0a);
+  padding: 0.3rem 0.6rem;
+  background: rgba(250, 199, 117, 0.12);
+  border-radius: 4px;
+}
+
+.ethics-result-bar-percent {
+  font-weight: 600;
+  color: var(--amber, #fac775);
+}
+
+.ethics-result-empty {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--warm-gray, #d3d1c7);
+}
+
+.ethics-blurb {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--black, #0a0a0a);
+  white-space: pre-line;
+  text-align: left;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  animation: ethics-fade-in 1s ease;
+}
+
+.ethics-frozen-message {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 1.1rem;
+  color: #d4537e;
+  font-style: italic;
+}
+
+.ethics-loading-text {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 1.2rem;
+  color: var(--deep-green, #27500a);
+  font-style: italic;
+}
