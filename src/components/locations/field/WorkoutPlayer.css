@@ -1,0 +1,167 @@
+.workout-player {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 24px;
+}
+
+.workout-card {
+  background: var(--cream, #f5f0e8);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 24px;
+  text-align: center;
+}
+
+.workout-close {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: white;
+  cursor: pointer;
+  z-index: 310;
+}
+
+.workout-title {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 1.8rem;
+  color: var(--deep-green, #27500a);
+  margin-bottom: 8px;
+}
+
+.workout-progress {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  color: var(--warm-gray, #d3d1c7);
+  margin-bottom: 8px;
+}
+
+.workout-group-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  color: var(--pink, #ed93b1);
+  margin-bottom: 4px;
+}
+
+.workout-exercise-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--black, #0a0a0a);
+  margin-bottom: 8px;
+}
+
+.workout-instructions {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  color: var(--black, #0a0a0a);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.workout-set-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.1rem;
+  color: var(--deep-green, #27500a);
+  margin-bottom: 12px;
+}
+
+.workout-action-btn {
+  display: inline-block;
+  padding: 0.7rem 1.6rem;
+  border: 1.5px solid var(--deep-green, #27500a);
+  background: transparent;
+  color: var(--deep-green, #27500a);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.workout-action-btn:hover {
+  background: var(--deep-green, #27500a);
+  color: white;
+}
+
+.workout-mode-prompt {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  margin-bottom: 16px;
+}
+
+.workout-mode-choices {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.workout-mode-btn {
+  padding: 0.7rem 1.2rem;
+  border: 1.5px solid var(--pink, #ed93b1);
+  background: transparent;
+  color: var(--pink, #ed93b1);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.workout-mode-btn:hover {
+  background: var(--pink, #ed93b1);
+  color: white;
+}
+
+.workout-timer-wrap {
+  margin-bottom: 8px;
+}
+
+.workout-timer-prestart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.workout-timer-number {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--amber, #fac775);
+}
+
+.workout-rest {
+  margin-top: 8px;
+}
+
+.workout-rest-label {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 1.1rem;
+  color: var(--warm-gray, #d3d1c7);
+  margin-bottom: 4px;
+}
+
+.workout-rest-number {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--pink, #ed93b1);
+  margin-bottom: 8px;
+}
+
+.workout-done-message {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 1.4rem;
+  color: var(--deep-green, #27500a);
+}
