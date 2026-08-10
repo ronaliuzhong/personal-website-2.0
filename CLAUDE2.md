@@ -1,5 +1,5 @@
 # CLAUDE.md — Rona's World Project Documentation
-*Last updated: July 30, 2026*
+*Last updated: August 10, 2026*
 
 ## Project Vision
 A personal website that functions as an interactive experience rather than a traditional portfolio. Visitors are welcomed through a series of prompts, then explore "Rona's World" — a map of five clickable locations, each revealing a different facet of who Rona is. The overarching goal is mutual discovery: getting to know the visitor while helping them understand themselves better through thoughtful questions.
@@ -179,6 +179,8 @@ Location Interior Screen (fade in, back button top left)
 
 Returning visitors (detected via localStorage) skip straight to the map with a brief "Welcome back, [name]." greeting that fades in and out. First-time visitors do NOT get a duplicate greeting on the map (they already saw the full "Welcome, [name]." screen moments earlier) — the map's greeting div only ever renders when `returning` is true.
 
+**`PromptScreen.jsx` now supports an optional `subtext` prop**, rendered in smaller italic text below the main prompt. Used specifically on Prompt 1 ("big or small—whatever's true for you") to lower perceived pressure around the happiness question — genuinely open questions can read as heavier than intended before any of the site's playful tone has been established yet. Prompt 2 doesn't use this prop (no subtext needed there).
+
 ---
 
 ## Design System
@@ -328,12 +330,13 @@ SVG interior: bookshelves left/right, clear sky window, table with coffee cup, j
 - **Coffee cup** — drink picker (coffee, tea, water, juice, milk). Liquid color changes. Saved to localStorage.
 - **Journal on table** — opens community journal (shared, Supabase-backed).
 
-**Ambient questions** — now wired via `useAmbientQuestion('cafe', { suppress: !!activeBook || !!activeQuestion || showJournal || showDrinkPicker })`, so the flower pick (and any future café ambient questions) surfaces on its own after 20–45 seconds, but never stacks on top of a book/journal/drink-picker/other question already open.
+**Ambient questions** — wired via `useAmbientQuestion('cafe', { suppress: !!activeBook || !!activeQuestion || showJournal || showDrinkPicker, localDelay: [60000, 240000] })` — tuned to 1–4 minutes (slower than the hook's 20–45 second default), so the flower pick (and any future café ambient questions) feels unhurried rather than rapid-fire, and never stacks on top of a book/journal/drink-picker/other question already open.
 
 **Books:**
-1. Ugly Art — drag to rank 4 art pieces, titles reveal after submit
-2. Recently Read — reading list (Tuesdays with Morrie, Eleanor Oliphant, Freakonomics, Funny Story, Tomorrow×3)
-3. Premium Instagram Reels Pull — journal entry about lifelong partners + inline question
+1. **Ugly Art** — drag to rank 4 art pieces (`@dnd-kit`), titles reveal after submit. Intro text was drifted/compressed by an earlier session and was restored closer to Rona's original argument (the "basically anything" conclusion, the precedent-based reasoning for why "what is art" resists exclusion, and "much more debatable" rather than the drifted "far more interesting" for the good-art question).
+2. **Recently Read** — reading list (Tuesdays with Morrie, Eleanor Oliphant, Freakonomics, Funny Story, Tomorrow×3)
+3. **Premium Instagram Reels Pull** (WitnessBook) — journal entry about why people look for a lifelong partner, ending in a quote from *Shall We Dance?* ("we need a witness to our lives...") + inline question. Reviewed and holds up well — the many-to-many vs. one-to-one framing for romantic vs. other connections is a genuinely original turn of phrase.
+4. **The Ethics Game** — a Good-Place-style real-time trolley-problem gauntlet. 6 dilemmas in escalating pressure (trolley → fat man → transplant → Baby Hitler → bomb → self-driving car), each with a shrinking SVG countdown ring (color shifts amber → warning → danger, card shakes near zero). Letting the timer run out shows "you didn't decide in time." before saving `'(froze)'` as the answer — a legitimate, thematically fitting outcome, not an error state. After all 6: a brief "that's all six." transition, then a percentages screen (`GET /answers/aggregate/{question_id}` — new backend endpoint, groups answers and returns counts/percentages, fetched in parallel via `Promise.all` for speed) showing what other visitors chose, plus a closing reflection blurb about *what* differed between dilemmas (mechanism vs. numbers) rather than telling the visitor what to conclude. **Key bug fixed:** the countdown ring must be `key`-ed to the dilemma's id — without it, consecutive dilemmas sharing the same `timerSeconds` value (e.g. trolley and fat man both at 12s) wouldn't reset properly, since React only re-runs a `useEffect` when its dependency *value* changes, not just because new props arrived. A `firedRef` guard also prevents the timeout callback from ever double-firing (was previously the root cause of skipped dilemmas and an eventual out-of-bounds crash).
 
 **Community Journal:**
 - Page-flipping spread layout, oldest entries first
@@ -351,10 +354,29 @@ Retro OS desktop, starry night background `#0a0a1a`, amber/green gradient title 
 | Tag | Label | Action |
 |-----|-------|--------|
 | `[PDF]` | resume.pdf | PDF iframe + download |
-| `[???]` | layton/ | Coming soon — puzzle not yet built |
+| `[???]` | layton/ | **Built** — see below |
 | `[EXE]` | question.exe | Question card with 2-question cooldown |
 | `[DIR]` | projects/ | Coming soon |
 | `[WIP]` | freakonomics.exe | Coming soon |
+
+### Professor Layton — "Level 1" (Built)
+Framed as "Level 1" (a brief fading title card shown once on entry, not per-puzzle) to leave room for a future Level 2 without over-promising it to visitors — the closing message reads "Level 1 complete." with no "Level 2 coming soon" teaser, deliberately, since that was cut in favor of not setting an expectation.
+
+**Copyright note:** puzzle *concepts* here are classic, public-domain logic puzzle traditions (river crossing, weighing problems, upside-down word riddles) that predate and are reused across countless puzzle games including the real Professor Layton series — not copied verbatim from Level-5's actual games. All wording is original.
+
+**4 text riddles, in order** (`src/data/laytonPuzzles.js`), each with 2 progressive free hints (no cost/currency — a simpler build than a full "hint coin" economy, which was considered and deliberately scoped down):
+1. Keyboard riddle
+2. Photo/family riddle ("brothers and sisters I have none...")
+3. Balls/weighing riddle (minimum weighings to find the heavier ball — answer: 2)
+4. Upside-down word riddle (answer: SWIMS) — hints avoid literally spelling out the answer's letters, a mistake from an earlier draft
+
+Each accepts **multiple valid answer strings** (e.g. "his son"/"son"/"the son", "2"/"two") via an `answers` array rather than a single string.
+
+**5th puzzle — Wolf/Chicken/Grain river crossing** (`RiverCrossingPuzzle.jsx`): real interactive state (which bank each item/the farmer is on, what's currently boarded), full safety validation (checks the bank just departed *from* for an unattended unsafe pair), win/lose states, and a manual "start over" link available during normal play (not just after a loss).
+
+**Progress persists across sessions** — checks `seenQuestions` on mount to resume at the correct puzzle (or skip straight to "Level 1 complete" if already finished), rather than always restarting from puzzle 1. Includes a guard: if a *new* puzzle is ever appended to the array later, a visitor who already beat the river crossing won't be forced to redo it — the code explicitly checks whether the river is already marked seen before ever routing back into it.
+
+**Key bug pattern (same root cause as Ethics Game's timer bug):** `TextRiddle`'s hint/answer state was leaking between puzzles, because React was reusing the same component instance across puzzle transitions. Fixed with `key={currentPuzzle.id}`, forcing a clean remount per puzzle — the same fix used in Ethics Game's `CountdownRing`.
 
 ---
 
@@ -467,15 +489,76 @@ function handleRevealQuestion(question) {
 > While I love a good shared activity to pass quality time with loved ones, I've also discovered the art of the "super casual hang". Having friends over to "study" in the living room, stretch on my yoga mat, sit on the couch and contemplate life—it's nice to just be in the company of others. My roommate is the master of the "super casual hang", and every second we lived together, I discovered new joys to this art, as well as just how important it was to me to have friends I could just exist with.
 
 ### Attribution note
-Original brainstorm considered RyanRumbolt's "Hover House" Rive file (CC BY, requiring credit) — the actual built scenes use custom Rive exports instead (`card-scene.riv`, `walking-scene.riv`, `room-scene.riv`, all with `State Machine 1` as the driving state machine), so **no attribution is owed**. Keeping this note in case the original file is ever referenced again.
+**Correction from earlier documentation:** Commons' three scenes (`card-scene.riv`, `walking-scene.riv`, `room-scene.riv`) are actually modified versions of RyanRumbolt's "Hover House," "Cloudy Walk," and "Bored Room" — three Rive assets from his "Little Wonders" series (illustrated in collaboration with Justyna Stasik), licensed **CC BY 4.0**. This is NOT custom original work as previously documented — that earlier note was inaccurate.
+
+CC BY 4.0 legally requires attribution AND disclosure that changes were made. This is implemented as a small, low-opacity "i" info icon (`.commons-credit-icon`) in the bottom-right corner of `CommonsScreen.jsx` — nearly invisible at rest, full-opacity on hover, click reveals a credit card (`.commons-credit-overlay`/`.commons-credit-card`) with the full attribution text:
+
+> "Hover House," "Cloudy Walk," and "Bored Room" by [RyanRumbolt](https://rive.app/@RyanRumbolt/), in collaboration with Justyna Stasik, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Modified from the originals.
+
+This satisfies the license's requirement that credit be reasonably accessible without forcing attribution into the main visual design of an intentionally minimalist scene.
 
 ---
 
-## The Field (Not started)
+## The Field (Built)
 
-**Concept:** movement, frisbee, sport.
-- "Do this workout with me" — follow-along routine
-- Frisbee-related activity (TBD)
+**Concept:** a "sticker sheet" resting on a wood table — 8 real people (some drawn as combined two-person stickers) plus a rainbow and one wildcard character, each opening a real workout. Illustrated entirely by hand in Illustrator (learned from scratch during this project), not code-generated shapes.
+
+### Visual build
+- Background: wood-table texture image (`public/textures/wood2.jpg`), rotated 90° via a `::before` pseudo-element trick (background layer rotated independently of foreground content, since a direct `transform` on the whole screen would've rotated the characters and back button too)
+- The sticker sheet itself: one combined hand-drawn SVG (exported from Illustrator, all characters positioned by the artist directly in Illustrator — no code-side repositioning math, unlike an earlier abandoned attempt at programmatic grid layout)
+- A `drop-shadow` filter on the whole sheet makes it look physically lifted off the table
+- "MEET THE TEAM" is its own hand-drawn sticker/sign, doubling as the clickable trigger for the (still unwritten) Field intro blurb
+
+### SVG → JSX pipeline (established workflow for any future Field art updates)
+Exported `.svg` files need format conversion before they're valid JSX:
+1. `class="..."` → `className="..."`
+2. `xml:space="preserve"` → `xmlSpace="preserve"`
+3. The embedded `<style>` CSS block must be wrapped via `dangerouslySetInnerHTML` (JSX would otherwise try to parse the CSS's `{ }` as JavaScript)
+4. Strip the XML declaration and Illustrator's generator comment
+5. Add `onClick`/`onMouseEnter`/`onMouseLeave` to whichever named `<g id="...">` groups need interactivity
+
+This entire conversion is done programmatically (a Python script processes the whole file in one pass) rather than manually — manual copy/paste of a multi-thousand-line file is real, demonstrated risk (a botched manual edit once caused hours of debugging). **Workflow going forward:** draw/reposition in Illustrator → export SVG → upload the whole file → full regeneration of `FieldScreen.jsx` in one pass. Never partial/manual edits to the big inline SVG block.
+
+**A real bug this caught:** one character (Lily) had a stray, invisible point left over in Illustrator, sitting far from her actual drawing — this silently inflated her computed bounding box, breaking her hover tooltip's position (jumped to the top of the screen). Confirmed via a bounding-box script comparing all characters' path coordinates, fixed by finding and deleting the stray point directly in Illustrator (selecting the layer's target circle reveals the true full selection extent).
+
+### Characters → workouts mapping
+```js
+'character-camille': 'camille',              // Arms & Back
+'character-brooke': 'brooke',                // Legs
+'character-mia': 'mia',                      // Abs
+'character-diani': 'dillon_diani_throws',    // Throws (paired with Dillon)
+'character-dillon': 'dillon_diani_throws',   // Throws
+'character-taytay': 'lily_taytay',           // Plyometrics (paired with Lily)
+'character-lily': 'lily_taytay',             // Plyometrics
+'character-licey': 'licey_renebean',         // PT (paired with Rene Bean)
+'character-renebean': 'licey_renebean',      // PT
+'character-rainbow': 'field_footwork',       // Footwork — a rainbow standing in for a person
+'character-victoria': 'field_speed_cod',     // Speed, Change of Direction & Acceleration
+'tinyandbigrona': null,                       // undecided "fun little game" — Phase 2
+```
+
+### Hover tooltips
+Every character (including `tinyandbigrona`) has `onMouseEnter`/`onMouseLeave` showing a small floating label with name + exercise, positioned via `getBoundingClientRect()` on the actual hovered element at the moment of hover (not precomputed coordinates — necessary since these are hand-positioned artwork with no reliable static bbox data). Matches Café's existing "label floats above the hovered item" pattern rather than a fixed-position tooltip. `tinyandbigrona` currently just shows "hello" as a placeholder (no name, no game description — the game itself is undecided).
+
+The "MEET THE TEAM" sign has no hover tooltip (intentionally excluded — it's not a workout).
+
+### `WorkoutPlayer.jsx` — the actual workout engine
+Lives in `src/components/locations/field/`. Fully generic — driven entirely by data in `fieldWorkouts.js`, no hardcoded workout logic. Three step types:
+- **`freeform`** — no timer, just a "done — next" tap (e.g. open-ended stretching)
+- **`time`** — shows the duration and a **"start" button first** (so the person has time to get into position before the countdown begins), then auto-counts-down and advances
+- **`reps`** — sets × reps, tap to complete each set; rest between sets is either a real countdown timer (**solo** mode) or a manual "I'm ready" button (**buddy** mode, no forced timer since a training partner's own turn naturally provides rest)
+
+**Buddy/solo toggle** (`hasBuddyToggle: true` in workout data) only applies to workouts using **shared gym equipment** (Camille's cable machine, Brooke's squat rack) — band/bodyweight/PT work doesn't need it, since there's no equipment-sharing rest dependency.
+
+### `fieldWorkouts.js` — all 9 workouts, fully written
+Camille (arms & back), Brooke (legs), Mia (abs), Diani & Dillon (throws — includes a corrected 7-cut drill: lateral movement open-side to break-side, not a literal 7-cut pattern), Licey & Rene Bean (PT), Lily & Tay Tay (plyometrics), plus two standalone, currently-unassigned workouts: Speed/Change-of-Direction/Acceleration (deceleration mechanics, multi-angle cutting, reactive agility, bounding, linear acceleration) and Footwork (backpedal/hip-flip, release moves, marking footwork, juke-and-cut combos) — both mapped to Field characters (rainbow → Footwork, Victoria → Speed/COD) despite not being tied to a specific real person's name.
+
+### Café-first nudge (built alongside Field work, lives in WorldMap)
+A pulsing ring (`.location-pulse-ring`, expanding-and-fading circle) highlights Café's map marker specifically for first-time visitors, gently suggesting where to start (Café was judged the most immediately interactive/fun entry point). Two conditions control it:
+- `!returning` — the runtime `returning` state only flips true on a *future* session (same mechanism used to suppress the duplicate welcome message), so this naturally covers "this is someone's first-ever session"
+- `!cafeVisited` — a separate, more responsive localStorage flag (`visitor.cafeVisited`) set the instant Café is actually clicked into, stopping the pulse immediately even *within* that same first session, rather than waiting for a future visit
+
+**TODO:** Write the Field intro blurb (the "MEET THE TEAM" sign currently opens an overlay with a `{/* TODO */}` placeholder). Decide Tiny and Big Rona's game (Phase 2). Double-check no other characters have stray Illustrator points like Lily did (checked once, clean as of this writing).
 
 **Status:** Concept only, not designed or built.
 
@@ -548,39 +631,41 @@ All sounds in `src/utils/sounds.js`, mapped in `src/hooks/useSounds.js`:
 
 ### Phase 1 — Launch (current)
 - ✅ Opening screen → prompts → welcome → map
-- ✅ World map Direction B (greeting spacing/logic fixed)
-- ✅ The School (RonalzOS desktop)
-- ✅ The Café (books, community journal, drink picker, ambient questions wired)
+- ✅ World map Direction B (greeting spacing/logic fixed, Café-first pulse nudge)
+- ✅ The School (RonalzOS desktop) **+ Professor Layton, "Level 1" complete**
+- ✅ The Café (books, community journal, drink picker, ambient questions tuned to 1–4 min) **+ the Ethics Game**
 - ✅ The Overlook (string lights with joys written, moon questions, bouquet, book)
-- ✅ Question card system with themes, cooldown, maybe later, kmk/twoTruths input types
+- ✅ Question card system — themes, cooldown, maybe later, text/choice/kmk/twoTruths input types
 - ✅ localStorage for returning visitors
 - ✅ Sound system
-- ✅ FastAPI + Supabase backend (journal entries + visitor creation + answers, all working)
-- ✅ The Commons interior (3 Rive scenes, hotspots, cursor regions, blurbs, questions)
-- ⬜ Café — 3 new book entries: "Good at Life," "New Words," Ethics Game (likely only 1 gets done in the near term)
+- ✅ FastAPI + Supabase backend — journal entries + visitor creation + answers, all syncing, **plus a new `/answers/aggregate/{question_id}` endpoint** for the Ethics Game's percentage breakdowns
+- ✅ The Commons interior (3 Rive scenes — actually RyanRumbolt's licensed, modified assets, not custom originals as previously misdocumented — hotspots, cursor regions, blurbs, questions, proper CC BY 4.0 attribution)
+- ✅ **The Field** — fully built (9 workouts, `WorkoutPlayer` engine, hand-illustrated sticker-sheet art, hover tooltips, wood-table background)
+- ✅ Opening prompt softened with reassuring subtext ("big or small—whatever's true for you"), so the happiness question doesn't feel like it demands a heavy answer
+- ⬜ **Add more questions across all locations** — questions are central to the whole concept; Phase 1 should ship with a genuinely satisfying amount, not just enough to prove the mechanism works
+- ⬜ Write the Field intro blurb ("MEET THE TEAM" sign currently opens a `{/* TODO */}` placeholder)
 - ⬜ Write happiness essay for Overlook book
-- ⬜ Professor Layton puzzle — want multiple eventually, at least 1 to start
-- ⬜ The Field — at least 1 workout + some clickable characters saying "workout coming soon" (waiting on Illustrator artwork)
-- ⬜ Add more questions across all locations
-- ⬜ Deploy (Vercel for frontend, Render for backend)
+- ⬜ Café — "Good at Life" / "New Words" book ideas (likely stay deprioritized — Ethics Game became "the one" book built this round)
+- ⬜ Deploy (Vercel for frontend, Render for backend) — plan finalized, not yet executed
 - ⬜ Set up UptimeRobot (or similar) for keep-warm pinging
 
 ### Phase 2 — Enrichment
-Originally broader — most of what was here has since been pulled forward into Phase 1 or partially completed:
-
 - Optional login / account creation
-- Cross-device experience (this is really the natural follow-on once login exists — right now synced answers exist in Supabase but there's no way for a visitor to retrieve them on a different device without an account system)
+- Cross-device experience (the natural follow-on once login exists — synced answers already exist in Supabase, but there's no way to retrieve them on a different device without an account system)
+- Tiny and Big Rona's "fun little game" (Field) — undecided what it is yet, not blocking Phase 1 launch
 
 ### Phase 3 — Intelligence
 - AI-generated questions based on visitor answers
 - "Talk to Rona" — RAG system, click figure on Overlook bench
 - Map personalization — elements appear based on visitor answers
-- Moon on Overlook — TBD interaction
-- Commons NPCs from visitor's own life — **a lightweight bridge toward this already exists**: the card scene's left/right girl, cat, house-top flower, and lake flower all have `cursorRegions` defined (cursor feedback only, no question yet). Promoting any of these to a real `hotspot` with `directQuestion: true` + a `questions.js` entry is mechanically identical to how Light/Grapes/Frames were built — a small, well-understood step, though still a step short of the full "NPCs personalized to the visitor's own life" vision, which would need actual dynamic/AI-driven content.
+- **Workout completion history + weight/rep progression tracking** (Field) — combined into one ticket, moved here from an earlier Phase 2 placement (unlikely to be ready that early). Would need: a dedicated logging table (visitor id, exercise, date, weight, reps), new backend endpoints, and new `WorkoutPlayer` UI for entering weight/reps per set — then a simple progressive-overload suggestion rule (hit all reps last time → suggest a small increase) once real history exists to base it on.
+
+~~Commons NPCs from visitor's own life~~ — **removed.** A feature letting visitors "talk to" people from Rona's real life crossed into feeling too personal; not being pursued.
 
 ### Phase 4
-- Playable card game with family NPCs
-- Playable puzzle with frisbee team NPCs
+- **Playable Sheng Ji with family NPCs that play like the real people** — the ambitious version: not just a playable card game, but gathering real data from actual family matches and training the NPCs to mimic each real person's actual play patterns (not just "an AI plays Sheng Ji," but "an AI plays *like Mom specifically*"). This is genuinely a machine learning project, not a simple feature: it needs real match-data logging infrastructure, a game-state representation for a trick-taking partnership game, and per-person behavioral modeling with enough real logged hands per person to capture a recognizable pattern. Treated as a distant, aspirational goal — not scoped precisely until actually approached.
+
+~~Playable puzzle with frisbee team NPCs~~ — **removed**, lower interest than the card game idea.
 
 ---
 
@@ -1366,7 +1451,10 @@ export function useAmbientQuestion(location, {
 ---
 
 ## Attribution Required
-If using RyanRumbolt's Hover House Rive file:
-Credit: RyanRumbolt + Justyna Stasik, CC BY 4.0
+RyanRumbolt's "Hover House," "Cloudy Walk," and "Bored Room" (Rive assets, part of his "Little Wonders" series, illustrated in collaboration with Justyna Stasik) ARE used in Commons — modified from the originals, not custom exports as earlier documentation incorrectly stated.
 
-(Not currently applicable — Commons uses custom Rive exports instead. Keeping this note for reference.)
+**License:** CC BY 4.0 — legally requires both attribution and disclosure that changes were made.
+
+**Implemented as:** a small, low-opacity "i" info icon (`.commons-credit-icon`) in the bottom-right corner of `CommonsScreen.jsx`, revealing a credit card on click:
+
+> "Hover House," "Cloudy Walk," and "Bored Room" by [RyanRumbolt](https://rive.app/@RyanRumbolt/), in collaboration with Justyna Stasik, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Modified from the originals.

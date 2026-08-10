@@ -59,6 +59,7 @@ function CommonsScreen() {
   const [sceneIndex, setSceneIndex] = useState(0);
   const [activeModalId, setActiveModalId] = useState(null);
   const [triggeredQuestion, setTriggeredQuestion] = useState(null);
+  const [showCredit, setShowCredit] = useState(false);
   const wrapRef = useRef(null);
   const { playTransition, playClick } = useSounds();
   const { getTriggeredQuestion } = useQuestions();
@@ -166,6 +167,33 @@ function CommonsScreen() {
 
         <p className="commons-scene-label">{scene.label}</p>
       </div>
+
+      <button
+        className="commons-credit-icon"
+        onClick={() => setShowCredit(true)}
+        aria-label="View animation credit"
+      >
+        i
+      </button>
+
+      {showCredit && (
+        <div className="commons-credit-overlay" onClick={() => setShowCredit(false)}>
+          <div className="commons-credit-card" onClick={(e) => e.stopPropagation()}>
+            <button className="commons-credit-close" onClick={() => setShowCredit(false)}>×</button>
+            <p className="commons-credit-text">
+              "Hover House," "Cloudy Walk," and "Bored Room" by{' '}
+              <a href="https://rive.app/@RyanRumbolt/" target="_blank" rel="noopener noreferrer">
+                RyanRumbolt
+              </a>
+              , in collaboration with Justyna Stasik, licensed under{' '}
+              <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">
+                CC BY 4.0
+              </a>
+              . Modified from the originals.
+            </p>
+          </div>
+        </div>
+      )}
 
       {activeModalId && (
         <CommonsSceneModal

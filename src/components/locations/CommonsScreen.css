@@ -56,3 +56,68 @@
   font-size: 1.2rem;
   color: var(--warm-gray, #d3d1c7);
 }
+
+.commons-credit-icon {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--warm-gray, #d3d1c7);
+  background: transparent;
+  color: var(--warm-gray, #d3d1c7);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  font-style: italic;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+  z-index: 50;
+}
+
+.commons-credit-icon:hover {
+  opacity: 1;
+}
+
+.commons-credit-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 24px;
+}
+
+.commons-credit-card {
+  position: relative;
+  background: var(--cream, #f5f0e8);
+  border-radius: 12px;
+  max-width: 420px;
+  padding: 2rem;
+}
+
+.commons-credit-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.8rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--black, #0a0a0a);
+}
+
+.commons-credit-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--black, #0a0a0a);
+}
+
+.commons-credit-text a {
+  color: var(--pink, #ed93b1);
+  text-decoration: underline;
+}
