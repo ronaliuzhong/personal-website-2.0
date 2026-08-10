@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8000'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 export async function getJournalEntries() {
   const res = await fetch(`${API_URL}/journal`)
@@ -46,17 +46,6 @@ export async function saveAnswerToBackend(visitorId, questionId, answer) {
   return res.json()
 }
 
-/*
-response shape:
-{
-  "question_id": "ethics_trolley",
-  "total": 12,
-  "breakdown": [
-    { "answer": "Pull the lever", "count": 9, "percentage": 75.0 },
-    { "answer": "Don't pull it", "count": 3, "percentage": 25.0 }
-  ]
-}
-*/
 export async function getAnswerAggregate(questionId) {
   const res = await fetch(`${API_URL}/answers/aggregate/${questionId}`)
   if (!res.ok) throw new Error('Failed to fetch answer aggregate')
