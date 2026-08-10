@@ -60,7 +60,7 @@ const locations = [
   },
 ]
 
-function LocationMarker({ loc, hovered, onHover, onLeave, onClick }) {
+function LocationMarker({ loc, hovered, onHover, onLeave, onClick, pulse }) {
   const isHovered = hovered === loc.id
 
   return (
@@ -71,6 +71,18 @@ function LocationMarker({ loc, hovered, onHover, onLeave, onClick }) {
       onClick={() => onClick(loc.id)}
       style={{ cursor: 'pointer' }}
     >
+      {/* pulsing ring — only shown for Café, only before it's ever been visited */}
+      {pulse && (
+        <circle
+          className="location-pulse-ring"
+          cx={loc.x}
+          cy={loc.y}
+          r={18}
+          fill="none"
+          stroke={loc.color}
+          strokeWidth={2}
+        />
+      )}
       {/* outer ring */}
       <circle
         cx={loc.x}
@@ -131,8 +143,23 @@ function WorldMap({ name, returning, onEnterLocation }) {
   const [hovered, setHovered] = useState(null)
   const { playTransition } = useSounds()
 
+  // Tracks whether Café has ever actually been visited — separate from
+  // `returning`, since `returning` only flips true on a whole NEW
+  // session. This stops the pulse the moment they click into Café,
+  // even within their very first session, rather than waiting for a
+  // future visit.
+  const [cafeVisited, setCafeVisited] = useState(() => {
+    const visitor = JSON.parse(localStorage.getItem('visitor')) || {}
+    return !!visitor.cafeVisited
+  })
+
   function handleEnterLocation(id) {
     playTransition()
+    if (id === 'cafe' && !cafeVisited) {
+      const visitor = JSON.parse(localStorage.getItem('visitor')) || {}
+      localStorage.setItem('visitor', JSON.stringify({ ...visitor, cafeVisited: true }))
+      setCafeVisited(true)
+    }
     onEnterLocation(id)
   }
 
@@ -175,6 +202,7 @@ function WorldMap({ name, returning, onEnterLocation }) {
             onHover={setHovered}
             onLeave={() => setHovered(null)}
             onClick={handleEnterLocation}
+            pulse={loc.id === 'cafe' && !returning && !cafeVisited}
           />
         ))}
       </svg>

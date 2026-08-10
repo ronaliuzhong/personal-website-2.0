@@ -15,7 +15,7 @@
   left: 50%;
   width: 100vh;
   height: 100vw;
-  background-image: url('/textures/wood2.jpg');
+  background-image: url('/textures/wood.jpg');
   background-size: cover;
   background-position: center;
   transform: translate(-50%, -50%) rotate(90deg);
@@ -29,6 +29,33 @@
   max-width: 900px;
   height: auto;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
+}
+
+.field-hover-tooltip {
+  position: fixed;
+  transform: translate(-50%, -110%);
+  background: var(--deep-green, #27500a);
+  border-radius: 6px;
+  padding: 0.3rem 0.7rem;
+  display: flex;
+  gap: 0.4rem;
+  align-items: baseline;
+  z-index: 400;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.field-hover-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--soft-green, #eaf3de);
+}
+
+.field-hover-exercise {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  color: var(--light-green, #c0dd97);
 }
 
 .field-intro-overlay {

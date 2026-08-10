@@ -85,7 +85,10 @@ function UglyArtBook() {
         what qualifies as art? And what qualifies as <em>good</em> art?
       </p>
       <p className="ugly-art-book__intro">
-        The first is nearly impossible to answer with exclusion. The second is far more interesting.
+        On the first question, our classes ended up going with "basically anything". It's incredibly hard to argue that any one candidate is not art, partially due to the wide variety of pieces that are conventionally accepted as art and therefore act as precedent for qualifying any other pieces as art. 
+        The second question is much more debatable. Let's see what you think is good art.
+      </p>
+      <p className="ugly-art-book__intro">
         Drag these four pieces to rank them from most to least good—in your opinion.
       </p>
 

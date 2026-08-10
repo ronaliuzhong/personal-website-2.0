@@ -49,3 +49,20 @@
   70% { opacity: 1; }
   100% { opacity: 0; }
 }
+
+.location-pulse-ring {
+  animation: locationPulse 2s ease-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+@keyframes locationPulse {
+  0% {
+    r: 18;
+    opacity: 0.8;
+  }
+  100% {
+    r: 32;
+    opacity: 0;
+  }
+}
