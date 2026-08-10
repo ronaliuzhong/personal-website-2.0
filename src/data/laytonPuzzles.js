@@ -34,7 +34,7 @@ export const textPuzzles = [
   },
   {
     id: 'layton_word',
-    prompt: 'What five-letter word, typed in all capital letters, reads the same upside down?',
+    prompt: 'What five-letter word, typed in all capital letters, reads the same upside down (a 180 degree rotation)?',
     answers: ['swims'],
     hints: [
       'Think of a common five-letter verb related to being in water.',

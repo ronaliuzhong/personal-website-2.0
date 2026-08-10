@@ -2,7 +2,7 @@ import { useSounds } from '../hooks/useSounds'
 import { useState } from 'react'
 import './PromptScreen.css'
 
-function PromptScreen({ prompt, onSubmit }) {
+function PromptScreen({ prompt, subtext, onSubmit }) {
   const [answer, setAnswer] = useState('')
   const { playSubmit } = useSounds()
 
@@ -16,6 +16,7 @@ function PromptScreen({ prompt, onSubmit }) {
   return (
     <div className="prompt-screen">
       <p className="prompt-text">"{prompt}"</p>
+      {subtext && <p className="prompt-subtext">{subtext}</p>}
       <input
         className="prompt-input"
         type="text"

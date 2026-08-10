@@ -19,6 +19,16 @@
   margin-bottom: 24px;
 }
 
+.prompt-subtext {
+  font-family: var(--font-ui);
+  font-size: clamp(14px, 1.2vw, 18px);
+  color: var(--color-warm-gray);
+  font-style: italic;
+  text-align: center;
+  margin-top: -12px;
+  margin-bottom: 24px;
+}
+
 .prompt-input {
   width: 600px;
   max-width: 80vw;

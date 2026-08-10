@@ -31,6 +31,7 @@ function App() {
       {screen === SCREENS.prompt1 && (
         <PromptScreen
           prompt="To know me, let me get to know you—what makes you happy?"
+          subtext="big or small, whatever's true for you"
           onSubmit={handlePrompt1Submit}
         />
       )}
