@@ -300,7 +300,13 @@ export default function OverlookScreen() {
             <button className="overlook-book__close" onClick={() => setShowBook(false)}>×</button>
             <p className="overlook-book__title">on happiness</p>
             <div className="overlook-book__body">
-              <p>[ coming soon ]</p>
+              <p>We have many important, commonly used words that are actually rather vague—freedom, success, art, love. I like to delve into what these words actually mean, and one that I have found particularly interesting to think about is happiness—what creates it, what feelings encompass it, and how it appears in my life. </p>
+
+              <p>My first distinction is that happiness does not equal pleasure. Purely pleasurable items or actions, I label as "simple happinesses". They do not have any lasting positive feelings but are pleasurable and enjoyable in the present. These could include but are not limited to—food, sex, doom-scrolling, drugs, vacation—and the overlook reflects said simple happinesses. It is my belief that these should be enjoyed to the extent that they do not severely harm your ability to create your "complex happinesses". My favorite instances of simple happinesses are when they can be used to develop complex happinesses; for example, it is undeniable that eating ice cream with your best friend on the couch strengthens your bond. </p>
+
+              <p>"Complex happinesses" are demonstrated by the remaining four locations—fulfillment you get from achieving effortful goals: your relationships, your career, your health, your sport, your community, your character. These probably deserve their own separate categories eventually but since I haven't figured out what role each of my complex happinesses plays, I have them all grouped together with the common denominator that each one requires continuous effort and the feeling it brings isn't one that can just be described as an instantaneous dopamine release. For now, my chosen life efforts are my health and athletics (the Field), my character and reflections (the Café), my career and contributions (the School), and my community and relationships (the Commons). </p>
+
+              <p>My interests and activities have naturally been supporting these goals, but only recently did I concretely categorize them. I'm curious to see in what ways my theory will change—whether certain complex happiness groups take precedence over others, whether new complex happiness groups emerge, whether there are further intersections of simple and complex happinesses. This world that you're exploring reflects not only what I have figured out, but also my attempt at furthering my understanding of what I want. </p>
             </div>
           </div>
         </div>
