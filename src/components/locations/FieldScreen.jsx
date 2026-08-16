@@ -7,13 +7,12 @@ const labelMap = {
   'character-camille': { name: 'Camille', exercise: 'Arms & Back' },
   'character-brooke': { name: 'Brooke', exercise: 'Legs' },
   'character-mia': { name: 'Mia', exercise: 'Abs' },
-  'character-diani': { name: 'Diani', exercise: 'Throws' },
+  'character-diani': { name: 'Diani', exercise: 'Footwork' },
   'character-dillon': { name: 'Dillon', exercise: 'Throws' },
   'character-taytay': { name: 'Tay Tay', exercise: 'Plyometrics' },
   'character-lily': { name: 'Lily', exercise: 'Plyometrics' },
   'character-licey': { name: 'Licey', exercise: 'PT' },
   'character-renebean': { name: 'Rene Bean', exercise: 'PT' },
-  'character-rainbow': { name: '', exercise: 'Footwork' },
   'character-victoria': { name: 'Victoria', exercise: 'Speed & COD' },
   'tinyandbigrona': { name: '', exercise: 'hello' },
 };
@@ -21,6 +20,7 @@ const labelMap = {
 function FieldScreen() {
   const [activeWorkoutId, setActiveWorkoutId] = useState(null);
   const [showIntro, setShowIntro] = useState(false);
+  const [showEssay, setShowEssay] = useState(false);
   const [hovered, setHovered] = useState(null); // { id, x, y } or null
 
   const activeWorkout = activeWorkoutId ? fieldWorkouts[activeWorkoutId] : null;
@@ -1081,7 +1081,7 @@ function FieldScreen() {
 		c0.29-1.28,0.53-2.64,0.72-4.02c-0.1,1.74-0.19,3.49-0.19,5.23c-0.23,0.47-0.47,0.9-0.71,1.25c0.26-0.26,0.48-0.56,0.71-0.86
 		C658.01,246.49,658.16,248.46,658.58,250.35C658.58,250.35,658.58,250.35,658.58,250.35z"/>
 </g>
-<g id="character-diani" onClick={() => setActiveWorkoutId('dillon_diani_throws')} onMouseEnter={(e) => handleHover('character-diani', e)} onMouseLeave={() => setHovered(null)} style={{cursor: 'pointer'}}>
+<g id="character-diani" onClick={() => setActiveWorkoutId('field_footwork')} onMouseEnter={(e) => handleHover('character-diani', e)} onMouseLeave={() => setHovered(null)} style={{cursor: 'pointer'}}>
 	<g>
 		<path className="st4" d="M485.34,345.6c-0.12,0.09-0.22,0.17-0.3,0.24c0.07-0.05,0.14-0.11,0.21-0.16
 			C485.28,345.65,485.31,345.63,485.34,345.6z"/>
@@ -1349,7 +1349,7 @@ function FieldScreen() {
 	<path className="st30" d="M510.2,377.82c-0.15,0.07-0.35,0.14-0.53,0.16"/>
 	<path className="st6" d="M509.62,378.03c1.01-0.17,1.96-1.26,2.16-1.98C511.19,376.82,510.52,377.57,509.62,378.03z"/>
 </g>
-<g id="character-rainbow" onClick={() => setActiveWorkoutId('field_footwork')} onMouseEnter={(e) => handleHover('character-rainbow', e)} onMouseLeave={() => setHovered(null)} style={{cursor: 'pointer'}}>
+<g id="character-rainbow" onClick={() => setShowEssay(true)} style={{cursor: 'pointer'}}>
 	<g>
 		<path className="st4" d="M266.43,394.76c-0.11-0.17-0.25-0.39-0.4-0.57c0.13,0.18,0.25,0.36,0.38,0.54
 			C266.42,394.74,266.43,394.75,266.43,394.76z"/>
@@ -3297,6 +3297,19 @@ function FieldScreen() {
             <button className="field-intro-close" onClick={() => setShowIntro(false)}>×</button>
             <p className="field-intro-text">
               {/* TODO: write the Field intro—why movement/sport matters to you */}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {showEssay && (
+        <div className="field-intro-overlay" onClick={() => setShowEssay(false)}>
+          <div className="field-intro-card" onClick={(e) => e.stopPropagation()}>
+            <button className="field-intro-close" onClick={() => setShowEssay(false)}>×</button>
+            <p className="field-intro-text">
+              {/* TODO: the Field essay — autonomy/mobility as a precondition
+                  for everything else, alongside genuine athletic ambition
+                  (nationals, a competitive club team) — still being drafted */}
             </p>
           </div>
         </div>

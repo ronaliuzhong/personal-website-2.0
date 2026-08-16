@@ -8,12 +8,18 @@ function QuestionCard({ question, location, onClose }) {
   const [answer, setAnswer] = useState('')
   const [visible, setVisible] = useState(false)
   const [guessed, setGuessed] = useState(null)
+  const [followUp, setFollowUp] = useState(null) // { text } once ambient_2's own answer becomes the new prompt
   const { markSeen, saveAnswer } = useQuestions()
   const theme = themes[location] || themes.cafe
   const isSchool = theme.type === 'school'
   const isOverlook = theme.type === 'overlook'
   const isDark = isSchool || isOverlook
   const isRest = question?.isRest
+
+  // Once a follow-up is active, everything renders based on IT instead
+  // of the original question — same shape (just a text prompt), so no
+  // other rendering logic needs to change.
+  const activeQuestion = followUp || question
 
   useEffect(() => {
     setTimeout(() => setVisible(true), 50)
@@ -26,8 +32,27 @@ function QuestionCard({ question, location, onClose }) {
 
   function handleSubmit() {
     if (answer.trim() === '') return
+
+    // Already answering the follow-up card (their own icebreaker,
+    // asked right back to them) — just save normally and close.
+    if (followUp) {
+      saveAnswer('ambient_2_followup', answer)
+      markSeen('ambient_2_followup')
+      handleClose()
+      return
+    }
+
     saveAnswer(question.id, answer)
     markSeen(question.id)
+
+    // Special case: the icebreaker question gets asked right back —
+    // their own typed answer becomes the new prompt, with a fresh input.
+    if (question.id === 'ambient_2') {
+      setFollowUp({ text: answer, inputType: 'text' })
+      setAnswer('')
+      return
+    }
+
     handleClose()
   }
 
@@ -86,9 +111,9 @@ function QuestionCard({ question, location, onClose }) {
             </p>
           ) : (
             <>
-              <p className="question-card__text">{question.text}</p>
+              <p className="question-card__text">{activeQuestion.text}</p>
 
-              {question.inputType === 'text' && (
+              {activeQuestion.inputType === 'text' && (
                 <div className="question-card__input-wrap">
                   <input
                     className="question-card__input"
@@ -144,7 +169,7 @@ function QuestionCard({ question, location, onClose }) {
                       <p className="question-card__reveal-message">
                         {guessed === question.correctAnswer
                           ? "You caught it! That was the lie."
-                          : `Nope—actually, this was the lie: "${question.correctAnswer}"`}
+                          : `Nope — actually, this was the lie: "${question.correctAnswer}"`}
                       </p>
                       <div className="question-card__choices">
                         {question.options.map(option => {

@@ -24,10 +24,10 @@ const pieces = [
 ]
 
 const titles = {
-  dali: 'Birth of Liquid Desires — Salvador Dalí',
-  hirst: 'The Physical Impossibility of Death in the Mind of Someone Living — Damien Hirst',
-  koons: 'Balloon Dog — Jeff Koons',
-  millet: 'The Gleaners — Jean-François Millet',
+  dali: 'Birth of Liquid Desires—Salvador Dalí',
+  hirst: 'The Physical Impossibility of Death in the Mind of Someone Living—Damien Hirst',
+  koons: 'Balloon Dog—Jeff Koons',
+  millet: 'The Gleaners—Jean-François Millet',
 }
 
 
