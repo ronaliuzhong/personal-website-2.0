@@ -3296,7 +3296,10 @@ function FieldScreen() {
           <div className="field-intro-card" onClick={(e) => e.stopPropagation()}>
             <button className="field-intro-close" onClick={() => setShowIntro(false)}>×</button>
             <p className="field-intro-text">
-              {/* TODO: write the Field intro—why movement/sport matters to you */}
+              Meet some of my Ultimate Frisbee teammates! 
+							Each one invites you to try a specific workout based on either something we actually do together or what I'd consider their strongest skill. 
+							You don't have to do any of them, but I encourage you to choose one to do today! 
+							Bonus points if you get a buddy to join you.
             </p>
           </div>
         </div>

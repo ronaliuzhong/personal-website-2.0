@@ -10,23 +10,13 @@ function WalkContent({ onClose }) {
       </button>
       <h2 className="commons-modal-title">The Chores I Don't Mind</h2>
       <p className="commons-modal-intro">
-        Although the "slow living" trend tried to convince me to enjoy
-        chores, they failed. Anything that required I take my focus away
-        from the task that brought me closer to my goals was an
-        unwelcome inconvenience.
+        Although the "slow living" trend tried to convince me to enjoy chores, they failed. I've never been good at slowing down for something that didn't feel like it had a goal--if a task had no clear purpose, it just felt like something standing between me and whatever came next. 
       </p>
       <p className="commons-modal-intro">
-        But as my girlfriend and I started spending prolonged periods of
-        time together, we started doing our everyday mundane tasks
-        together, and you know what? I didn't mind doing these chores at
-        all. I hate the time transportation takes but driving for her or
-        walking with her? Doesn't feel like any time was lost at all.
-        Cooking is a date night activity, grocery shopping is a fun
-        sidequest, and laundry is time to watch a show together.
+        But as my girlfriend and I started spending prolonged periods of time together, we started doing our everyday mundane tasks together, and you know what? I didn't mind doing these chores. I hate the time transportation takes but I like walking with her. Cooking is a date night activity, grocery shopping is a fun sidequest, and laundry is time to watch a show together.
       </p>
       <p className="commons-modal-intro">
-        I guess some people just make life a bit more vibrant, so it's
-        easier to slow down and enjoy the colors.
+        Granted, we don't get much time together so of course any time together will feel like a novelty. But it's had me thinking: maybe slow living was onto something after all. Either way, big steps for me. 
       </p>
     </div>
   );
