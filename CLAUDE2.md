@@ -1,5 +1,5 @@
 # CLAUDE.md — Rona's World Project Documentation
-*Last updated: August 10, 2026*
+*Last updated: August 19, 2026*
 
 ## Project Vision
 A personal website that functions as an interactive experience rather than a traditional portfolio. Visitors are welcomed through a series of prompts, then explore "Rona's World" — a map of five clickable locations, each revealing a different facet of who Rona is. The overarching goal is mutual discovery: getting to know the visitor while helping them understand themselves better through thoughtful questions.
@@ -118,12 +118,17 @@ personal-website-2.0/
                                     via directQuestion), but kept for future background
                                     characters (e.g. promoting a card-scene cursorRegion
                                     to a real hotspot later)
+          StaticPromptContent.jsx ← generic "one-time real-world action prompt" content
+                                    (not a question), parameterized by text + promptId,
+                                    reusable for any future one-off prompt like the cat's
+                                    photo-text prompt (currently on flower_painting)
       OpeningScreen.jsx       ← black screen, Bebas Neue
       OpeningScreen.css
-      PromptScreen.jsx        ← reusable prompt + input
+      PromptScreen.jsx        ← reusable prompt + input, optional `subtext` prop
       PromptScreen.css
       QuestionCard.jsx        ← location-themed question cards — supports inputType:
-                                 'text' | 'choice' | 'kmk' | 'twoTruths'
+                                 'text' | 'choice' | 'kmk' | 'twoTruths', plus the
+                                 ambient_2 icebreaker follow-up special case
       QuestionCard.css
       questionInputs/
         KissMarryKill.jsx     ← drag-and-drop Kiss/Marry/Kill, used by inputType 'kmk'
@@ -133,6 +138,11 @@ personal-website-2.0/
       questions.js            ← ALL questions live here
       themes.js                ← question card themes per location (includes 'commons': pink)
       cafeBooks.js             ← café book data with SVG coordinates
+      fieldWorkouts.js         ← all 9 Field workouts, data-only, drives WorkoutPlayer
+      laytonPuzzles.js         ← Layton's 4 text riddles, data-only
+      actionPrompts.js         ← one-time real-world action prompts (not questions) —
+                                 parallel to questions.js but simpler shape, no
+                                 inputType/answer schema, drives StaticPromptContent
     hooks/
       useAppState.js           ← screen routing/state + backend visitor sync
       useQuestions.js          ← question sequencing, seen tracking, cooldown,
@@ -268,6 +278,15 @@ All questions live in `src/data/questions.js`. Structure:
 - **`kmk`** ("Kiss, Marry, Kill") — drag-and-drop via `@dnd-kit`; `options` is an array of exactly 3 strings; answer saved as `"Kiss: X, Marry: Y, Kill: Z"`. Component: `src/components/questionInputs/KissMarryKill.jsx`.
 - **`twoTruths`** ("Two Truths and a Lie") — click a statement to guess the lie; reveals correct answer with visual feedback (correct lie highlighted, wrong guess struck through) before a "continue" button saves and closes. `correctAnswer` must exactly match one of `options`.
 
+### Special case: the icebreaker gets asked back (`QuestionCard.jsx`)
+`ambient_2` ("What's your favorite icebreaker question?") has a unique follow-up behavior, hardcoded as a special case inside `QuestionCard.jsx` itself (not a generic mechanism — this is the one question on the whole site that works this way):
+
+1. Visitor answers the icebreaker normally — saves as `ambient_2`, marked seen
+2. Instead of closing, the card swaps to show **their own typed answer** as a brand-new prompt, with a fresh empty text input (`followUp` state holds `{ text: answer, inputType: 'text' }`, and `activeQuestion = followUp || question` drives what actually renders)
+3. They answer their own icebreaker — saves separately as `ambient_2_followup`, then closes for real
+
+Every other question type/flow is completely unaffected, since this only triggers on the exact id `ambient_2`.
+
 ### Current questions (as of this update):
 
 **School:**
@@ -300,7 +319,8 @@ All questions live in `src/data/questions.js`. Structure:
 
 **Ambient — anywhere** (`location: null`, rare/global tier):
 - `ambient_1` — does suffering make us stronger
-- `ambient_2` — favorite icebreaker question
+- `ambient_2` — favorite icebreaker question (has the special follow-up behavior above)
+- `ambient_2_followup` — not a real entry in `questions.js` — this id only ever exists as a saved *answer*, generated dynamically at runtime from whatever the visitor typed for `ambient_2`
 
 ---
 
@@ -387,7 +407,7 @@ Dusk/night SVG scene. Dark purple/navy sky with layered gradients, crescent moon
 **Clickable elements:**
 - **String lights (10)** — hover reveals a simple joy. ✅ **Written** (see below).
 - **Bouquet** — triggers overlook_flower question. Colors reflect visitor's flower (café) + favorite person's flower (overlook). White if unanswered.
-- **Book (amber)** — opens "on happiness" essay modal. ⬜ **Essay still not written** — placeholder text.
+- **Book (amber)** — opens "on happiness" essay modal. ✅ **Written** (see below).
 - **Moon** — glows with pulse when question ready. Triggers moon_q1/2/3 in sequence.
 - **Figure (Rona)** — Phase 3 placeholder for "talk to Rona" AI feature.
 
@@ -409,7 +429,16 @@ const SIMPLE_JOYS = [
 ]
 ```
 
-**TODO:** Write happiness essay.
+**Happiness essay — written, in full:**
+> We have many important, commonly used words that are actually rather vague—freedom, success, art, love. I like to delve into what these words actually mean, and one that I have found particularly interesting to think about is happiness—what creates it, what feelings encompass it, and how it appears in my life.
+>
+> My first distinction is that happiness does not equal pleasure. Purely pleasurable items or actions, I label as "simple happinesses". They do not have any lasting positive feelings but are pleasurable and enjoyable in the present. These could include but are not limited to—food, sex, doom-scrolling, drugs, vacation—and the overlook reflects said simple happinesses. It is my belief that these should be enjoyed to the extent that they do not severely harm your ability to create your "complex happinesses". My favorite instances of simple happinesses are when they can be used to develop complex happinesses; for example, it is undeniable that eating ice cream with your best friend on the couch strengthens your bond.
+>
+> "Complex happinesses" are demonstrated by the remaining four locations—fulfillment you get from achieving effortful goals: your relationships, your career, your health, your sport, your community, your character. These probably deserve their own separate categories eventually but since I haven't figured out what role each of my complex happinesses plays, I have them all grouped together with the common denominator that each one requires continuous effort and the feeling it brings isn't one that can just be described as an instantaneous dopamine release. For now, my chosen life efforts are my health and athletics (the Field), my character and reflections (the Café), my career and contributions (the School), and my community and relationships (the Commons).
+>
+> My interests and activities have naturally been supporting these goals, but only recently did I concretely categorize them. I'm curious to see in what ways my theory will change—whether certain complex happiness groups take precedence over others, whether new complex happiness groups emerge, whether there are further intersections of simple and complex happinesses. This world that you're exploring reflects not only what I have figured out, but also my attempt at furthering my understanding of what I want.
+
+*(This essay is genuinely the architecture-defining piece of the whole site — the "simple happiness" vs. "complex happiness" split explains why Overlook exists in contrast to the other four locations. It deliberately includes an explicit, honest example of the categories overlapping rather than staying cleanly separate (ice cream → bonding), and deliberately leaves the four complex-happiness categories un-ranked/un-sorted as an admitted open question rather than forcing false tidiness — consistent with the site's overall voice of not overclaiming certainty.)*
 
 ---
 
@@ -479,14 +508,31 @@ function handleRevealQuestion(question) {
 > When other Chinese families came over, the schedule was almost always a joint dinner followed by a split of the kids and adults, where the adults would eat sunflower seeds and play card games and the kids would go do whatever it was we used to do. Eventually my sister and I got older, and we were taught to play the grown-up card game (Sheng Ji, also known as Level Up or Tractor) as well. Now, we always bring two decks of cards with us on family outings, in case the perfect scene for a good game of Sheng Ji appears.
 
 **Walk — "The Chores I Don't Mind":**
-> Although the "slow living" trend tried to convince me to enjoy chores, they failed. Anything that required I take my focus away from the task that brought me closer to my goals was an unwelcome inconvenience.
+> Although the "slow living" trend tried to convince me to enjoy chores, they failed. I've never been good at slowing down for something that didn't feel like it had a goal—if a task had no clear purpose, it just felt like something standing between me and whatever came next.
 >
-> But as my girlfriend and I started spending prolonged periods of time together, we started doing our everyday mundane tasks together, and you know what? I didn't mind doing these chores at all. I hate the time transportation takes but driving for her or walking with her? Doesn't feel like any time was lost at all. Cooking is a date night activity, grocery shopping is a fun sidequest, and laundry is time to watch a show together.
+> But as my girlfriend and I started spending prolonged periods of time together, we started doing our everyday mundane tasks together, and you know what? I didn't mind doing these chores. I hate the time transportation takes but I like walking with her. Cooking is a date night activity, grocery shopping is a fun sidequest, and laundry is time to watch a show together.
 >
-> I guess some people just make life a bit more vibrant, so it's easier to slow down and enjoy the colors.
+> Granted, we don't get much time together so of course any time together will feel like a novelty. But it's had me thinking: maybe slow living was onto something after all. Either way, big steps for me.
+
+*(Went through significant rewriting — earlier drafts risked reading as either corny, too similar to Room's "activity doesn't matter, person does" theme, too similar to WitnessBook's sincerity, or accidentally implying doubt about the relationship's future rather than just honest uncertainty about whether novelty survives daily repetition. The "granted..." paragraph is the fix — it explicitly names the confound (limited time together = of course it still feels fresh) without ever touching "us" or the relationship's future, keeping the uncertainty scoped to chores/novelty specifically.)*
 
 **Room — "Whatever, Together":**
 > While I love a good shared activity to pass quality time with loved ones, I've also discovered the art of the "super casual hang". Having friends over to "study" in the living room, stretch on my yoga mat, sit on the couch and contemplate life—it's nice to just be in the company of others. My roommate is the master of the "super casual hang", and every second we lived together, I discovered new joys to this art, as well as just how important it was to me to have friends I could just exist with.
+
+### Commons Action Prompts (Built) — one-time real-world instructions, not questions
+
+A new, separate system from the question cards — instead of asking the visitor to answer something, these prompt an actual small real-world action (currently: "text a random recently taken photo to your family groupchat").
+
+**Data:** `src/data/actionPrompts.js` — parallel to `questions.js` but with a simpler shape (just `{ text }`, no `inputType`/`answer`/schema), since these aren't Q&A.
+
+**Component:** `src/components/locations/commons/StaticPromptContent.jsx` — generic, reusable, parameterized by `text` + `promptId` (not a dedicated file per prompt — this was deliberately corrected mid-build, since a first pass created a one-off `CatPromptContent.jsx` for a single line of text, which was rightly flagged as unnecessary given `QuestionOnlyContent.jsx` already established the "generic component + data param" pattern for exactly this kind of reuse).
+
+**Three distinct exits, each with different persistence behavior:**
+- **"done"** button → `markSeen(promptId)`, closes — completed, gone forever
+- **"not for me"** button → `markSeen(promptId)`, closes — declined, gone forever, never asked again (this was a deliberate design correction: an earlier version had "maybe next time" as the decline wording, implying it would resurface later, which is NOT what was wanted — the fix was renaming the button and having it mark-seen just like "done", so any *explicit* choice is permanent)
+- **× close button** → just closes, no `markSeen` — NOT treated as a decision, so an accidental/undecided dismissal leaves the prompt available to trigger again on a future click
+
+**Currently wired to:** `flower_painting` hotspot in the card scene (placeholder coordinates as of this writing — `top: 35%, left: 65%`, pending a reference image to tune properly). **Important lesson learned:** this was originally wired to the **cat**, promoted from a `cursorRegion` to a real `hotspot` — but this broke the cat's own native Rive hover reaction, since a real `<button>` hotspot sits on top of the canvas and intercepts every mouse event in that area, blocking whatever built-in animation Rive's own state machine was providing underneath. The cat was reverted back to a `cursorRegion` (cursor-only, no click) and the prompt moved to a different element instead — a good concrete example of why the hotspot/cursorRegion distinction exists at all.
 
 ### Attribution note
 **Correction from earlier documentation:** Commons' three scenes (`card-scene.riv`, `walking-scene.riv`, `room-scene.riv`) are actually modified versions of RyanRumbolt's "Hover House," "Cloudy Walk," and "Bored Room" — three Rive assets from his "Little Wonders" series (illustrated in collaboration with Justyna Stasik), licensed **CC BY 4.0**. This is NOT custom original work as previously documented — that earlier note was inaccurate.
@@ -507,15 +553,16 @@ This satisfies the license's requirement that credit be reasonably accessible wi
 - Background: wood-table texture image (`public/textures/wood2.jpg`), rotated 90° via a `::before` pseudo-element trick (background layer rotated independently of foreground content, since a direct `transform` on the whole screen would've rotated the characters and back button too)
 - The sticker sheet itself: one combined hand-drawn SVG (exported from Illustrator, all characters positioned by the artist directly in Illustrator — no code-side repositioning math, unlike an earlier abandoned attempt at programmatic grid layout)
 - A `drop-shadow` filter on the whole sheet makes it look physically lifted off the table
-- "MEET THE TEAM" is its own hand-drawn sticker/sign, doubling as the clickable trigger for the (still unwritten) Field intro blurb
+- "MEET THE TEAM" is its own hand-drawn sticker/sign, triggering the (written, see below) short **intro** blurb — separate from the deeper **essay**, which lives on the rainbow instead (see mapping below)
 
 ### SVG → JSX pipeline (established workflow for any future Field art updates)
 Exported `.svg` files need format conversion before they're valid JSX:
 1. `class="..."` → `className="..."`
 2. `xml:space="preserve"` → `xmlSpace="preserve"`
-3. The embedded `<style>` CSS block must be wrapped via `dangerouslySetInnerHTML` (JSX would otherwise try to parse the CSS's `{ }` as JavaScript)
-4. Strip the XML declaration and Illustrator's generator comment
-5. Add `onClick`/`onMouseEnter`/`onMouseLeave` to whichever named `<g id="...">` groups need interactivity
+3. `xmlns:xlink="..."` → `xmlnsXlink="..."` (same camelCase issue as the other two — this one slipped through the original conversion script and sat as a silent console warning for a while before being caught and fixed)
+4. The embedded `<style>` CSS block must be wrapped via `dangerouslySetInnerHTML` (JSX would otherwise try to parse the CSS's `{ }` as JavaScript)
+5. Strip the XML declaration and Illustrator's generator comment
+6. Add `onClick`/`onMouseEnter`/`onMouseLeave` to whichever named `<g id="...">` groups need interactivity
 
 This entire conversion is done programmatically (a Python script processes the whole file in one pass) rather than manually — manual copy/paste of a multi-thousand-line file is real, demonstrated risk (a botched manual edit once caused hours of debugging). **Workflow going forward:** draw/reposition in Illustrator → export SVG → upload the whole file → full regeneration of `FieldScreen.jsx` in one pass. Never partial/manual edits to the big inline SVG block.
 
@@ -526,21 +573,23 @@ This entire conversion is done programmatically (a Python script processes the w
 'character-camille': 'camille',              // Arms & Back
 'character-brooke': 'brooke',                // Legs
 'character-mia': 'mia',                      // Abs
-'character-diani': 'dillon_diani_throws',    // Throws (paired with Dillon)
-'character-dillon': 'dillon_diani_throws',   // Throws
+'character-diani': 'field_footwork',         // Footwork — reassigned from Throws
+'character-dillon': 'dillon_diani_throws',   // Throws (solo now, no longer paired with Diani in the click-mapping — the workout content itself still describes practicing with a mark)
 'character-taytay': 'lily_taytay',           // Plyometrics (paired with Lily)
 'character-lily': 'lily_taytay',             // Plyometrics
 'character-licey': 'licey_renebean',         // PT (paired with Rene Bean)
 'character-renebean': 'licey_renebean',      // PT
-'character-rainbow': 'field_footwork',       // Footwork — a rainbow standing in for a person
+'character-rainbow': null,                    // no longer a workout — opens the deeper Field essay (setShowEssay) instead
 'character-victoria': 'field_speed_cod',     // Speed, Change of Direction & Acceleration
 'tinyandbigrona': null,                       // undecided "fun little game" — Phase 2
 ```
 
+**Why the reassignment:** the rainbow standing in for a workout ("Footwork") felt visually off since it's not a person — moving Footwork onto Diani (an actual person) and repurposing the rainbow as the essay trigger solved both the "rainbow shouldn't be a workout" feeling and gave the site's two Field-specific written pieces (intro vs. essay) two distinct, sensible homes: the sign for the short welcome, the rainbow for the deeper reflection.
+
 ### Hover tooltips
 Every character (including `tinyandbigrona`) has `onMouseEnter`/`onMouseLeave` showing a small floating label with name + exercise, positioned via `getBoundingClientRect()` on the actual hovered element at the moment of hover (not precomputed coordinates — necessary since these are hand-positioned artwork with no reliable static bbox data). Matches Café's existing "label floats above the hovered item" pattern rather than a fixed-position tooltip. `tinyandbigrona` currently just shows "hello" as a placeholder (no name, no game description — the game itself is undecided).
 
-The "MEET THE TEAM" sign has no hover tooltip (intentionally excluded — it's not a workout).
+Neither "MEET THE TEAM" nor the rainbow has a hover tooltip (intentionally excluded — they're narrative/written-content triggers, not workout characters).
 
 ### `WorkoutPlayer.jsx` — the actual workout engine
 Lives in `src/components/locations/field/`. Fully generic — driven entirely by data in `fieldWorkouts.js`, no hardcoded workout logic. Three step types:
@@ -551,16 +600,21 @@ Lives in `src/components/locations/field/`. Fully generic — driven entirely by
 **Buddy/solo toggle** (`hasBuddyToggle: true` in workout data) only applies to workouts using **shared gym equipment** (Camille's cable machine, Brooke's squat rack) — band/bodyweight/PT work doesn't need it, since there's no equipment-sharing rest dependency.
 
 ### `fieldWorkouts.js` — all 9 workouts, fully written
-Camille (arms & back), Brooke (legs), Mia (abs), Diani & Dillon (throws — includes a corrected 7-cut drill: lateral movement open-side to break-side, not a literal 7-cut pattern), Licey & Rene Bean (PT), Lily & Tay Tay (plyometrics), plus two standalone, currently-unassigned workouts: Speed/Change-of-Direction/Acceleration (deceleration mechanics, multi-angle cutting, reactive agility, bounding, linear acceleration) and Footwork (backpedal/hip-flip, release moves, marking footwork, juke-and-cut combos) — both mapped to Field characters (rainbow → Footwork, Victoria → Speed/COD) despite not being tied to a specific real person's name.
+Camille (arms & back), Brooke (legs), Mia (abs), Dillon (throws — includes a corrected 7-cut drill: lateral movement open-side to break-side, not a literal 7-cut pattern; workout content still describes practicing with a mark, even though only Dillon's sticker triggers it now), Licey & Rene Bean (PT), Lily & Tay Tay (plyometrics), plus two standalone workouts now mapped to real characters: Diani → Footwork (backpedal/hip-flip, release moves, marking footwork, juke-and-cut combos), Victoria → Speed/Change-of-Direction/Acceleration (deceleration mechanics, multi-angle cutting, reactive agility, bounding, linear acceleration).
 
 ### Café-first nudge (built alongside Field work, lives in WorldMap)
 A pulsing ring (`.location-pulse-ring`, expanding-and-fading circle) highlights Café's map marker specifically for first-time visitors, gently suggesting where to start (Café was judged the most immediately interactive/fun entry point). Two conditions control it:
 - `!returning` — the runtime `returning` state only flips true on a *future* session (same mechanism used to suppress the duplicate welcome message), so this naturally covers "this is someone's first-ever session"
 - `!cafeVisited` — a separate, more responsive localStorage flag (`visitor.cafeVisited`) set the instant Café is actually clicked into, stopping the pulse immediately even *within* that same first session, rather than waiting for a future visit
 
-**TODO:** Write the Field intro blurb (the "MEET THE TEAM" sign currently opens an overlay with a `{/* TODO */}` placeholder). Decide Tiny and Big Rona's game (Phase 2). Double-check no other characters have stray Illustrator points like Lily did (checked once, clean as of this writing).
+### Written content — intro (finished) and essay (still TODO)
 
-**Status:** Concept only, not designed or built.
+**Intro (the "MEET THE TEAM" sign, `showIntro` state) — written:**
+> Meet some of my Ultimate Frisbee teammates! Each one invites you to try a specific workout based on either something we actually do together or what I'd consider their strongest skill. You don't have to do any of them, but I encourage you to choose one to do today! Bonus points if you get a buddy to join you.
+
+**Essay (the rainbow, `showEssay` state) — still a `{/* TODO */}` placeholder.** Direction is settled even though the text isn't written yet: not autonomy alone, and not achievement alone — both are genuinely true and don't resolve into one clean thesis. Autonomy/mobility functions as a *floor* ("I didn't choose to need my body, but I noticed I couldn't afford to lose it" — not something being built toward, more a precondition protecting everything else). Real athletic ambition (nationals, a competitive club team, becoming a genuinely strong player) is a separate, active *ceiling* — closer in shape to career/relationship goals than to the autonomy piece. Community runs through both rather than standing as its own third thesis. Multiple explicit ending directions were drafted and rejected (each felt too tidy/resolved); the honest note by the end of drafting was that Field may be the one location where naming the *unresolved tension itself* — "I'm not sure if I care more about being able to move, or being good at moving" — is the actual, truest ending, rather than picking one.
+
+**Double-check outstanding:** no other Field characters have stray Illustrator points like Lily did (checked once at the time of that fix, clean as of this writing — worth a final sweep once all art is fully settled).
 
 ---
 
@@ -606,24 +660,23 @@ All sounds in `src/utils/sounds.js`, mapped in `src/hooks/useSounds.js`:
 
 ---
 
-## Deployment Plan (not yet executed)
+## Deployment (LIVE)
 
-**Chosen approach:** Vercel (frontend) + Render (backend) — two separate services, matching the original Phase 1 roadmap.
+**Frontend:** `https://ronaliuzhong.vercel.app` (Vercel)
+**Backend:** `https://ronaliuzhong.onrender.com` (Render, region: Ohio/Virginia — closest US-East options to Boston)
+**Uptime monitoring:** UptimeRobot, hitting `/ping` every 5 minutes — keeps both Render and Supabase from ever going idle
 
-**Why two services:** the frontend is static files (HTML/JS/CSS) best served from Vercel's CDN; the backend is a persistent running Python process, which needs an always-on host like Render (Vercel's serverless model doesn't fit a long-running FastAPI server well).
+**Why two services:** the frontend is static files (HTML/JS/CSS) best served from Vercel's CDN; the backend is a persistent running Python process, which needs an always-on host like Render (Vercel's serverless/multi-service model doesn't fit a long-running FastAPI server — this was actually hit directly: Vercel auto-detected the `backend/` folder and defaulted into its own "Services" multi-app mode requiring a `vercel.json`, which needed to be explicitly switched off in favor of a plain single-app Vite preset, so Vercel only ever builds the frontend and never tries to run the Python backend itself).
 
-**Steps outlined:**
-1. Push repo to GitHub
-2. Render: new Web Service, build command `pip install -r requirements.txt`, start command `uvicorn main:app --host 0.0.0.0 --port $PORT`, env vars `SUPABASE_URL`/`SUPABASE_KEY` set in Render's dashboard (not committed)
-3. Update `main.py`'s CORS `allow_origins` with the real deployed Vercel URL
-4. Update `src/utils/api.js`'s `API_URL` to use an environment variable (`import.meta.env.VITE_API_URL`) so local dev still points at `localhost:8000` while production points at Render
-5. Vercel: import repo, auto-detects Vite, set `VITE_API_URL` env var to the Render URL
-6. Test the full flow (visitor creation, answering a question, journal post) on the deployed URLs before sharing the link
+**Render setup:** Root Directory `backend`, Build Command `pip install -r requirements.txt`, Start Command `uvicorn main:app --host 0.0.0.0 --port $PORT`, env vars `SUPABASE_URL`/`SUPABASE_KEY` set directly in Render's dashboard.
 
-**Cold-start mitigation (needed for a good recruiter/first-impression experience, not just friend-testing):**
-- Render free tier sleeps after ~15 min inactivity, ~30–60s wake time on next request
-- Supabase free tier pauses after ~7 days inactivity, doesn't self-wake
-- **Fix:** the `/ping` route (added) + an external monitor hitting it every 5–10 minutes, keeping both services perpetually warm. **UptimeRobot** (free) recommended — not yet set up, user said they'd think about it.
+**Vercel setup:** Root Directory `.` (repo root), framework auto-detected as Vite, env var `VITE_API_URL` set to the Render URL above, scope "Production and Preview."
+
+**`src/utils/api.js`** now reads `const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'` — falls back to localhost automatically for local dev, uses the real Render URL in production. **Important Vite gotcha hit during setup:** environment variables are baked in at *build time*, not read live afterward — the very first deploy shipped with `localhost:8000` hardcoded into the built JS because the code change hadn't been pushed to GitHub yet when Vercel built it. Fixed by actually pushing the `api.js` change, which triggered a fresh build that correctly picked up the variable.
+
+**`main.py`'s CORS** `allow_origins` now includes the real Vercel URL (`https://ronaliuzhong.vercel.app`) alongside `localhost:5173`.
+
+**Cold-start mitigation:** the `/ping` route + UptimeRobot (5-minute interval) keeps both Render (15-min sleep threshold) and Supabase (~7-day pause threshold) perpetually warm — this is what actually solves the "recruiter clicks the link and it looks frozen" problem, not something to revisit.
 
 ---
 
@@ -632,40 +685,36 @@ All sounds in `src/utils/sounds.js`, mapped in `src/hooks/useSounds.js`:
 ### Phase 1 — Launch (current)
 - ✅ Opening screen → prompts → welcome → map
 - ✅ World map Direction B (greeting spacing/logic fixed, Café-first pulse nudge)
-- ✅ The School (RonalzOS desktop) **+ Professor Layton, "Level 1" complete**
-- ✅ The Café (books, community journal, drink picker, ambient questions tuned to 1–4 min) **+ the Ethics Game**
-- ✅ The Overlook (string lights with joys written, moon questions, bouquet, book)
-- ✅ Question card system — themes, cooldown, maybe later, text/choice/kmk/twoTruths input types
+- ✅ The School (RonalzOS desktop) + Professor Layton, "Level 1" complete (Level 2 groundwork: brute-force longest-path solver built and tested, original map design deferred)
+- ✅ The Café (books, community journal, drink picker, ambient questions tuned to 1–4 min) + the Ethics Game
+- ✅ The Overlook (string lights with joys written, moon questions, bouquet, book) **+ happiness essay, fully written**
+- ✅ Question card system — themes, cooldown, maybe later, text/choice/kmk/twoTruths input types, **+ the icebreaker follow-up special case**
 - ✅ localStorage for returning visitors
 - ✅ Sound system
-- ✅ FastAPI + Supabase backend — journal entries + visitor creation + answers, all syncing, **plus a new `/answers/aggregate/{question_id}` endpoint** for the Ethics Game's percentage breakdowns
-- ✅ The Commons interior (3 Rive scenes — actually RyanRumbolt's licensed, modified assets, not custom originals as previously misdocumented — hotspots, cursor regions, blurbs, questions, proper CC BY 4.0 attribution)
-- ✅ **The Field** — fully built (9 workouts, `WorkoutPlayer` engine, hand-illustrated sticker-sheet art, hover tooltips, wood-table background)
-- ✅ Opening prompt softened with reassuring subtext ("big or small—whatever's true for you"), so the happiness question doesn't feel like it demands a heavy answer
-- ⬜ **Add more questions across all locations** — questions are central to the whole concept; Phase 1 should ship with a genuinely satisfying amount, not just enough to prove the mechanism works
-- ⬜ Write the Field intro blurb ("MEET THE TEAM" sign currently opens a `{/* TODO */}` placeholder)
-- ⬜ Write happiness essay for Overlook book
-- ⬜ Café — "Good at Life" / "New Words" book ideas (likely stay deprioritized — Ethics Game became "the one" book built this round)
-- ⬜ Deploy (Vercel for frontend, Render for backend) — plan finalized, not yet executed
-- ⬜ Set up UptimeRobot (or similar) for keep-warm pinging
+- ✅ FastAPI + Supabase backend — journal entries + visitor creation + answers, all syncing, plus `/answers/aggregate/{question_id}` for Ethics Game percentages
+- ✅ The Commons interior (3 Rive scenes — RyanRumbolt's licensed, modified assets, proper CC BY 4.0 attribution) **+ the new Action Prompts system** (photo-text prompt on `flower_painting`, placeholder position pending reference image)
+- ✅ **The Field** — fully built (9 workouts reassigned per final character mapping, `WorkoutPlayer` engine, hand-illustrated sticker-sheet art, hover tooltips, wood-table background) **+ finished intro blurb**
+- ✅ Opening prompt softened with reassuring subtext
+- ✅ **Deployed and live** — Vercel (frontend) + Render (backend), CORS configured, UptimeRobot pinging every 5 minutes
+- ⬜ **Add more questions across all locations** — questions are central to the whole concept; still an open, ongoing task, not something to consider "done" at any specific number
+- ⬜ **Field's deeper essay** (rainbow, `showEssay`) — direction settled (autonomy as floor + genuine athletic ambition as ceiling + community running through both, likely ending by naming the tension rather than resolving it), text not yet written
+- ⬜ Café — "Good at Life," "New Words," and a new idea: **"Flaws"** — list some of Rona's own flaws, visitor drags to rank worst-to-not-worst (reusing the `@dnd-kit` pattern from Ugly Art), then two follow-up text inputs: visitor's own worst flaw, and a flaw they're not too worried about
+- ⬜ Commons — **general, open-ended goal: more interactive elements.** Not a locked spec — one seed idea that came up was a shared/cumulative visual element (pixel art board, word cloud) everyone contributes to, visible collectively; nothing committed yet
+- ⬜ Tune `flower_painting`'s hotspot position once a reference image is shared (currently a rough placeholder estimate)
 
 ### Phase 2 — Enrichment
 - Optional login / account creation
-- Cross-device experience (the natural follow-on once login exists — synced answers already exist in Supabase, but there's no way to retrieve them on a different device without an account system)
-- Tiny and Big Rona's "fun little game" (Field) — undecided what it is yet, not blocking Phase 1 launch
+- Cross-device experience
+- Tiny and Big Rona's "fun little game" (Field) — still undecided
 
 ### Phase 3 — Intelligence
 - AI-generated questions based on visitor answers
-- "Talk to Rona" — RAG system, click figure on Overlook bench
-- Map personalization — elements appear based on visitor answers
-- **Workout completion history + weight/rep progression tracking** (Field) — combined into one ticket, moved here from an earlier Phase 2 placement (unlikely to be ready that early). Would need: a dedicated logging table (visitor id, exercise, date, weight, reps), new backend endpoints, and new `WorkoutPlayer` UI for entering weight/reps per set — then a simple progressive-overload suggestion rule (hit all reps last time → suggest a small increase) once real history exists to base it on.
-
-~~Commons NPCs from visitor's own life~~ — **removed.** A feature letting visitors "talk to" people from Rona's real life crossed into feeling too personal; not being pursued.
+- "Talk to Rona" — RAG system, Overlook bench
+- Map personalization based on visitor answers
+- Workout completion history + weight/rep progression tracking (combined ticket, Field)
 
 ### Phase 4
-- **Playable Sheng Ji with family NPCs that play like the real people** — the ambitious version: not just a playable card game, but gathering real data from actual family matches and training the NPCs to mimic each real person's actual play patterns (not just "an AI plays Sheng Ji," but "an AI plays *like Mom specifically*"). This is genuinely a machine learning project, not a simple feature: it needs real match-data logging infrastructure, a game-state representation for a trick-taking partnership game, and per-person behavioral modeling with enough real logged hands per person to capture a recognizable pattern. Treated as a distant, aspirational goal — not scoped precisely until actually approached.
-
-~~Playable puzzle with frisbee team NPCs~~ — **removed**, lower interest than the card game idea.
+- Playable Sheng Ji with family NPCs that learn to play like the real people (genuinely an ML project — real match-data logging, game-state representation, per-person behavioral modeling; treated as a distant, aspirational goal)
 
 ---
 

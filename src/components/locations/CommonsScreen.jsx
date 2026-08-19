@@ -13,7 +13,10 @@ const SCENES = [
     label: 'The Card Table',
     src: '/commons/card-scene.riv',
     stateMachines: 'State Machine 1',
-    hotspots: [{ id: 'family', top: '50%', left: '45%', width: '12%', height: '7%' }],
+    hotspots: [
+      { id: 'family', top: '50%', left: '45%', width: '12%', height: '7%' },
+      { id: 'flower_painting', top: '58%', left: '53%', width: '16%', height: '10%' }, // rough estimate — will tune once you share the image
+    ],
     cursorRegions: [
       { top: '44%', left: '29%', width: '17%', height: '13%' }, // left girl
       { top: '44%', left: '53%', width: '16%', height: '12%' }, // right girl
@@ -62,7 +65,7 @@ function CommonsScreen() {
   const [showCredit, setShowCredit] = useState(false);
   const wrapRef = useRef(null);
   const { playTransition, playClick } = useSounds();
-  const { getTriggeredQuestion } = useQuestions();
+  const { getTriggeredQuestion, getSeenQuestions } = useQuestions();
 
   const scene = SCENES[sceneIndex];
   const isFirstRender = useRef(true);
@@ -106,6 +109,12 @@ function CommonsScreen() {
       const q = getTriggeredQuestion('commons', h.trigger);
       if (q) setTriggeredQuestion(q);
       // if nothing left, clicking just does nothing — no modal to show
+    } else if (h.id === 'flower_painting') {
+      // One-time prompt — only opens if not already done/declined via
+      // an explicit choice inside the modal.
+      if (!getSeenQuestions().includes('commons_photo_prompt')) {
+        setActiveModalId('flower_painting');
+      }
     } else {
       setActiveModalId(h.id);
     }

@@ -48,3 +48,53 @@
   margin-bottom: 1rem;
 }
 
+.commons-action-prompt-title {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 2rem;
+  color: var(--blue, #b5d4f4);
+  margin-bottom: 0.75rem;
+}
+
+.commons-action-prompt-title {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 2rem;
+  color: var(--blue, #b5d4f4);
+  margin-bottom: 0.75rem;
+}
+
+.commons-action-prompt-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.commons-action-prompt-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.commons-action-prompt-btn--done {
+  border: 1.5px solid var(--deep-green, #27500a);
+  background: transparent;
+  color: var(--deep-green, #27500a);
+}
+
+.commons-action-prompt-btn--done:hover {
+  background: var(--deep-green, #27500a);
+  color: white;
+}
+
+.commons-action-prompt-btn--later {
+  border: none;
+  background: none;
+  color: var(--warm-gray, #d3d1c7);
+  opacity: 0.7;
+}
+
+.commons-action-prompt-btn--later:hover {
+  opacity: 1;
+}
