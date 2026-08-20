@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuestions } from '../../../hooks/useQuestions';
 
 // Generic "just show a message" content — no question, no answer,
@@ -11,15 +12,39 @@ import { useQuestions } from '../../../hooks/useQuestions';
 
 function StaticPromptContent({ text, promptId, onClose }) {
   const { markSeen } = useQuestions();
+  const [completed, setCompleted] = useState(false);
 
   function handleDone() {
     markSeen(promptId);
-    onClose();
+    setCompleted(true);
+    setTimeout(onClose, 2000);
   }
 
   function handleDecline() {
     markSeen(promptId);
     onClose();
+  }
+
+  if (completed) {
+    return (
+      <div className="commons-content commons-confetti-wrap">
+        <div className="commons-confetti-piece" />
+        <div className="commons-confetti-piece" />
+        <div className="commons-confetti-piece" />
+        <div className="commons-confetti-piece" />
+        <div className="commons-confetti-piece" />
+        <div className="commons-confetti-piece" />
+        <div className="commons-confetti-piece" />
+        <div className="commons-confetti-piece" />
+        <div className="commons-confetti-piece" />
+        <div className="commons-confetti-piece" />
+        <div className="commons-confetti-piece" />
+        <div className="commons-confetti-piece" />
+        <p className="commons-action-prompt-complete">
+          Good work!
+        </p>
+      </div>
+    );
   }
 
   return (
