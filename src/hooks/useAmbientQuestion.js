@@ -10,8 +10,8 @@ import { useQuestions } from './useQuestions'
 export function useAmbientQuestion(location, {
   active = true,
   suppress = false,
-  localDelay = [20000, 45000],   // 20–45 seconds
-  globalDelay = [180000, 360000], // 3–6 minutes
+  localDelay = [180000, 360000],   // 3–6 minutes
+  globalDelay = [240000, 360000], // 4–6 minutes
 } = {}) {
   const { getAmbientQuestion, getGlobalAmbientQuestion } = useQuestions()
   const [question, setQuestion] = useState(null)

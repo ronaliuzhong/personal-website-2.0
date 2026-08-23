@@ -1,33 +1,16 @@
 export const questions = [
   // TRIGGERED — School
-  {
-    id: 'school_t1',
-    text: 'Pick the emoji that best describes your work:',
-    type: 'triggered',
-    location: 'school',
-    trigger: 'projects',
-    inputType: 'choice',
-    options: ['💻', '🔬', '📊', '🎨'],
-    sequence: 1,
-  },
-  {
-    id: 'school_t2',
-    text: 'What job would be your worst nightmare?',
-    type: 'triggered',
-    location: 'school',
-    trigger: 'projects',
-    inputType: 'text',
-    sequence: 2,
-  },
+
 
   // TRIGGERED -- Qexe (question mark icon) in School
   {
     id: 'school_qexe_1',
-    text: 'What would you do if money wasn\'t a question?',
+    text: 'Would you rather wake up and be: ',
     type: 'triggered',
     location: 'school',
     trigger: 'question_exe',
-    inputType: 'text',
+    inputType: 'choice',
+    options: ['a successful, respected 40-year-old, having skipped your 20s and 30s', 'a broke 20 year old, just starting out your life'],
     sequence: 1,
   },
   {
@@ -39,8 +22,36 @@ export const questions = [
     inputType: 'text',
     sequence: 2,
   },
+  {
+    id: 'school_qexe_3',
+    text: 'Pick the emoji that best describes your work:',
+    type: 'triggered',
+    location: 'school',
+    trigger: 'question_exe',
+    inputType: 'choice',
+    options: ['💻', '🔬', '📊', '🎨'],
+    sequence: 3,
+  },
+  {
+    id: 'school_qexe_4',
+    text: 'What job would be your worst nightmare?',
+    type: 'triggered',
+    location: 'school',
+    trigger: 'question_exe',
+    inputType: 'text',
+    sequence: 4,
+  },
+  {
+    id: 'school_qexe_5',
+    text: 'What would you do if money wasn\'t a question?',
+    type: 'triggered',
+    location: 'school',
+    trigger: 'question_exe',
+    inputType: 'text',
+    sequence: 5,
+  },
 
-  // TRIGGERED — Café
+  // ambient — Café
   {
     id: 'cafe_t1',
     text: 'Pick a flower:',
@@ -49,16 +60,47 @@ export const questions = [
     trigger: null,
     inputType: 'choice',
     options: ['🌸', '🌹', '🌿', '🌷', '💐', '🌼'],
+    sequence: 1,
   },
   {
     id: 'cafe_t2',
-    text: 'Who is most important in your life?',
-    type: 'triggered',
+    text: 'You can abolish any single behavior that humans do, applied to everyone forever. What is it that you choose to abolish?',
+    type: 'ambient',
     location: 'cafe',
-    trigger: 'bookshelf',
+    trigger: null,
     inputType: 'text',
-    sequence: 1,
+    sequence: 2,
   },
+  {
+    id: 'cafe_t3',
+    text: 'Who is most important in your life?',
+    type: 'ambient',
+    location: 'cafe',
+    trigger: null,
+    inputType: 'text',
+    sequence: 3,
+  },
+  {
+    id: 'cafe_t4',
+    text: 'If everyone on earth suddenly thought exactly like you do--same beliefs, same instincts but retaining their knowledge and memories--would the world get better or worse?',
+    type: 'ambient',
+    location: 'cafe',
+    trigger: null,
+    inputType: 'choice',
+    options: ['better', 'worse'],
+    sequence: 4,
+  },
+  {
+    id: 'cafe_t5',
+    text: 'You are given the opportunity to go to a new Earth, and the universe guaranteed you that you will have the most fulfilling, high-positive-impact life there. However, you will never be able to see or contact anyone on this Earth again. Would you do it?',
+    type: "ambient",
+    location: 'cafe',
+    trigger: null,
+    inputType: 'choice',
+    options: ['yes', 'no'],
+    sequence: 5,
+  },
+
 
   // TRIGGERED--overlook
   {
@@ -86,21 +128,31 @@ export const questions = [
 },
 {
   id: 'moon_q2',
+  text: 'You have to live a life without music or without books--which do you give up?',
+  type: 'triggered',
+  location: 'overlook',
+  trigger: 'moon',
+  inputType: 'choice',
+  options: ['music', 'books'],
+  sequence: 2,
+},
+{
+  id: 'moon_q3',
   text: 'What made you smile recently?',
   type: 'triggered',
   location: 'overlook',
   trigger: 'moon',
   inputType: 'text',
-  sequence: 2,
+  sequence: 3,
 },
 {
-  id: 'moon_q3',
+  id: 'moon_q4',
   text: 'What is one de-stress method you use?',
   type: 'triggered',
   location: 'overlook',
   trigger: 'moon',
   inputType: 'text',
-  sequence: 3,
+  sequence: 4,
 },
 
 // triggered -- commons
@@ -182,10 +234,11 @@ export const questions = [
   // AMBIENT — anywhere
   {
     id: 'ambient_1',
-    text: 'Do you think suffering truly makes us stronger?',
+    text: 'Do you read the comments of the scrolling-media (e.g. TikTok, Instagram Reels) you watch?',
     type: 'ambient',
     location: null,
-    inputType: 'text',
+    inputType: 'choice',
+    options: ['Yes', 'No'],
   },
 
   {

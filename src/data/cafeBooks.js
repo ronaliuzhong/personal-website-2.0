@@ -38,4 +38,13 @@ export const cafeBooks = [
   svgWidth: 14,
   svgHeight: 58,
 },
+  {
+    id: 'book_which_life',
+    title: 'Which Life',
+    color: '#FAC775',
+    svgX: 108, // placeholder — position on your bookshelf
+    svgY: 58,
+    svgWidth: 14,
+    svgHeight: 52,
+  },
 ]

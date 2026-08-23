@@ -1,0 +1,136 @@
+/* WHICH LIFE BOOK */
+
+.which-life-content {
+  text-align: center;
+}
+
+.which-life-loading {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 1.2rem;
+  color: var(--deep-green, #27500a);
+  font-style: italic;
+}
+
+.which-life-intro {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 1.5rem;
+  color: var(--deep-green, #27500a);
+  margin-bottom: 1.5rem;
+}
+
+.which-life-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.which-life-option-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  text-align: left;
+  padding: 0.9rem 1.1rem;
+  border: 1.5px solid var(--deep-green, #27500a);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.which-life-option-btn:hover {
+  background: rgba(39, 80, 10, 0.06);
+  border-color: var(--amber, #fac775);
+}
+
+.which-life-option-label {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 1.15rem;
+  color: var(--amber, #fac775);
+  -webkit-text-stroke: 0.3px var(--deep-green, #27500a);
+}
+
+.which-life-option-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--black, #0a0a0a);
+}
+
+.which-life-results-heading {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 1.6rem;
+  color: var(--amber, #fac775);
+  margin-bottom: 1.5rem;
+  animation: which-life-fade-in 0.8s ease;
+}
+
+.which-life-results {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  animation: which-life-fade-in 0.8s ease;
+}
+
+.which-life-result-row {
+  text-align: left;
+}
+
+.which-life-result-row--mine .which-life-result-label {
+  color: #d4537e;
+}
+
+.which-life-result-row--mine .which-life-result-label::after {
+  content: ' — your pick';
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--warm-gray, #d3d1c7);
+}
+
+.which-life-result-label-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.which-life-result-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--deep-green, #27500a);
+}
+
+.which-life-result-percent {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--amber, #fac775);
+}
+
+.which-life-result-bar-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.which-life-result-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: var(--amber, #fac775);
+  transition: width 0.8s ease;
+}
+
+.which-life-result-empty {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--warm-gray, #d3d1c7);
+}
+
+@keyframes which-life-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
