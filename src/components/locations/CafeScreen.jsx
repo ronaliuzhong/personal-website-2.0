@@ -31,7 +31,7 @@ function CafeScreen() {
   const [showJournal, setShowJournal] = useState(false)
   const { question: ambientQuestion, close: closeAmbientQuestion } = useAmbientQuestion('cafe', {
     suppress: !!activeBook || !!activeQuestion || showJournal || showDrinkPicker,
-    localDelay: [240000, 480000], // 4-8 minutes
+    localDelay: [360000, 600000], // 6-10 minutes
   })
 
 
