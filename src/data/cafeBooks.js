@@ -47,4 +47,13 @@ export const cafeBooks = [
     svgWidth: 14,
     svgHeight: 52,
   },
+  {
+    id: 'book_thinking_in_bets',
+    title: 'Thinking in Bets',
+    color: '#97C459',
+    svgX: 584, // placeholder — meant for the rightmost shelf, tune against real SVG
+    svgY: 55,
+    svgWidth: 18,
+    svgHeight: 55,
+  },
 ]
