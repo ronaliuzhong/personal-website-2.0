@@ -73,7 +73,7 @@ export const thinkingInBetsScenarios = [
       label: 'Choose Sam',
       probabilityGood: 0.65,
       textGood: "You and Sam click immediately. Same sleep schedule, same sense of humor—it feels like you picked right.",
-      textBad: "In person, Sam's nothing like their messages suggested. You're stuck with a mismatched roommate you specifically chose.",
+      textBad: "Sam ends up staying up all night and refuses to let you sleep. Needless to say, you aren't the closest of roommates.",
     },
     optionB: {
       id: 'random',

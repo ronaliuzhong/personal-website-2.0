@@ -120,29 +120,6 @@
   margin-bottom: 1.5rem;
 }
 
-.tib-reflection {
-  text-align: left;
-}
-
-.tib-reflection-prompt {
-  font-family: 'Caveat Brush', cursive;
-  font-size: 1.15rem;
-  color: var(--deep-green, #27500a);
-  margin-bottom: 0.75rem;
-}
-
-.tib-reflection-input {
-  width: 100%;
-  border: 1.5px solid var(--warm-gray, #d3d1c7);
-  border-radius: 8px;
-  padding: 0.6rem 0.8rem;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.9rem;
-  resize: vertical;
-  margin-bottom: 0.75rem;
-  box-sizing: border-box;
-}
-
 .tib-play-again {
   margin-top: 1rem;
 }
@@ -150,4 +127,13 @@
 @keyframes tib-fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+.tib-essay-paragraph {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--black, #0a0a0a);
+  text-align: left;
+  margin-bottom: 1.25rem;
 }

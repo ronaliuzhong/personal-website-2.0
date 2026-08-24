@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { useQuestions } from '../../../hooks/useQuestions'
-import { thinkingInBetsQuestionId, thinkingInBetsScenarios } from '../../../data/thinkingInBetsScenarios'
+import { thinkingInBetsScenarios } from '../../../data/thinkingInBetsScenarios'
 import './ThinkingInBetsBook.css'
 
 // Genuine weighted random draw — not scripted. Given a probability of
@@ -9,92 +8,126 @@ function drawOutcome(probabilityGood) {
   return Math.random() < probabilityGood ? 'good' : 'bad'
 }
 
+const PROGRESS_KEY = 'thinkingInBetsProgress'
+
+const defaultProgress = {
+  scenarioIndex: 0,
+  pickedOption: null, // 'A' | 'B' | null
+  firstResult: null, // 'good' | 'bad' | null
+  finished: false, // true once all 3 scenarios are done — shows the essay
+}
+
+// This book saves nothing to the visitor's answers or the backend —
+// it's a self-contained local experience. Progress (which scenario
+// you're on, what you picked, and whether you've finished) lives in
+// its own localStorage entry so closing and reopening the book
+// resumes exactly where you left off. "Start over" is the only thing
+// that resets it.
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(PROGRESS_KEY)
+    if (!raw) return { ...defaultProgress }
+    return { ...defaultProgress, ...JSON.parse(raw) }
+  } catch (err) {
+    console.error('Failed to load Thinking in Bets progress:', err)
+    return { ...defaultProgress }
+  }
+}
+
+function saveProgress(progress) {
+  try {
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress))
+  } catch (err) {
+    console.error('Failed to save Thinking in Bets progress:', err)
+  }
+}
+
 function ThinkingInBetsBook() {
-  const { saveAnswer, markSeen, getSeenQuestions } = useQuestions()
-  const alreadySeen = getSeenQuestions().includes(thinkingInBetsQuestionId)
+  const [progress, setProgress] = useState(loadProgress)
 
-  // 'playing' | 'essay'. A visitor who already answered the reflection
-  // (in this visit or a past one) always opens straight to the essay —
-  // 'playing' is only the state while working through the 3 scenarios,
-  // whether that's the first time or a later "play again."
-  const [phase, setPhase] = useState(alreadySeen ? 'essay' : 'playing')
-  const [answered, setAnswered] = useState(alreadySeen)
-  const [scenarioIndex, setScenarioIndex] = useState(0)
-
-  // Per-scenario round state
-  const [pickedOption, setPickedOption] = useState(null) // 'A' | 'B' | null
-  const [firstResult, setFirstResult] = useState(null) // 'good' | 'bad' | null
-
-  const [reflectionText, setReflectionText] = useState('')
-
+  const { scenarioIndex, pickedOption, firstResult, finished } = progress
   const scenario = thinkingInBetsScenarios[scenarioIndex]
 
-  function resetRoundState() {
-    setPickedOption(null)
-    setFirstResult(null)
+  function updateProgress(patch) {
+    const next = { ...progress, ...patch }
+    setProgress(next)
+    saveProgress(next)
   }
 
   function handlePick(letter) {
     const option = letter === 'A' ? scenario.optionA : scenario.optionB
-    setPickedOption(letter)
-    setFirstResult(drawOutcome(option.probabilityGood))
+    updateProgress({
+      pickedOption: letter,
+      firstResult: drawOutcome(option.probabilityGood),
+    })
   }
 
   function handleContinue() {
     if (scenarioIndex < thinkingInBetsScenarios.length - 1) {
-      setScenarioIndex(scenarioIndex + 1)
-      resetRoundState()
+      updateProgress({
+        scenarioIndex: scenarioIndex + 1,
+        pickedOption: null,
+        firstResult: null,
+      })
     } else {
-      setPhase('essay')
+      updateProgress({ finished: true })
     }
   }
 
-  function handleSubmitReflection() {
-    if (!reflectionText.trim()) return
-    saveAnswer(thinkingInBetsQuestionId, reflectionText.trim())
-    markSeen(thinkingInBetsQuestionId)
-    setAnswered(true)
+  function handleStartOver() {
+    updateProgress({ ...defaultProgress })
   }
 
-  // Reopens the 3 scenarios from scratch. Unlimited — doesn't touch
-  // the saved reflection answer or seen status, so closing and
-  // reopening the book later always lands back on the essay screen
-  // regardless of how many extra times someone plays again.
-  function handlePlayAgain() {
-    setScenarioIndex(0)
-    resetRoundState()
-    setPhase('playing')
-  }
-
-  // ---- Essay screen (after finishing the scenarios, or on any later visit) ----
-  if (phase === 'essay') {
+  // ---- Essay screen (after finishing all 3 scenarios) ----
+  if (finished) {
     return (
       <div className="tib-content">
         <p className="tib-essay-title">Ode to Gambling</p>
-        <p className="tib-essay-placeholder">{'{/* TODO: essay */}'}</p>
-        {!answered && (
-          <div className="tib-reflection">
-            <p className="tib-reflection-prompt">
-              Did the way things turned out change how good your choices felt to you?
-            </p>
-            <textarea
-              className="tib-reflection-input"
-              value={reflectionText}
-              onChange={(e) => setReflectionText(e.target.value)}
-              placeholder="type your answer..."
-              rows={3}
-            />
-            <button
-              className="tib-btn tib-btn--primary"
-              onClick={handleSubmitReflection}
-              disabled={!reflectionText.trim()}
-            >
-              done
-            </button>
-          </div>
-        )}
-        <button className="tib-btn tib-btn--secondary tib-play-again" onClick={handlePlayAgain}>
-          play again
+        <p className="tib-essay-paragraph">
+          So, what was your score out of 3? Did you get good results or bad ones?
+          What decisions would you have made differently, and why?
+        </p>
+        <p className="tib-essay-paragraph">
+          If you got one with a bad result, then you may have been thinking of
+          reasoning for why that choice was "wrong". But think back on why you
+          chose your original decision—this reasoning hasn't just disappeared,
+          right? Does its validity still stand? And is it still stronger than
+          your new reasoning? Conversely, if you made a choice with a good
+          result, did you automatically equate this with your strong reasoning
+          skills?
+        </p>
+        <p className="tib-essay-paragraph">
+          In Thinking in Bets, by psychologist and poker player Annie Duke, she
+          talks of the ability to separate consequence from choice, as a result
+          does not necessarily dictate the "correctness" of a choice. In poker,
+          you could have a hand that has an 80% chance of winning…and still
+          lose, because 80% is not 100%. If you ended up losing that hand, does
+          that mean your feedback to yourself should be: "that was a losing
+          hand, fold next time"? Or would you just call that bad luck since 20%
+          is less than 80%?
+        </p>
+        <p className="tib-essay-paragraph">
+          For much of my life, I had been subconsciously telling myself to
+          "fold next time", whenever life threw me a bad result. But reading
+          Duke's work made me realize that this concept can be applied to many
+          of our life scenarios, where we know limited information and we can
+          only guess which options have a higher probability of good results.
+          These said results provide instantaneous feedback, ones that are
+          oblivious to the percentages and give concrete answers. The ability
+          to discriminate between when our reasoning actually needs improvement
+          and when luck was not on our side is extremely difficult, but made
+          significantly easier when you recognize that this distinction must be
+          drawn at all.
+        </p>
+        <p className="tib-essay-paragraph">
+          Now I implore you to play the game again—you can try the other answer
+          if you believe the reasoning behind your first choice wasn't as
+          strong. I wouldn't just choose what you know to be "right" and
+          "wrong" though, because as we've established, there is no correct
+          answer in most of life's scenarios, just choices with better odds.
+        </p>
+        <button className="tib-btn tib-btn--secondary tib-play-again" onClick={handleStartOver}>
+          start over
         </button>
       </div>
     )

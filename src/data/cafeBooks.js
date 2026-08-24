@@ -33,7 +33,7 @@ export const cafeBooks = [
   id: 'book_ethics_game',
   title: 'The Ethics Game',
   color: '#D4537E', // or whatever fits your existing palette pattern
-  svgX: 60, // placeholder — position on your bookshelf
+  svgX: 60, 
   svgY: 122,
   svgWidth: 14,
   svgHeight: 58,
@@ -41,17 +41,17 @@ export const cafeBooks = [
   {
     id: 'book_which_life',
     title: 'Which Life',
-    color: '#FAC775',
-    svgX: 108, // placeholder — position on your bookshelf
-    svgY: 58,
-    svgWidth: 14,
-    svgHeight: 52,
+    color: '#C4956A',
+    svgX: 620, 
+    svgY: 196,
+    svgWidth: 16,
+    svgHeight: 54,
   },
   {
     id: 'book_thinking_in_bets',
     title: 'Thinking in Bets',
     color: '#97C459',
-    svgX: 584, // placeholder — meant for the rightmost shelf, tune against real SVG
+    svgX: 584, 
     svgY: 55,
     svgWidth: 18,
     svgHeight: 55,
