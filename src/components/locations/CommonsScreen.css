@@ -14,7 +14,13 @@
 
 .commons-canvas-wrap {
   position: relative;
-  height: 85vh;
+  /* Previously just `85vh` — on a narrow/tall phone screen, 85% of
+     the viewport HEIGHT computes into a WIDTH (via aspect-ratio)
+     that's often wider than the phone itself, pushing the arrows
+     that sit beside it clean off-screen. Capping with min() also
+     bounds height by however tall the canvas can be while still
+     leaving ~8rem of horizontal room for both arrows combined. */
+  height: min(85vh, calc((100vw - 8rem) / 0.62));
   max-height: 900px;
   aspect-ratio: 0.62; /* tune this to match your card's actual proportions */
 }
