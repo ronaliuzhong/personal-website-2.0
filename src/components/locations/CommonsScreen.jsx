@@ -15,7 +15,7 @@ const SCENES = [
     stateMachines: 'State Machine 1',
     hotspots: [
       { id: 'family', top: '50%', left: '45%', width: '12%', height: '7%' },
-      { id: 'flower_painting', top: '58%', left: '53%', width: '16%', height: '10%' }, // rough estimate — will tune once you share the image
+      { id: 'flower_painting', top: '58%', left: '53%', width: '16%', height: '10%' },
     ],
     cursorRegions: [
       { top: '44%', left: '29%', width: '17%', height: '13%' }, // left girl
