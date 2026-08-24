@@ -1,5 +1,5 @@
 # CLAUDE.md — Rona's World Project Documentation
-*Last updated: August 19, 2026*
+*Last updated: August 23, 2026*
 
 ## Project Vision
 A personal website that functions as an interactive experience rather than a traditional portfolio. Visitors are welcomed through a series of prompts, then explore "Rona's World" — a map of five clickable locations, each revealing a different facet of who Rona is. The overarching goal is mutual discovery: getting to know the visitor while helping them understand themselves better through thoughtful questions.
@@ -96,6 +96,14 @@ personal-website-2.0/
           UglyArtBook.jsx     ← drag to rank 4 art pieces
           ReadingListBook.jsx ← reading list
           WitnessBook.jsx     ← journal entry + inline question
+          EthicsGameBook.jsx  ← trolley-problem gauntlet + percentage reveal
+          EthicsGameBook.css
+          WhichLifeBook.jsx   ← pick-one-of-4 hypothetical + percentage reveal
+          WhichLifeBook.css
+          ThinkingInBetsBook.jsx ← resulting-bias game, 3 scenarios, real
+                                    weighted random draws, localStorage-only
+                                    progress (not through useQuestions)
+          ThinkingInBetsBook.css
           cafe-books.css
         school/
           ResumeWindow.jsx    ← PDF iframe + download
@@ -138,6 +146,10 @@ personal-website-2.0/
       questions.js            ← ALL questions live here
       themes.js                ← question card themes per location (includes 'commons': pink)
       cafeBooks.js             ← café book data with SVG coordinates
+      whichLifeOptions.js      ← the 4 hypothetical-life options for WhichLifeBook
+      thinkingInBetsScenarios.js ← the 3 scenarios for ThinkingInBetsBook — each
+                                    option's real, sourced probabilityGood plus
+                                    both good/bad outcome texts
       fieldWorkouts.js         ← all 9 Field workouts, data-only, drives WorkoutPlayer
       laytonPuzzles.js         ← Layton's 4 text riddles, data-only
       actionPrompts.js         ← one-time real-world action prompts (not questions) —
@@ -264,9 +276,9 @@ All questions live in `src/data/questions.js`. Structure:
 
 **Triggered** — appear when a specific object is clicked (or, for Commons' "direct question" hotspots, on click without any modal in between). Sequenced, never repeats once seen.
 
-**Ambient** — random, appears unprompted via a background timer (see `useAmbientQuestion` below), not tied to any click. Two-tier system:
-- **Location-specific ambient** (`location: 'commons'`, etc.) — frequent, 20–45 second random interval
-- **Global ambient** (`location: null`) — rare, 3–6 minute random interval, can theoretically fire in any location running the hook
+**Ambient** — random, appears unprompted via a background timer (see `useAmbientQuestion` below), not tied to any click. Two-tier system, using the hook's own defaults unless a location overrides them (Café does — see The Café section):
+- **Location-specific ambient** (`location: 'commons'`, etc.) — default 3–6 minute random interval
+- **Global ambient** (`location: null`) — default 4–6 minute random interval, can theoretically fire in any location running the hook
 
 **Rest message**: "let your brain rest for now. we can ponder again soon." — shown by `getIntentionalQuestion` after every 2 intentional (site-wide) questions. **Important:** guaranteed/dedicated questions (Commons' Family, and the direct-question hotspots Light/Grapes/Frames) deliberately bypass this by calling `getTriggeredQuestion` directly instead of `getIntentionalQuestion` — they should never show the rest message, since they're not part of the casual "intentional browsing" counter.
 
@@ -289,23 +301,29 @@ Every other question type/flow is completely unaffected, since this only trigger
 
 ### Current questions (as of this update):
 
-**School:**
-- `school_t1` — pick work emoji (projects trigger)
-- `school_t2` — worst nightmare job (projects trigger)
-- `school_qexe_1` — what if money wasn't a question (question_exe trigger)
-- `school_qexe_2` — money or passion (question_exe trigger)
+**School** (all on the `question_exe` trigger now — the old `projects`-trigger questions were dead code, since nothing ever called `getTriggeredQuestion`/`getIntentionalQuestion` for `projects`; `projects/` still opens `ComingSoonWindow` and will get real questions once it's a built feature):
+- `school_qexe_1` — would you rather wake up a successful 40-year-old (skipped 20s/30s) or a broke 20-year-old just starting out (sequence 1, inputType `choice`)
+- `school_qexe_2` — should people work for money or for passion (sequence 2)
+- `school_qexe_3` — pick work emoji (sequence 3, inputType `choice`)
+- `school_qexe_4` — worst nightmare job (sequence 4)
+- `school_qexe_5` — what if money wasn't a question (sequence 5)
 
-**Café:**
-- `cafe_t1` — pick a flower (ambient, location: 'cafe') — **now surfaces via `useAmbientQuestion`**
-- `cafe_t2` — who is most important (bookshelf trigger)
+**Café** (all now `type: 'ambient'`, `location: 'cafe'`, `trigger: null` — the old `bookshelf`-trigger question had the same dead-code problem as School's `projects` ones, since no bookshelf click handler ever existed):
+- `cafe_t1` — pick a flower
+- `cafe_t2` — abolish one human behavior, forever, applied to everyone
+- `cafe_t3` — who is most important in your life
+- `cafe_t4` — if everyone on earth suddenly thought like you, better or worse (inputType `choice`)
+- `cafe_t5` — new Earth, guaranteed fulfilling life, never see anyone here again (inputType `choice`)
 - `cafe_witness_question` — why do people look for a lifelong partner (inline in WitnessBook)
 - `ugly_art_ranking` — drag to rank art pieces (inline in UglyArtBook)
+- Two new standalone books, **Which Life** and **Thinking in Bets**, don't use `questions.js` at all — see The Café section below.
 
 **Overlook:**
 - `overlook_flower` — favorite person's flower (bouquet trigger)
-- `moon_q1` — rate your life out of 10 (moon trigger)
-- `moon_q2` — what made you smile recently (moon trigger)
-- `moon_q3` — one de-stress method you use (moon trigger)
+- `moon_q1` — rate your life out of 10 (moon trigger, sequence 1)
+- `moon_q2` — live without music or without books, which do you give up (moon trigger, sequence 2, inputType `choice`)
+- `moon_q3` — what made you smile recently (moon trigger, sequence 3)
+- `moon_q4` — one de-stress method you use (moon trigger, sequence 4)
 
 **Commons** (all `location: 'commons'`):
 - `commons_family` — "What is your family's go-to activity?" (trigger: `family_scene`, guaranteed — always shown when the blurb closes)
@@ -318,9 +336,11 @@ Every other question type/flow is completely unaffected, since this only trigger
 - `commons_walk_ambient` — "What is one thing you refuse to be frugal about?" (ambient, location: 'commons' — surfaces unprompted while viewing the walking scene)
 
 **Ambient — anywhere** (`location: null`, rare/global tier):
-- `ambient_1` — does suffering make us stronger
+- `ambient_1` — do you read the comments on scrolling media like TikTok/Reels (inputType `choice`) — replaced the original "does suffering make us stronger" question, which felt too heavy/unthemed to surface unprompted in a random location
 - `ambient_2` — favorite icebreaker question (has the special follow-up behavior above)
 - `ambient_2_followup` — not a real entry in `questions.js` — this id only ever exists as a saved *answer*, generated dynamically at runtime from whatever the visitor typed for `ambient_2`
+
+**A design lesson worth carrying forward:** both `school_t1`/`t2` (on the never-wired `projects` trigger) and `cafe_t2` (on the never-wired `bookshelf` trigger) were silently dead — present in the data, impossible to ever see, because nothing in the corresponding screen component ever called `getTriggeredQuestion` for that trigger name. Adding a question to `questions.js` is not sufficient on its own; the trigger name has to actually be invoked somewhere in the location's click handling, or the question can theoretically exist forever unseen. Worth double-checking this whenever a new triggered (not ambient) question is added.
 
 ---
 
@@ -350,13 +370,15 @@ SVG interior: bookshelves left/right, clear sky window, table with coffee cup, j
 - **Coffee cup** — drink picker (coffee, tea, water, juice, milk). Liquid color changes. Saved to localStorage.
 - **Journal on table** — opens community journal (shared, Supabase-backed).
 
-**Ambient questions** — wired via `useAmbientQuestion('cafe', { suppress: !!activeBook || !!activeQuestion || showJournal || showDrinkPicker, localDelay: [60000, 240000] })` — tuned to 1–4 minutes (slower than the hook's 20–45 second default), so the flower pick (and any future café ambient questions) feels unhurried rather than rapid-fire, and never stacks on top of a book/journal/drink-picker/other question already open.
+**Ambient questions** — wired via `useAmbientQuestion('cafe', { suppress: !!activeBook || !!activeQuestion || showJournal || showDrinkPicker, localDelay: [360000, 600000] })` — tuned to 6–10 minutes (bumped up twice from an original 1–4 minutes, then a since-fixed 60000/240000 typo that briefly cut it closer to 1 minute due to a missing zero), so ambient questions feel like rare, spontaneous moments rather than something that interrupts active browsing — and since `suppress` is checked *at fire time* (not just while scheduling), a question can never appear while a book/journal/drink-picker is open; if the timer elapses while suppressed, it silently reschedules a brand-new full delay rather than firing the moment you close whatever you were doing.
 
 **Books:**
 1. **Ugly Art** — drag to rank 4 art pieces (`@dnd-kit`), titles reveal after submit. Intro text was drifted/compressed by an earlier session and was restored closer to Rona's original argument (the "basically anything" conclusion, the precedent-based reasoning for why "what is art" resists exclusion, and "much more debatable" rather than the drifted "far more interesting" for the good-art question).
 2. **Recently Read** — reading list (Tuesdays with Morrie, Eleanor Oliphant, Freakonomics, Funny Story, Tomorrow×3)
 3. **Premium Instagram Reels Pull** (WitnessBook) — journal entry about why people look for a lifelong partner, ending in a quote from *Shall We Dance?* ("we need a witness to our lives...") + inline question. Reviewed and holds up well — the many-to-many vs. one-to-one framing for romantic vs. other connections is a genuinely original turn of phrase.
 4. **The Ethics Game** — a Good-Place-style real-time trolley-problem gauntlet. 6 dilemmas in escalating pressure (trolley → fat man → transplant → Baby Hitler → bomb → self-driving car), each with a shrinking SVG countdown ring (color shifts amber → warning → danger, card shakes near zero). Letting the timer run out shows "you didn't decide in time." before saving `'(froze)'` as the answer — a legitimate, thematically fitting outcome, not an error state. After all 6: a brief "that's all six." transition, then a percentages screen (`GET /answers/aggregate/{question_id}` — new backend endpoint, groups answers and returns counts/percentages, fetched in parallel via `Promise.all` for speed) showing what other visitors chose, plus a closing reflection blurb about *what* differed between dilemmas (mechanism vs. numbers) rather than telling the visitor what to conclude. **Key bug fixed:** the countdown ring must be `key`-ed to the dilemma's id — without it, consecutive dilemmas sharing the same `timerSeconds` value (e.g. trolley and fat man both at 12s) wouldn't reset properly, since React only re-runs a `useEffect` when its dependency *value* changes, not just because new props arrived. A `firedRef` guard also prevents the timeout callback from ever double-firing (was previously the root cause of skipped dilemmas and an eventual out-of-bounds crash).
+5. **Which Life** — a single pick-one-of-4 hypothetical (data in `src/data/whichLifeOptions.js`: The Loop / The Machine / The Calm After / The Hard Story), followed by a percentage reveal of what other visitors picked, reusing the same `GET /answers/aggregate/{question_id}` endpoint the Ethics Game established. Like Ugly Art/Ethics Game, saves directly via `saveAnswer`/`markSeen` under `cafe_which_life` rather than going through `questions.js`'s triggered/ambient queue. Checks `getSeenQuestions()` on mount so a visitor who already picked goes straight to the results view instead of picking again.
+6. **Thinking in Bets** — inspired by Annie Duke's book of the same name, illustrating "resulting": the idea that an outcome doesn't determine the quality of a decision. 3 real-world scenarios (a kidney stone treatment decision, investing a windfall lump-sum-vs-gradual, and a college roommate chosen-vs-random), each framed as realistic dialogue giving the visitor genuine qualitative information to reason from — but never a stated percentage, since the whole point is that the visitor has to judge for themselves the way a real decision-maker would. Each option privately carries a real, sourced `probabilityGood` (see `src/data/thinkingInBetsScenarios.js` for the research behind each number); at runtime, a genuine weighted `Math.random()` draw decides the outcome — nothing is scripted toward a lesson. Ends on an "Ode to Gambling" essay (still being written) with an unlimited "start over" button. **Notably different from every other book:** progress (current scenario, pick, result, and whether all 3 are finished) persists in its own dedicated `localStorage` key (`thinkingInBetsProgress`), read on mount and written on every pick/continue — not through `useQuestions`' `answers`/`seenQuestions` system at all, since this book doesn't save anything to the backend or `visitor.answers`. It's intentionally a fully local, ephemeral experience; a device switch simply restarts it, which was a deliberate tradeoff (not worth the complexity of backend-syncing pure UI progress for a ~1–2 minute interaction), not an oversight.
 
 **Community Journal:**
 - Page-flipping spread layout, oldest entries first
@@ -375,7 +397,7 @@ Retro OS desktop, starry night background `#0a0a1a`, amber/green gradient title 
 |-----|-------|--------|
 | `[PDF]` | resume.pdf | PDF iframe + download |
 | `[???]` | layton/ | **Built** — see below |
-| `[EXE]` | question.exe | Question card with 2-question cooldown |
+| `[EXE]` | question.exe | Question card with 2-question cooldown, now cycling through 5 questions (`school_qexe_1-5`) |
 | `[DIR]` | projects/ | Coming soon |
 | `[WIP]` | freakonomics.exe | Coming soon |
 
@@ -694,21 +716,25 @@ All sounds in `src/utils/sounds.js`, mapped in `src/hooks/useSounds.js`:
 - ✅ Opening screen → prompts → welcome → map
 - ✅ World map Direction B (greeting spacing/logic fixed, Café-first pulse nudge)
 - ✅ The School (RonalzOS desktop) + Professor Layton, "Level 1" complete (Level 2 groundwork: brute-force longest-path solver built and tested, original map design deferred)
-- ✅ The Café (books, community journal, drink picker, ambient questions tuned to 1–4 min) + the Ethics Game
-- ✅ The Overlook (string lights with joys written, moon questions, bouquet, book) **+ happiness essay, fully written**
+- ✅ The Café (books, community journal, drink picker, ambient questions now tuned to 6–10 min) + the Ethics Game + **Which Life** (pick-of-4 + percentage reveal) + **Thinking in Bets** (Annie Duke–inspired resulting-bias game, essay in progress)
+- ✅ The Overlook (string lights with joys written, moon questions now 4-deep, bouquet, book) **+ happiness essay, fully written**
 - ✅ Question card system — themes, cooldown, maybe later, text/choice/kmk/twoTruths input types, **+ the icebreaker follow-up special case**
 - ✅ localStorage for returning visitors
 - ✅ Sound system
-- ✅ FastAPI + Supabase backend — journal entries + visitor creation + answers, all syncing, plus `/answers/aggregate/{question_id}` for Ethics Game percentages
+- ✅ FastAPI + Supabase backend — journal entries + visitor creation + answers, all syncing, plus `/answers/aggregate/{question_id}` for Ethics Game and Which Life percentages
 - ✅ The Commons interior (3 Rive scenes — RyanRumbolt's licensed, modified assets, proper CC BY 4.0 attribution) **+ the new Action Prompts system** (photo-text prompt on `flower_painting`, placeholder position pending reference image)
 - ✅ **The Field** — fully built (9 workouts reassigned per final character mapping, `WorkoutPlayer` engine, hand-illustrated sticker-sheet art, hover tooltips, wood-table background) **+ finished intro blurb**
 - ✅ Opening prompt softened with reassuring subtext
 - ✅ **Deployed and live** — Vercel (frontend) + Render (backend), CORS configured, UptimeRobot pinging every 5 minutes
-- ⬜ **Add more questions across all locations** — questions are central to the whole concept; still an open, ongoing task, not something to consider "done" at any specific number
+- ⬜ **Add more questions across all locations** — questions are central to the whole concept; still an open, ongoing task, not something to consider "done" at any specific number. School and Café got a real pass this session (both had dead, unreachable questions fixed and new ones added); Commons and Field haven't yet.
 - ⬜ **Field's deeper essay** (rainbow, `showEssay`) — direction settled (autonomy as floor + genuine athletic ambition as ceiling + community running through both, likely ending by naming the tension rather than resolving it), text not yet written
+- ⬜ **Thinking in Bets' "Ode to Gambling" essay** — opening and closing paragraphs written and finalized; the middle section (an Annie Duke/poker explanation plus a personal anecdote, deliberately anonymized to avoid identifying a friend) is still being drafted
+- ⬜ **Field's stretch/warm-up section as a question hook** — a `freeform`-type `WorkoutPlayer` step (no timer pressure) could carry a question, but deliberately deprioritized since Field is expected to be the least-visited location
 - ⬜ Café — "Good at Life," "New Words," and a new idea: **"Flaws"** — list some of Rona's own flaws, visitor drags to rank worst-to-not-worst (reusing the `@dnd-kit` pattern from Ugly Art), then two follow-up text inputs: visitor's own worst flaw, and a flaw they're not too worried about
 - ⬜ Commons — **general, open-ended goal: more interactive elements.** Not a locked spec — one seed idea that came up was a shared/cumulative visual element (pixel art board, word cloud) everyone contributes to, visible collectively; nothing committed yet
-- ⬜ Tune `flower_painting`'s hotspot position once a reference image is shared (currently a rough placeholder estimate)
+- ⬜ Tune `flower_painting`'s hotspot position once a reference image is shared (currently a rough placeholder estimate — unchanged this session, still `top: 58%, left: 53%, width: 16%, height: 10%`)
+- ⬜ **Make the world map more interactive** — no spec yet, flagged as a future direction
+- ⬜ **Private notes/feedback feature for Rona herself** — a way to leave notes on the site (particularly improvement ideas) while browsing it as if a visitor; no spec yet
 
 ### Phase 2 — Enrichment
 - Optional login / account creation
@@ -749,35 +775,15 @@ All sounds in `src/utils/sounds.js`, mapped in `src/hooks/useSounds.js`:
 
 ```javascript
 export const questions = [
-  // TRIGGERED — School
-  {
-    id: 'school_t1',
-    text: 'Pick the emoji that best describes your work:',
-    type: 'triggered',
-    location: 'school',
-    trigger: 'projects',
-    inputType: 'choice',
-    options: ['💻', '🔬', '📊', '🎨'],
-    sequence: 1,
-  },
-  {
-    id: 'school_t2',
-    text: 'What job would be your worst nightmare?',
-    type: 'triggered',
-    location: 'school',
-    trigger: 'projects',
-    inputType: 'text',
-    sequence: 2,
-  },
-
   // TRIGGERED -- Qexe (question mark icon) in School
   {
     id: 'school_qexe_1',
-    text: 'What would you do if money wasn\'t a question?',
+    text: 'Would you rather wake up and be: ',
     type: 'triggered',
     location: 'school',
     trigger: 'question_exe',
-    inputType: 'text',
+    inputType: 'choice',
+    options: ['a successful, respected 40-year-old, having skipped your 20s and 30s', 'a broke 20 year old, just starting out your life'],
     sequence: 1,
   },
   {
@@ -789,8 +795,36 @@ export const questions = [
     inputType: 'text',
     sequence: 2,
   },
+  {
+    id: 'school_qexe_3',
+    text: 'Pick the emoji that best describes your work:',
+    type: 'triggered',
+    location: 'school',
+    trigger: 'question_exe',
+    inputType: 'choice',
+    options: ['💻', '🔬', '📊', '🎨'],
+    sequence: 3,
+  },
+  {
+    id: 'school_qexe_4',
+    text: 'What job would be your worst nightmare?',
+    type: 'triggered',
+    location: 'school',
+    trigger: 'question_exe',
+    inputType: 'text',
+    sequence: 4,
+  },
+  {
+    id: 'school_qexe_5',
+    text: 'What would you do if money wasn\'t a question?',
+    type: 'triggered',
+    location: 'school',
+    trigger: 'question_exe',
+    inputType: 'text',
+    sequence: 5,
+  },
 
-  // TRIGGERED — Café
+  // ambient — Café
   {
     id: 'cafe_t1',
     text: 'Pick a flower:',
@@ -799,15 +833,45 @@ export const questions = [
     trigger: null,
     inputType: 'choice',
     options: ['🌸', '🌹', '🌿', '🌷', '💐', '🌼'],
+    sequence: 1,
   },
   {
     id: 'cafe_t2',
-    text: 'Who is most important in your life?',
-    type: 'triggered',
+    text: 'You can abolish any single behavior that humans do, applied to everyone forever. What is it that you choose to abolish?',
+    type: 'ambient',
     location: 'cafe',
-    trigger: 'bookshelf',
+    trigger: null,
     inputType: 'text',
-    sequence: 1,
+    sequence: 2,
+  },
+  {
+    id: 'cafe_t3',
+    text: 'Who is most important in your life?',
+    type: 'ambient',
+    location: 'cafe',
+    trigger: null,
+    inputType: 'text',
+    sequence: 3,
+  },
+  {
+    id: 'cafe_t4',
+    text: 'If everyone on earth suddenly thought exactly like you do--same beliefs, same instincts but retaining their knowledge and memories--would the world get better or worse?',
+    type: 'ambient',
+    location: 'cafe',
+    trigger: null,
+    inputType: 'choice',
+    options: ['better', 'worse'],
+    sequence: 4,
+  },
+  {
+    id: 'cafe_t5',
+    type: 'ambient',
+    text: 'You are given the opportunity to go to a new Earth, and the universe guaranteed you that you will have the most fulfilling, high-positive-impact life there. However, you will never be able to see or contact anyone on this Earth again. Would you do it?',
+    location: 'cafe',
+    trigger: null,
+    inputType: 'choice',
+    options: ['yes', 'no'],
+    sequence: 5,
   },
 
   // TRIGGERED--overlook
@@ -835,21 +899,31 @@ export const questions = [
   },
   {
     id: 'moon_q2',
+    text: 'You have to live a life without music or without books--which do you give up?',
+    type: 'triggered',
+    location: 'overlook',
+    trigger: 'moon',
+    inputType: 'choice',
+    options: ['music', 'books'],
+    sequence: 2,
+  },
+  {
+    id: 'moon_q3',
     text: 'What made you smile recently?',
     type: 'triggered',
     location: 'overlook',
     trigger: 'moon',
     inputType: 'text',
-    sequence: 2,
+    sequence: 3,
   },
   {
-    id: 'moon_q3',
+    id: 'moon_q4',
     text: 'What is one de-stress method you use?',
     type: 'triggered',
     location: 'overlook',
     trigger: 'moon',
     inputType: 'text',
-    sequence: 3,
+    sequence: 4,
   },
 
   // triggered -- commons
@@ -862,7 +936,6 @@ export const questions = [
     inputType: 'text',
     sequence: 1
   },
-
   {
     id: 'commons_room_frame1',
     text: 'What\'s a memory you\'re afraid you\'ll forget one day?',
@@ -872,7 +945,6 @@ export const questions = [
     inputType: 'text',
     sequence: 1,
   },
-
   {
     id: 'commons_room_grapes1',
     text: 'Favorite movie snack: ',
@@ -882,7 +954,6 @@ export const questions = [
     inputType: 'text',
     sequence: 1
   },
-
   {
     id: 'commons_room_light1',
     text: 'Your house is burning, what do you grab?',
@@ -892,7 +963,6 @@ export const questions = [
     inputType: 'text',
     sequence: 1
   },
-
   {
     id: 'commons_light_kmk',
     text: 'Kiss, Marry, Kill:',
@@ -914,7 +984,6 @@ export const questions = [
     correctAnswer: 'I average a banana a day',
     sequence: 3,
   },
-
   {
     id: 'commons_room_light4',
     text: 'Would you rather:',
@@ -938,12 +1007,12 @@ export const questions = [
   // AMBIENT — anywhere
   {
     id: 'ambient_1',
-    text: 'Do you think suffering truly makes us stronger?',
+    text: 'Do you read the comments of the scrolling-media (e.g. TikTok, Instagram Reels) you watch?',
     type: 'ambient',
     location: null,
-    inputType: 'text',
+    inputType: 'choice',
+    options: ['Yes', 'No'],
   },
-
   {
     id: 'ambient_2',
     text: 'What\'s your favorite icebreaker question?',
@@ -1101,8 +1170,8 @@ import { useQuestions } from './useQuestions'
 export function useAmbientQuestion(location, {
   active = true,
   suppress = false,
-  localDelay = [20000, 45000],   // 20–45 seconds
-  globalDelay = [180000, 360000], // 3–6 minutes
+  localDelay = [180000, 360000],  // 3–6 minutes (bumped up from an original 20–45 second default)
+  globalDelay = [240000, 360000], // 4–6 minutes
 } = {}) {
   const { getAmbientQuestion, getGlobalAmbientQuestion } = useQuestions()
   const [question, setQuestion] = useState(null)
@@ -1504,6 +1573,8 @@ export function useAmbientQuestion(location, {
 
 **A real bug was found and fixed during a final audit pass (this session):** `useQuestions.js`'s `saveAnswer` function called `saveAnswerToBackend(...)`, but the import for it had gone missing from the top of the file — meaning every answer-save for any visitor with a backend id would have thrown a runtime error. This was caught only by directly re-reading the actual saved file and comparing it line-by-line against what this document claimed, rather than trusting either memory or a prior "success" message. **It's fixed now in the version documented below** — but this is a concrete example of how documentation and reality can silently drift apart in a long session, and why the next person working on this project (human or AI) should verify claims against real files rather than take any doc — including this one — fully on faith.
 
+**A second, related lesson from this session:** while building the Thinking in Bets book, a file was edited correctly in the working session but the *copy shared for download* was stale — an old version (still containing a mechanic that had already been removed) got re-served because the "share this file" step re-used a previously-copied file instead of the freshly-edited one. Re-reading the working file wasn't enough on its own here, since the working file was correct — the gap was between the working file and the file actually handed off. The fix going forward: after any edit, verify the *specific file being shared or deployed* matches the *specific file just edited* (e.g. a hash or direct diff), not just that the edit "took" somewhere in the project. A tool reporting success, and even a follow-up read confirming the edit landed, still isn't the same as confirming the file that reaches the person is the same file.
+
 **A structural limitation to know about:** many CSS additions across this project were given only as inline snippets in chat, for manual merging into the real project files — they were never saved as tracked files in this session's own workspace, and never re-verified afterward the way the JS/JSX logic files above were (each of which was directly re-read and cross-checked against this document before it was finalized). That means the CSS list below should be treated as **"this was given at some point — please confirm it's actually present in your real files,"** not as verified fact the way everything above it is.
 
 **CSS given via chat, needing a real-file check:**
@@ -1512,7 +1583,7 @@ export function useAmbientQuestion(location, {
 - `CommonsSceneModal.css` — `.commons-confetti-wrap`, `.commons-confetti-piece` (12 `nth-child` color/drift/delay rules), `@keyframes confettiPopFall` (confetti burst)
 - `CommonsSceneModal.css` — `.commons-modal-intro` needs `margin-bottom: 1rem` (paragraph spacing fix — confirmed this was a real, needed fix earlier in the session; worth double-checking it's still there)
 - `WorldMap.css` — `.location-pulse-ring`, `@keyframes locationPulse` (Café-first pulse nudge)
-- `CommonsSceneModal.css` — `.commons-reveal-question` — likely now genuinely unused (light/grapes/frames bypass the modal entirely via `directQuestion`, and Walk's old reveal-button pattern was removed too) — safe to delete if it's still sitting there unused, not required to keep
+- `CommonsSceneModal.css` — `.commons-reveal-question` — confirmed genuinely unused (light/grapes/frames bypass the modal entirely via `directQuestion`, and Walk's old reveal-button pattern was removed too), but **Rona has deliberately decided to keep this rather than delete it**, in case a future feature brings back a similar pattern — same reasoning as keeping `QuestionOnlyContent.jsx` around unused.
 
 ---
 
