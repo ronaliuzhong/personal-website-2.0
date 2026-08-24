@@ -26,3 +26,8 @@ dist-ssr
 notes.txt
 backend/venv
 backend/.env
+
+# Python bytecode cache — auto-generated whenever Python runs/imports
+# a module (e.g. uvicorn starting the backend), never source code
+__pycache__/
+*.pyc
