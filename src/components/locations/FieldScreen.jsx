@@ -28,7 +28,7 @@ function FieldScreen() {
   // swap the rainbow's onClick back to setShowEssay(true) once the
   // essay is ready, rather than leaving a blank modal in the meantime.
   const [rainbowSparkle, setRainbowSparkle] = useState(null);
-  const { playPiano } = useSounds();
+  const { playSparkle } = useSounds();
 
   const activeWorkout = activeWorkoutId ? fieldWorkouts[activeWorkoutId] : null;
   const hoveredLabel = hovered ? labelMap[hovered.id] : null;
@@ -40,7 +40,7 @@ function FieldScreen() {
 
   function handleRainbowClick(e) {
     const rect = e.currentTarget.getBoundingClientRect();
-    playPiano();
+    playSparkle();
     setRainbowSparkle({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
     setTimeout(() => setRainbowSparkle(null), 1200);
   }

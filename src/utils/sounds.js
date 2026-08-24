@@ -131,10 +131,39 @@ function createChime() {
   })
 }
 
+function createSparkle() {
+  const ctx = new AudioContext()
+
+  // a quick, bright ascending run — much snappier and higher than
+  // the piano's single held low note, meant to feel like a whimsical
+  // little shimmer rather than a solemn tone
+  const frequencies = [1318.51, 1567.98, 1975.53, 2637.02] // E6, G6, B6, E7
+  const delays = [0, 0.05, 0.1, 0.15]
+
+  frequencies.forEach((freq, i) => {
+    const oscillator = ctx.createOscillator()
+    const gainNode = ctx.createGain()
+
+    oscillator.connect(gainNode)
+    gainNode.connect(ctx.destination)
+
+    oscillator.type = 'sine'
+    oscillator.frequency.setValueAtTime(freq, ctx.currentTime + delays[i])
+
+    gainNode.gain.setValueAtTime(0, ctx.currentTime + delays[i])
+    gainNode.gain.linearRampToValueAtTime(0.18, ctx.currentTime + delays[i] + 0.01)
+    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delays[i] + 0.4)
+
+    oscillator.start(ctx.currentTime + delays[i])
+    oscillator.stop(ctx.currentTime + delays[i] + 0.4)
+  })
+}
+
 export const sounds = {
   click: createClick,
   bubble: createBubble,
   whoosh: createWhoosh,
   piano: createPiano,
   chime: createChime,
+  sparkle: createSparkle,
 }
