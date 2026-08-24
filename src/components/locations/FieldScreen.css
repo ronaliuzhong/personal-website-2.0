@@ -97,3 +97,48 @@
   line-height: 1.6;
   color: var(--black, #0a0a0a);
 }
+/* Rainbow sparkle burst — a small non-text moment standing in for the
+   essay reveal (still unwritten). A radial scatter of 10 pieces
+   flying outward from the click point and fading, paired with a
+   piano chime. Positioned via left/top set inline from the rainbow's
+   own getBoundingClientRect(), same technique as the hover tooltips. */
+.field-rainbow-sparkle-wrap {
+  position: fixed;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 60;
+}
+
+.field-rainbow-sparkle-piece {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  opacity: 0;
+  animation: field-sparkle-burst 0.9s ease-out forwards;
+}
+
+@keyframes field-sparkle-burst {
+  0% {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1);
+    opacity: 0;
+  }
+}
+
+.field-rainbow-sparkle-piece--0 { --tx: 0px;    --ty: -60px; background: var(--pink, #ed93b1); }
+.field-rainbow-sparkle-piece--1 { --tx: 35px;   --ty: -48px; background: var(--amber, #fac775); }
+.field-rainbow-sparkle-piece--2 { --tx: 57px;   --ty: -18px; background: var(--blue, #b5d4f4); }
+.field-rainbow-sparkle-piece--3 { --tx: 57px;   --ty: 18px;  background: var(--mid-green, #97c459); }
+.field-rainbow-sparkle-piece--4 { --tx: 35px;   --ty: 48px;  background: var(--pink, #ed93b1); }
+.field-rainbow-sparkle-piece--5 { --tx: 0px;    --ty: 60px;  background: var(--amber, #fac775); }
+.field-rainbow-sparkle-piece--6 { --tx: -35px;  --ty: 48px;  background: var(--blue, #b5d4f4); }
+.field-rainbow-sparkle-piece--7 { --tx: -57px;  --ty: 18px;  background: var(--mid-green, #97c459); }
+.field-rainbow-sparkle-piece--8 { --tx: -57px;  --ty: -18px; background: var(--pink, #ed93b1); }
+.field-rainbow-sparkle-piece--9 { --tx: -35px;  --ty: -48px; background: var(--amber, #fac775); }

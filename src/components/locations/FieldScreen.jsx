@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { fieldWorkouts } from '../../data/fieldWorkouts';
+import { useSounds } from '../../hooks/useSounds';
 import WorkoutPlayer from './field/WorkoutPlayer';
 import './FieldScreen.css';
 
@@ -22,6 +23,12 @@ function FieldScreen() {
   const [showIntro, setShowIntro] = useState(false);
   const [showEssay, setShowEssay] = useState(false);
   const [hovered, setHovered] = useState(null); // { id, x, y } or null
+  // { x, y } or null — a brief sparkle burst + chime where the rainbow
+  // was clicked. Standing in for the essay reveal (still unwritten);
+  // swap the rainbow's onClick back to setShowEssay(true) once the
+  // essay is ready, rather than leaving a blank modal in the meantime.
+  const [rainbowSparkle, setRainbowSparkle] = useState(null);
+  const { playPiano } = useSounds();
 
   const activeWorkout = activeWorkoutId ? fieldWorkouts[activeWorkoutId] : null;
   const hoveredLabel = hovered ? labelMap[hovered.id] : null;
@@ -29,6 +36,13 @@ function FieldScreen() {
   function handleHover(id, e) {
     const rect = e.currentTarget.getBoundingClientRect();
     setHovered({ id, x: rect.left + rect.width / 2, y: rect.top });
+  }
+
+  function handleRainbowClick(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    playPiano();
+    setRainbowSparkle({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+    setTimeout(() => setRainbowSparkle(null), 1200);
   }
 
   return (
@@ -1349,7 +1363,7 @@ function FieldScreen() {
 	<path className="st30" d="M510.2,377.82c-0.15,0.07-0.35,0.14-0.53,0.16"/>
 	<path className="st6" d="M509.62,378.03c1.01-0.17,1.96-1.26,2.16-1.98C511.19,376.82,510.52,377.57,509.62,378.03z"/>
 </g>
-<g id="character-rainbow" onClick={() => setShowEssay(true)} style={{cursor: 'pointer'}}>
+<g id="character-rainbow" onClick={handleRainbowClick} style={{cursor: 'pointer'}}>
 	<g>
 		<path className="st4" d="M266.43,394.76c-0.11-0.17-0.25-0.39-0.4-0.57c0.13,0.18,0.25,0.36,0.38,0.54
 			C266.42,394.74,266.43,394.75,266.43,394.76z"/>
@@ -3302,6 +3316,17 @@ function FieldScreen() {
 							Bonus points if you get a buddy to join you.
             </p>
           </div>
+        </div>
+      )}
+
+      {rainbowSparkle && (
+        <div
+          className="field-rainbow-sparkle-wrap"
+          style={{ left: rainbowSparkle.x, top: rainbowSparkle.y }}
+        >
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div key={i} className={`field-rainbow-sparkle-piece field-rainbow-sparkle-piece--${i}`} />
+          ))}
         </div>
       )}
 
