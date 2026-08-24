@@ -1,5 +1,11 @@
 # CLAUDE.md — Rona's World Project Documentation
-*Last updated: August 23, 2026*
+*Last updated: August 24, 2026*
+
+> **Picking this back up after a break?** Phase 1 is fully closed as of this
+> update. The site is live at `ronaliuzhong.com`, the domain is working, and
+> the backend/database are both properly secured. Phase 2 has a real list of
+> open items below (see "Phase 2 — Enrichment") — nothing urgent is
+> outstanding, so start wherever feels most interesting.
 
 ## Project Vision
 A personal website that functions as an interactive experience rather than a traditional portfolio. Visitors are welcomed through a series of prompts, then explore "Rona's World" — a map of five clickable locations, each revealing a different facet of who Rona is. The overarching goal is mutual discovery: getting to know the visitor while helping them understand themselves better through thoughtful questions.
@@ -609,12 +615,12 @@ This entire conversion is done programmatically (a Python script processes the w
 'character-lily': 'lily_taytay',             // Plyometrics
 'character-licey': 'licey_renebean',         // PT (paired with Rene Bean)
 'character-renebean': 'licey_renebean',      // PT
-'character-rainbow': null,                    // no longer a workout — opens the deeper Field essay (setShowEssay) instead
+'character-rainbow': null,                    // no longer a workout — currently triggers a sparkle+sound moment (see below), not the essay
 'character-victoria': 'field_speed_cod',     // Speed, Change of Direction & Acceleration
 'tinyandbigrona': null,                       // undecided "fun little game" — Phase 2
 ```
 
-**Why the reassignment:** the rainbow standing in for a workout ("Footwork") felt visually off since it's not a person — moving Footwork onto Diani (an actual person) and repurposing the rainbow as the essay trigger solved both the "rainbow shouldn't be a workout" feeling and gave the site's two Field-specific written pieces (intro vs. essay) two distinct, sensible homes: the sign for the short welcome, the rainbow for the deeper reflection.
+**Why the reassignment:** the rainbow standing in for a workout ("Footwork") felt visually off since it's not a person — moving Footwork onto Diani (an actual person) and repurposing the rainbow as a narrative-content trigger solved both the "rainbow shouldn't be a workout" feeling and gave the site's Field-specific written pieces distinct homes.
 
 ### Hover tooltips
 Every character (including `tinyandbigrona`) has `onMouseEnter`/`onMouseLeave` showing a small floating label with name + exercise, positioned via `getBoundingClientRect()` on the actual hovered element at the moment of hover (not precomputed coordinates — necessary since these are hand-positioned artwork with no reliable static bbox data). Matches Café's existing "label floats above the hovered item" pattern rather than a fixed-position tooltip. `tinyandbigrona` currently just shows "hello" as a placeholder (no name, no game description — the game itself is undecided).
@@ -637,12 +643,25 @@ A pulsing ring (`.location-pulse-ring`, expanding-and-fading circle) highlights 
 - `!returning` — the runtime `returning` state only flips true on a *future* session (same mechanism used to suppress the duplicate welcome message), so this naturally covers "this is someone's first-ever session"
 - `!cafeVisited` — a separate, more responsive localStorage flag (`visitor.cafeVisited`) set the instant Café is actually clicked into, stopping the pulse immediately even *within* that same first session, rather than waiting for a future visit
 
-### Written content — intro (finished) and essay (still TODO)
+### Rainbow interaction — currently a sparkle moment, not the essay (temporary, deliberate)
+Clicking the rainbow used to open a `showEssay` modal — but since the essay text wasn't written yet, that modal rendered completely empty (a blank white card), which became a real problem once the site went live and people could actually click it. Rather than ship placeholder text, the rainbow's `onClick` was rewired to `handleRainbowClick`, which:
+- Captures the rainbow's on-screen position via `getBoundingClientRect()` (same technique as the hover tooltips)
+- Plays a new `playSparkle()` sound (see Sound System below)
+- Renders a `field-rainbow-sparkle-wrap` div with 10 small colored pieces (cycling the site's existing pink/amber/blue/mid-green palette) that scatter outward and fade via a CSS keyframe animation (`field-sparkle-burst`), auto-clearing via `setTimeout` after 1.2s
+
+**The old `showEssay` modal code was deliberately left in place, just disconnected** — `showEssay` state, the modal JSX, and `.field-intro-overlay`/`.field-intro-card` styling are all still there, unused. Once the essay is actually written, re-connecting it is a one-line change (swap the rainbow's `onClick` back to `() => setShowEssay(true)`, or combine both).
+
+### Written content — intro (finished) and essay (direction settled, not yet written)
 
 **Intro (the "MEET THE TEAM" sign, `showIntro` state) — written:**
 > Meet some of my Ultimate Frisbee teammates! Each one invites you to try a specific workout based on either something we actually do together or what I'd consider their strongest skill. You don't have to do any of them, but I encourage you to choose one to do today! Bonus points if you get a buddy to join you.
 
-**Essay (the rainbow, `showEssay` state) — still a `{/* TODO */}` placeholder.** Direction is settled even though the text isn't written yet: not autonomy alone, and not achievement alone — both are genuinely true and don't resolve into one clean thesis. Autonomy/mobility functions as a *floor* ("I didn't choose to need my body, but I noticed I couldn't afford to lose it" — not something being built toward, more a precondition protecting everything else). Real athletic ambition (nationals, a competitive club team, becoming a genuinely strong player) is a separate, active *ceiling* — closer in shape to career/relationship goals than to the autonomy piece. Community runs through both rather than standing as its own third thesis. Multiple explicit ending directions were drafted and rejected (each felt too tidy/resolved); the honest note by the end of drafting was that Field may be the one location where naming the *unresolved tension itself* — "I'm not sure if I care more about being able to move, or being good at moving" — is the actual, truest ending, rather than picking one.
+**Essay (the rainbow) — still unwritten, but the shape is settled after real back-and-forth.** An earlier direction (autonomy as a *floor* + athletic ambition as a *ceiling* + community as a connective thread) was scrapped mid-session — not because the ideas were wrong, but because it was a framework imposed before actually knowing what she wanted to say, and it put too much weight on the teammate bond rather than the body/movement relationship that's supposed to be the throughline. The revised, current shape:
+1. **Open concrete** — how it actually feels after moving her body, in any form (stretching, lifting, sport), no framing yet
+2. **Widen** — mobility and autonomy as something valued in a broad, near-universal way; this is where "I didn't choose to need my body, but I noticed I couldn't afford to lose it" still fits
+3. **Narrow into Ultimate specifically** — her body improving in exact, particular ways, plus the strategy of the game; teammates get a light, honest mention here, not the center of gravity
+4. **End on movement itself, unresolved** — naming the real tension rather than forcing an answer: does she care more about being *able* to move, or being *good* at moving
+
 
 **Double-check outstanding:** no other Field characters have stray Illustrator points like Lily did (checked once at the time of that fix, clean as of this writing — worth a final sweep once all art is fully settled).
 
@@ -673,7 +692,9 @@ Base URL: `http://localhost:8000`
 
 ## Database (Supabase PostgreSQL)
 
-Three tables: `visitors`, `answers`, `journal_entries`. RLS disabled.
+Three tables: `visitors`, `answers`, `journal_entries`.
+
+**RLS (Row Level Security) is enabled** on all three tables, each with two policies: public `SELECT` (read) and public `INSERT` (create) — no `UPDATE`/`DELETE` policies exist, so those operations are blocked by default for anyone hitting Supabase's direct REST API. This matches actual app behavior (the backend never updates or deletes rows), so nothing about the app's real functionality changed — this was purely closing a gap where, previously, anyone with the project's anon key could've directly modified or deleted *any* row via Supabase's auto-generated API, bypassing the FastAPI backend entirely. The backend itself is unaffected either way, since it connects with a service-role key that bypasses RLS by design. Confirmed via Supabase's own "Advisor" security scanner — went from 3 flagged critical issues to 0 after enabling.
 
 **Known gotcha:** Supabase free-tier projects auto-pause after ~7 days of inactivity. Unlike Render's sleep (which self-wakes on the next request, just slowly), a paused Supabase project needs to be manually unpaused from the dashboard. The `/ping` route + a periodic external monitor is the fix (see Deployment Plan below).
 
@@ -686,15 +707,18 @@ All sounds in `src/utils/sounds.js`, mapped in `src/hooks/useSounds.js`:
 - `playSubmit()` → bubble — prompt answer submit
 - `playTransition()` → whoosh — entering a location, changing Commons scenes
 - `playClick()` → click — small UI interactions, Commons hotspot clicks
-- `playPiano()` → piano — available, unused
+- `playPiano()` → piano — a single deep C3 note held for 3 seconds; available, still unused
+- `playSparkle()` → sparkle — a quick 4-note ascending run (E6→G6→B6→E7, ~0.4s per note with fast decay), paired with the Field rainbow's click interaction. Originally the rainbow used `playPiano()`, but that sound's low, sustained, solemn quality read as tonally wrong for a quick whimsical moment — `playSparkle` was purpose-built to be snappier and brighter instead.
 
 ---
 
 ## Deployment (LIVE)
 
-**Frontend:** `https://ronaliuzhong.vercel.app` (Vercel)
+**Frontend:** `https://www.ronaliuzhong.com` (custom domain, purchased through Vercel — the free `.vercel.app` URL still works too, and Vercel handles the redirect from the bare `ronaliuzhong.com` apex to the `www` version automatically)
 **Backend:** `https://ronaliuzhong.onrender.com` (Render, region: Ohio/Virginia — closest US-East options to Boston)
 **Uptime monitoring:** UptimeRobot, hitting `/ping` every 5 minutes — keeps both Render and Supabase from ever going idle
+
+**Custom domain setup:** bought directly through Vercel's dashboard (Project Overview → the "+" next to the assigned domains, or Settings → Domains → "Buy" if visible — this moved around in Vercel's Feb 2026 navigation redesign, so it may not be exactly where older docs describe). Since the domain was purchased *through* Vercel, nameservers were configured automatically — no manual DNS records were needed. SSL was provisioned automatically too. Custom domains are free on Vercel's Hobby plan; only the registration fee itself costs anything (~$11/year for `.com`).
 
 **Why two services:** the frontend is static files (HTML/JS/CSS) best served from Vercel's CDN; the backend is a persistent running Python process, which needs an always-on host like Render (Vercel's serverless/multi-service model doesn't fit a long-running FastAPI server — this was actually hit directly: Vercel auto-detected the `backend/` folder and defaulted into its own "Services" multi-app mode requiring a `vercel.json`, which needed to be explicitly switched off in favor of a plain single-app Vite preset, so Vercel only ever builds the frontend and never tries to run the Python backend itself).
 
@@ -704,39 +728,49 @@ All sounds in `src/utils/sounds.js`, mapped in `src/hooks/useSounds.js`:
 
 **`src/utils/api.js`** now reads `const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'` — falls back to localhost automatically for local dev, uses the real Render URL in production. **Important Vite gotcha hit during setup:** environment variables are baked in at *build time*, not read live afterward — the very first deploy shipped with `localhost:8000` hardcoded into the built JS because the code change hadn't been pushed to GitHub yet when Vercel built it. Fixed by actually pushing the `api.js` change, which triggered a fresh build that correctly picked up the variable.
 
-**`main.py`'s CORS** `allow_origins` now includes the real Vercel URL (`https://ronaliuzhong.vercel.app`) alongside `localhost:5173`.
+**`main.py`'s CORS** `allow_origins` now includes four entries: `http://localhost:5173`, `https://ronaliuzhong.vercel.app`, `https://ronaliuzhong.com`, and `https://www.ronaliuzhong.com`. **A real mix-up happened adding the last two:** the file that actually got pushed to GitHub still had a generic placeholder (`"https://your-deployed-site.com"`) — not even the real Vercel URL — meaning whatever was live before this fix wasn't the version that had been reviewed at all. Caught by directly checking the file's real content on GitHub's website rather than trusting that a local edit + push had worked. Also hit: Python bytecode cache files (`backend/__pycache__/*.pyc`) were being tracked by git and showing as spurious changes — fixed by adding `__pycache__/` and `*.pyc` to `.gitignore` and running `git rm -r --cached backend/__pycache__` to untrack the already-committed ones.
 
 **Cold-start mitigation:** the `/ping` route + UptimeRobot (5-minute interval) keeps both Render (15-min sleep threshold) and Supabase (~7-day pause threshold) perpetually warm — this is what actually solves the "recruiter clicks the link and it looks frozen" problem, not something to revisit.
 
 ---
 
+## Mobile Responsiveness
+
+**Status: mostly works, not a true responsive pass.** Explicitly deferred as a real Phase 2 item, not forgotten — the codebase currently has **zero media queries** anywhere, and several key components use hard fixed pixel widths (`QuestionCard` and `BookModal` at 680px, `CommunityJournal` at 780px, `PromptScreen`'s input at 600px) that will overflow or feel cramped on a typical ~375-430px phone screen. SVG-based interiors (World Map, Café, Overlook, Commons) do scale by default, but hover tooltips, hotspot buttons, and click targets sized for a mouse cursor aren't optimized for touch.
+
+**One real mobile bug was found and fixed this session** (not deferred, since it fully broke a location): Commons' carousel arrows were computing their layout size from `85vh` (85% of *viewport height*) — which works fine on a wide desktop screen, but on a narrow/tall phone in portrait, 85% of the height computes into a *width* wider than the phone itself, pushing the arrows completely off-screen. Fixed by capping the canvas height with `min(85vh, calc((100vw - 10rem) / 0.62))`, so the canvas now also respects how much horizontal room is actually available. A second, related issue — the arrows were technically on-screen after that fix but were just a bare floating character, easy to miss/not recognize as tappable — was fixed by giving `.commons-arrow` a real circular button shape (`background`, `border-radius: 50%`, fixed `3rem × 3rem` size with `flex-shrink: 0`) instead of a lone glyph.
+
+**Everything else mobile-related remains genuinely deferred to Phase 2** — pinch-zoom behavior, the fixed-width modals, and touch-target sizing across the site have not been addressed.
+
+---
+
 ## Phase Roadmap
 
-### Phase 1 — Launch (current)
+### Phase 1 — Launch (✅ COMPLETE — closed August 24, 2026)
 - ✅ Opening screen → prompts → welcome → map
 - ✅ World map Direction B (greeting spacing/logic fixed, Café-first pulse nudge)
 - ✅ The School (RonalzOS desktop) + Professor Layton, "Level 1" complete (Level 2 groundwork: brute-force longest-path solver built and tested, original map design deferred)
-- ✅ The Café (books, community journal, drink picker, ambient questions now tuned to 6–10 min) + the Ethics Game + **Which Life** (pick-of-4 + percentage reveal) + **Thinking in Bets** (Annie Duke–inspired resulting-bias game, essay in progress)
+- ✅ The Café (books, community journal, drink picker, ambient questions now tuned to 6–10 min) + the Ethics Game + **Which Life** (pick-of-4 + percentage reveal) + **Thinking in Bets** (Annie Duke–inspired resulting-bias game, essay fully written)
 - ✅ The Overlook (string lights with joys written, moon questions now 4-deep, bouquet, book) **+ happiness essay, fully written**
 - ✅ Question card system — themes, cooldown, maybe later, text/choice/kmk/twoTruths input types, **+ the icebreaker follow-up special case**
 - ✅ localStorage for returning visitors
-- ✅ Sound system
-- ✅ FastAPI + Supabase backend — journal entries + visitor creation + answers, all syncing, plus `/answers/aggregate/{question_id}` for Ethics Game and Which Life percentages
-- ✅ The Commons interior (3 Rive scenes — RyanRumbolt's licensed, modified assets, proper CC BY 4.0 attribution) **+ the new Action Prompts system** (photo-text prompt on `flower_painting`, placeholder position pending reference image)
-- ✅ **The Field** — fully built (9 workouts reassigned per final character mapping, `WorkoutPlayer` engine, hand-illustrated sticker-sheet art, hover tooltips, wood-table background) **+ finished intro blurb**
+- ✅ Sound system (**+ `playSparkle`**, added for the Field rainbow interaction)
+- ✅ FastAPI + Supabase backend — journal entries + visitor creation + answers, all syncing, plus `/answers/aggregate/{question_id}` for Ethics Game and Which Life percentages, **+ Row Level Security enabled on all three tables** (public read/insert, no update/delete)
+- ✅ The Commons interior (3 Rive scenes — RyanRumbolt's licensed, modified assets, proper CC BY 4.0 attribution) **+ the new Action Prompts system** (photo-text prompt on `flower_painting`, position confirmed correct)
+- ✅ **The Field** — fully built (9 workouts reassigned per final character mapping, `WorkoutPlayer` engine, hand-illustrated sticker-sheet art, hover tooltips, wood-table background) **+ finished intro blurb**; rainbow currently plays a sparkle+sound moment rather than the still-unwritten essay (deliberate, see Field section)
 - ✅ Opening prompt softened with reassuring subtext
-- ✅ **Deployed and live** — Vercel (frontend) + Render (backend), CORS configured, UptimeRobot pinging every 5 minutes
-- ⬜ **Add more questions across all locations** — questions are central to the whole concept; still an open, ongoing task, not something to consider "done" at any specific number. School and Café got a real pass this session (both had dead, unreachable questions fixed and new ones added); Commons and Field haven't yet.
-- ⬜ **Field's deeper essay** (rainbow, `showEssay`) — direction settled (autonomy as floor + genuine athletic ambition as ceiling + community running through both, likely ending by naming the tension rather than resolving it), text not yet written
-- ✅ **Thinking in Bets' "Ode to Gambling" essay** — fully written (opening reflection questions, an Annie Duke/poker paragraph, a personal anecdote deliberately anonymized to avoid identifying a friend, and a closing "play again" invitation)
-- ⬜ **Field's stretch/warm-up section as a question hook** — a `freeform`-type `WorkoutPlayer` step (no timer pressure) could carry a question, but deliberately deprioritized since Field is expected to be the least-visited location
-- ⬜ Café — "Good at Life," "New Words," and a new idea: **"Flaws"** — list some of Rona's own flaws, visitor drags to rank worst-to-not-worst (reusing the `@dnd-kit` pattern from Ugly Art), then two follow-up text inputs: visitor's own worst flaw, and a flaw they're not too worried about
-- ⬜ Commons — **general, open-ended goal: more interactive elements.** Not a locked spec — one seed idea that came up was a shared/cumulative visual element (pixel art board, word cloud) everyone contributes to, visible collectively; nothing committed yet
-- ⬜ Tune `flower_painting`'s hotspot position once a reference image is shared (currently a rough placeholder estimate — unchanged this session, still `top: 58%, left: 53%, width: 16%, height: 10%`)
-- ⬜ **Make the world map more interactive** — no spec yet, flagged as a future direction
-- ⬜ **Private notes/feedback feature for Rona herself** — a way to leave notes on the site (particularly improvement ideas) while browsing it as if a visitor; no spec yet
+- ✅ **Deployed and live at `ronaliuzhong.com`** (custom domain, purchased through Vercel) — CORS configured for all real origins, UptimeRobot pinging every 5 minutes
+- ✅ One real mobile bug found and fixed (Commons carousel arrows going off-screen/being hard to spot) — full responsive pass deliberately deferred to Phase 2, see Mobile Responsiveness section
 
 ### Phase 2 — Enrichment
+- **Add more questions across all locations** — ongoing, open-ended, not something to consider "done" at a specific number. School and Café got a real pass in the previous session (dead/unreachable questions fixed, new ones added); Commons and Field haven't yet.
+- **Field's deeper essay** (the rainbow) — direction now settled after real revision: open on the concrete feeling of movement → widen to valuing mobility/autonomy broadly → narrow into Ultimate specifics (body improving in exact ways, strategy, a light — not central — mention of teammates) → end unresolved, naming the tension between wanting to be *able* to move vs. wanting to be *good* at moving. Text not yet written. The rainbow currently triggers a sparkle+sound moment instead (see Field section) — reconnecting the real essay later is a one-line change.
+- **Field's stretch/warm-up section as a question hook** — a `freeform`-type `WorkoutPlayer` step (no timer pressure) could carry a question, but deliberately deprioritized since Field is expected to be the least-visited location
+- Café — "Good at Life," "New Words," and a new idea: **"Flaws"** — list some of Rona's own flaws, visitor drags to rank worst-to-not-worst (reusing the `@dnd-kit` pattern from Ugly Art), then two follow-up text inputs: visitor's own worst flaw, and a flaw they're not too worried about
+- Commons — **general, open-ended goal: more interactive elements.** Not a locked spec — one seed idea that came up was a shared/cumulative visual element (pixel art board, word cloud) everyone contributes to, visible collectively; nothing committed yet
+- **Make the world map more interactive** — no spec yet, flagged as a future direction
+- **Private notes/feedback feature for Rona herself** — a way to leave notes on the site (particularly improvement ideas) while browsing it as if a visitor; no spec yet
+- **Full mobile responsive pass** — add real media queries, fix fixed-pixel-width modals (`QuestionCard`, `BookModal`, `CommunityJournal`, `PromptScreen`), address touch-target sizing and pinch-zoom behavior. See Mobile Responsiveness section for what's already been fixed vs. what's still outstanding.
 - Optional login / account creation
 - Cross-device experience
 - Tiny and Big Rona's "fun little game" (Field) — still undecided
