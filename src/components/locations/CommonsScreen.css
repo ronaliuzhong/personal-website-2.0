@@ -19,8 +19,11 @@
      that's often wider than the phone itself, pushing the arrows
      that sit beside it clean off-screen. Capping with min() also
      bounds height by however tall the canvas can be while still
-     leaving ~8rem of horizontal room for both arrows combined. */
-  height: min(85vh, calc((100vw - 8rem) / 0.62));
+     leaving ~10rem of horizontal room for both arrows combined —
+     bumped up from 8rem so each arrow gets a bit of breathing room
+     around its own circular button, not just barely enough space
+     for the bare character itself. */
+  height: min(85vh, calc((100vw - 10rem) / 0.62));
   max-height: 900px;
   aspect-ratio: 0.62; /* tune this to match your card's actual proportions */
 }
@@ -40,13 +43,22 @@
 }
 
 .commons-arrow {
-  background: none;
+  /* A visible circular button shape, not just a bare character —
+     on mobile, a sliver of a lone glyph peeking in from off-screen
+     doesn't read as "tap here." A soft circle behind it means even
+     a partial edge-peek still visually signals a real button. */
+  background: rgba(0, 0, 0, 0.05);
   border: none;
-  font-size: 2.5rem;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  flex-shrink: 0;
+  font-size: 2rem;
+  line-height: 1;
   color: var(--warm-gray, #d3d1c7);
   cursor: pointer;
-  padding: 0 1rem;
-  transition: color 0.2s ease;
+  padding: 0;
+  transition: color 0.2s ease, background 0.2s ease;
 }
 
 .commons-arrow:hover {
