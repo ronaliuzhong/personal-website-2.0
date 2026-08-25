@@ -243,7 +243,7 @@ function CafeScreen() {
                 rx="1"
                 fill="none"
                 stroke="#FAC775"
-                strokeWidth="1.5"
+                strokeWidth="3"
                 className="cafe-book-pulse-ring"
               />
             )}
