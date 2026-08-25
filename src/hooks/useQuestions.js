@@ -35,7 +35,7 @@ export function useQuestions() {
     // Sync to backend in the background. If the visitor doesn't have
     // a backend id yet, just skip — the answer's still saved locally.
     if (visitor.id) {
-      saveAnswerToBackend(visitor.id, questionId, answer).catch((err) =>
+      saveAnswerToBackend(visitor.id, questionId, answer, visitor.name).catch((err) =>
         console.error('Failed to sync answer to backend:', err)
       )
     }

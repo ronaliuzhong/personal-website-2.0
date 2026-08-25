@@ -24,7 +24,7 @@ export function useAppState() {
             localStorage.setItem('visitor', JSON.stringify({ ...visitor, id: backendVisitor.id }))
 
             if (visitor.answers?.happiness) {
-              saveAnswerToBackend(backendVisitor.id, 'happiness', visitor.answers.happiness).catch((err) =>
+              saveAnswerToBackend(backendVisitor.id, 'happiness', visitor.answers.happiness, visitor.name).catch((err) =>
                 console.error('Failed to sync happiness answer to backend:', err)
               )
             }
@@ -65,7 +65,7 @@ export function useAppState() {
         // The happiness answer is captured before a visitor id exists,
         // so it isn't caught by useQuestions' saveAnswer — sync it here
         // instead, now that we finally have an id to attach it to.
-        saveAnswerToBackend(backendVisitor.id, 'happiness', happiness).catch((err) =>
+        saveAnswerToBackend(backendVisitor.id, 'happiness', happiness, capitalized).catch((err) =>
           console.error('Failed to sync happiness answer to backend:', err)
         )
       })

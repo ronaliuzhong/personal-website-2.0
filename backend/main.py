@@ -38,6 +38,7 @@ class AnswerCreate(BaseModel):
     visitor_id: str
     question_id: str
     answer: str
+    visitor_name: str | None = None
 
 class JournalEntryCreate(BaseModel):
     visitor_id: str | None
@@ -78,7 +79,8 @@ def save_answer(answer: AnswerCreate):
     result = supabase.table("answers").insert({
         "visitor_id": answer.visitor_id,
         "question_id": answer.question_id,
-        "answer": answer.answer
+        "answer": answer.answer,
+        "visitor_name": answer.visitor_name
     }).execute()
     return result.data[0]
 

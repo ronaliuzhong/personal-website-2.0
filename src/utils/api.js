@@ -32,7 +32,7 @@ export async function createVisitor(nickname) {
   return res.json()
 }
 
-export async function saveAnswerToBackend(visitorId, questionId, answer) {
+export async function saveAnswerToBackend(visitorId, questionId, answer, visitorName) {
   const res = await fetch(`${API_URL}/answers`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -40,6 +40,7 @@ export async function saveAnswerToBackend(visitorId, questionId, answer) {
       visitor_id: visitorId,
       question_id: questionId,
       answer,
+      visitor_name: visitorName || null,
     }),
   })
   if (!res.ok) throw new Error('Failed to save answer')
