@@ -26,6 +26,10 @@ function CafeScreen() {
     const visitor = JSON.parse(localStorage.getItem('visitor')) || {}
     return drinks.find(d => d.id === visitor.drink) || drinks[0]
   })
+  const [bookClicked, setBookClicked] = useState(() => {
+  const visitor = JSON.parse(localStorage.getItem('visitor')) || {}
+    return !!visitor.bookClicked
+  })
   const { getTriggeredQuestion } = useQuestions()
   const { playClick } = useSounds()
   const [showJournal, setShowJournal] = useState(false)
@@ -38,6 +42,11 @@ function CafeScreen() {
   function handleBookClick(book) {
     playClick()
     setActiveBook(book)
+    if (!bookClicked) {
+      setBookClicked(true)
+      const visitor = JSON.parse(localStorage.getItem('visitor')) || {}
+      localStorage.setItem('visitor', JSON.stringify({ ...visitor, bookClicked: true }))
+    }
   }
 
   function handleCupClick() {
@@ -223,26 +232,41 @@ function CafeScreen() {
         <ellipse cx="222" cy="258" rx="15" ry="20" fill="#27500A" opacity="0.5"/>
 
         {/* LIVE BOOKS — data driven */}
-        {cafeBooks.map(book => (
-          <rect
-            key={book.id}
-            x={book.svgX}
-            y={book.svgY}
-            width={book.svgWidth}
-            height={book.svgHeight}
-            rx="1"
-            fill={book.color}
-            style={{
-              cursor: 'pointer',
-              filter: hoveredBook === book.id
-                ? 'brightness(1.3) drop-shadow(0 0 6px rgba(250, 199, 117, 0.7))'
-                : 'none',
-              transition: 'filter 0.2s ease',
-            }}
-            onMouseEnter={() => setHoveredBook(book.id)}
-            onMouseLeave={() => setHoveredBook(null)}
-            onClick={() => handleBookClick(book)}
-          />
+        {cafeBooks.map((book, index) => (
+          <g key={book.id}>
+            {index === 0 && !bookClicked && (
+              <rect
+                x={book.svgX}
+                y={book.svgY}
+                width={book.svgWidth}
+                height={book.svgHeight}
+                rx="1"
+                fill="none"
+                stroke="#FAC775"
+                strokeWidth="1.5"
+                className="cafe-book-pulse-ring"
+              />
+            )}
+            <rect
+              x={book.svgX}
+              y={book.svgY}
+              width={book.svgWidth}
+              height={book.svgHeight}
+              rx="1"
+              fill={book.color}
+              className={index === 0 && !bookClicked ? 'cafe-book-nudge' : undefined}
+              style={{
+                cursor: 'pointer',
+                filter: hoveredBook === book.id
+                  ? 'brightness(1.3) drop-shadow(0 0 6px rgba(250, 199, 117, 0.7))'
+                  : 'none',
+                transition: 'filter 0.2s ease',
+              }}
+              onMouseEnter={() => setHoveredBook(book.id)}
+              onMouseLeave={() => setHoveredBook(null)}
+              onClick={() => handleBookClick(book)}
+            />
+          </g>
         ))}
 
         {/* FLOATING TITLE on hover */}

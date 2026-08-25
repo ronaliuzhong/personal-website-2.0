@@ -49,7 +49,7 @@ export const cafeBooks = [
   },
   {
     id: 'book_thinking_in_bets',
-    title: 'Thinking in Bets',
+    title: 'bet',
     color: '#97C459',
     svgX: 584, 
     svgY: 55,
