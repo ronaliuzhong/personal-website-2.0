@@ -31,6 +31,20 @@
 .back-button:hover {
   opacity: 1;
 }
+
+/* Field's wood-texture background makes plain green text hard to
+   read — this gives it a solid pill behind the text specifically for
+   Field, without changing how the back button looks anywhere else. */
+.back-button--high-contrast {
+  background: rgba(245, 240, 232, 0.9);
+  padding: 5px 12px;
+  border-radius: 8px;
+  opacity: 1;
+}
+
+.back-button--high-contrast:hover {
+  background: rgba(245, 240, 232, 1);
+}
 /* First-ever-location interactive hint — a small, non-blocking pill
    banner shown once, inside whichever location a visitor enters
    first. pointer-events: none so it never intercepts clicks meant

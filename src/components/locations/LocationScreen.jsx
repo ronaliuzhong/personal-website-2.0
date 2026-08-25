@@ -56,7 +56,10 @@ function LocationScreen({ locationId, onExit }) {
       className={`location-screen ${visible ? 'visible' : ''}`}
       onClick={handleFirstInteraction}
     >
-      <button className="back-button" onClick={handleExit}>
+      <button
+        className={`back-button ${locationId === 'field' ? 'back-button--high-contrast' : ''}`}
+        onClick={handleExit}
+      >
         ← back to the map
       </button>
       {Interior && <Interior />}
