@@ -80,7 +80,7 @@ function LocationMarker({ loc, hovered, onHover, onLeave, onClick, pulse }) {
           r={18}
           fill="none"
           stroke={loc.color}
-          strokeWidth={2}
+          strokeWidth={3.5}
         />
       )}
       {/* outer ring */}
@@ -191,7 +191,7 @@ function WorldMap({ name, returning, onEnterLocation }) {
           fontSize="22"
           fill="#27500A"
         >
-          Rona's Corner
+          Rona's World
         </text>
 
         {locations.map(loc => (

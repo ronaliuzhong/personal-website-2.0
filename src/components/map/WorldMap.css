@@ -51,7 +51,7 @@
 }
 
 .location-pulse-ring {
-  animation: locationPulse 2s ease-out infinite;
+  animation: locationPulse 1.8s ease-out infinite;
   transform-origin: center;
   transform-box: fill-box;
 }
@@ -59,10 +59,10 @@
 @keyframes locationPulse {
   0% {
     r: 18;
-    opacity: 0.8;
+    opacity: 1;
   }
   100% {
-    r: 32;
+    r: 48;
     opacity: 0;
   }
 }
