@@ -254,7 +254,7 @@ function CafeScreen() {
               height={book.svgHeight}
               rx="1"
               fill={book.color}
-              className={index === 0 && !bookClicked ? 'cafe-book-nudge' : undefined}
+              className={book.id == 'book_welcome' && !bookClicked ? 'cafe-book-nudge' : undefined}
               style={{
                 cursor: 'pointer',
                 filter: hoveredBook === book.id

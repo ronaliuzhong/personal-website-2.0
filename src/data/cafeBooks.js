@@ -1,11 +1,21 @@
 export const cafeBooks = [
   {
+    id: 'book_welcome',
+    title: 'Welcome',
+    type: 'journal',
+    color: '#C4956A',
+    svgX: 150,
+    svgY: 122,
+    svgWidth: 14,
+    svgHeight: 58,
+  },
+  {
     id: 'book_ugly_art',
     title: 'Ugly Art',
     type: 'interactive',
     color: '#D4537E',
     svgX: 150,
-    svgY: 122,
+    svgY: 500,
     svgWidth: 14,
     svgHeight: 58,
   },

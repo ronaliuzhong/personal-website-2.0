@@ -5,6 +5,7 @@ import WitnessBook from './WitnessBook'
 import EthicsGameBook from './EthicsGameBook';
 import WhichLifeBook from './WhichLifeBook';
 import ThinkingInBetsBook from './ThinkingInBetsBook';
+import WelcomeBook from './WelcomeBook';
 
 const bookComponents = {
   book_ugly_art: UglyArtBook,
@@ -13,6 +14,7 @@ const bookComponents = {
   book_ethics_game: EthicsGameBook,
   book_which_life: WhichLifeBook,
   book_thinking_in_bets: ThinkingInBetsBook,
+  book_welcome: WelcomeBook,
 }
 
 function BookModal({ book, onClose }) {

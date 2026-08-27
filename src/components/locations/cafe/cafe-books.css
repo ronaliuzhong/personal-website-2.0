@@ -195,3 +195,90 @@
   flex-direction: column;
   gap: 16px;
 }
+/* welcome book */
+.welcome-book {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: welcomeBookFadeIn 0.7s ease;
+}
+
+.welcome-book__greeting {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 32px;
+  color: #FAC775;
+  margin-bottom: -4px;
+}
+
+.welcome-book__text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #444441;
+  line-height: 1.7;
+}
+
+.welcome-book__highlight {
+  color: #FAC775;
+  font-weight: 700;
+}
+
+.welcome-book__text em {
+  font-style: italic;
+  font-weight: 600;
+}
+
+.welcome-book__mapping-intro {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: #888780;
+  letter-spacing: 0.03em;
+  margin-top: -4px;
+}
+
+.welcome-book__mapping {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.welcome-book__mapping-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+}
+
+.welcome-book__mapping-name {
+  font-weight: 700;
+  min-width: 70px;
+}
+
+.welcome-book__mapping-arrow {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.welcome-book__mapping-category {
+  color: #444441;
+}
+
+.welcome-book__signature {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 22px;
+  color: #FAC775;
+  text-align: right;
+  padding-right: 20%;
+  margin-top: 4px;
+}
+
+@keyframes welcomeBookFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
