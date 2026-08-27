@@ -65,7 +65,7 @@ function LocationScreen({ locationId, onExit }) {
       {Interior && <Interior />}
       {showHint && (
         <div className="location-hint">
-          this world is interactive — click around to explore
+          this world is interactive—click around to explore
         </div>
       )}
     </div>
