@@ -45,6 +45,24 @@
 .back-button--high-contrast:hover {
   background: rgba(245, 240, 232, 1);
 }
+
+/* Shared "dark background" variant — currently used by Overlook and
+   School, both of which have plain dark-green back-button text sitting
+   against a dark scene (Overlook's navy/purple night sky, School's
+   dark starry desktop background). A plain bright cream pill (Field's
+   variant) felt too glaring/stark against dark scenes like these, so
+   this uses the same cream but at lower opacity instead. Named
+   generically (not "-overlook") since more than one location shares it. */
+.back-button--high-contrast-dark {
+  background: rgba(245, 240, 232, 0.5);
+  padding: 5px 12px;
+  border-radius: 8px;
+  opacity: 1;
+}
+
+.back-button--high-contrast-dark:hover {
+  background: rgba(245, 240, 232, 0.7);
+}
 /* First-ever-location interactive hint — a small, non-blocking pill
    banner shown once, inside whichever location a visitor enters
    first. pointer-events: none so it never intercepts clicks meant
