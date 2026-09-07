@@ -4,6 +4,7 @@ import CommonsSceneModal from './commons/CommonsSceneModal';
 import { useSounds } from '../../hooks/useSounds';
 import { useQuestions } from '../../hooks/useQuestions';
 import { useAmbientQuestion } from '../../hooks/useAmbientQuestion';
+import { getNextActionPrompt } from '../../data/actionPrompts';
 import QuestionCard from '../QuestionCard';
 import './CommonsScreen.css';
 
@@ -110,9 +111,10 @@ function CommonsScreen() {
       if (q) setTriggeredQuestion(q);
       // if nothing left, clicking just does nothing — no modal to show
     } else if (h.id === 'flower_painting') {
-      // One-time prompt — only opens if not already done/declined via
-      // an explicit choice inside the modal.
-      if (!getSeenQuestions().includes('commons_photo_prompt')) {
+      // One-time prompt(s) — only opens if there's still an unseen
+      // prompt left in the sequence (checks both commons_photo_prompt
+      // and commons_snack_prompt, in order).
+      if (getNextActionPrompt(getSeenQuestions())) {
         setActiveModalId('flower_painting');
       }
     } else {
