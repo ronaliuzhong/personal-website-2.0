@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useQuestions } from '../../hooks/useQuestions'
 import { useSounds } from '../../hooks/useSounds'
 import QuestionCard from '../QuestionCard'
+import MoodChart from './overlook/MoodChart'
 import './OverlookScreen.css'
 
 const SIMPLE_JOYS = [
@@ -55,6 +56,7 @@ export default function OverlookScreen() {
   const [activeQuestion, setActiveQuestion] = useState(null)
   const [showBouquet, setShowBouquet] = useState(false)
   const [showBook, setShowBook] = useState(false)
+  const [showMoodChart, setShowMoodChart] = useState(false)
   const [moonGlowing, setMoonGlowing] = useState(false)
   const { getTriggeredQuestion, getSeenQuestions, markSeen, saveAnswer } = useQuestions()
   const { playClick, playEnter } = useSounds()
@@ -146,6 +148,27 @@ export default function OverlookScreen() {
         ].map(([x,y], i) => (
           <circle key={i} cx={x} cy={y} r={i % 3 === 0 ? 1.5 : 1} fill="white" opacity={0.5 + (i % 4) * 0.1}/>
         ))}
+
+        {/* SHOOTING STAR — clickable, reveals real mood history chart.
+            Persistent (not a random appear/disappear event) so it's
+            reliably findable, but styled as a streaking comet with a
+            fading tail so it reads as distinct from the plain round
+            stars, plus a gentle continuous twinkle to draw the eye. */}
+        <g
+          onClick={() => setShowMoodChart(true)}
+          style={{ cursor: 'pointer' }}
+          className="overlook-shooting-star"
+        >
+          <line x1="130" y1="55" x2="180" y2="95" stroke="url(#starTailGradient)" strokeWidth="2" strokeLinecap="round"/>
+          <circle cx="184" cy="99" r="3" fill="#FAC775"/>
+          <circle cx="184" cy="99" r="7" fill="#FAC775" opacity="0.3"/>
+        </g>
+        <defs>
+          <linearGradient id="starTailGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FAC775" stopOpacity="0"/>
+            <stop offset="100%" stopColor="#FAC775" stopOpacity="0.8"/>
+          </linearGradient>
+        </defs>
 
         {/* MOON */}
         <circle cx="575" cy="68" r="24" fill="#FAC775" opacity="0.6"/>
@@ -294,6 +317,16 @@ export default function OverlookScreen() {
       )}
 
       {/* book modal */}
+      {showMoodChart && (
+        <div className="overlook-book-overlay" onClick={() => setShowMoodChart(false)}>
+          <div className="overlook-book" onClick={e => e.stopPropagation()}>
+            <button className="overlook-book__close" onClick={() => setShowMoodChart(false)}>×</button>
+            <p className="overlook-book__title">my mood, over time</p>
+            <MoodChart />
+          </div>
+        </div>
+      )}
+
       {showBook && (
         <div className="overlook-book-overlay" onClick={() => setShowBook(false)}>
           <div className="overlook-book" onClick={e => e.stopPropagation()}>

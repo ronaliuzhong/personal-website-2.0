@@ -1,0 +1,11 @@
+.mood-chart__intro {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #444441;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.mood-chart__wrap {
+  width: 100%;
+}

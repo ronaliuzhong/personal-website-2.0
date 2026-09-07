@@ -86,3 +86,21 @@
   to { opacity: 1; transform: scale(1); }
 }
 
+
+/* Shooting star — clickable, reveals the mood history chart. A gentle
+   continuous twinkle (not the map/book "look at me" pulse style, just
+   a soft breathing opacity shift) to catch the eye without being loud. */
+.overlook-shooting-star {
+  animation: shootingStarTwinkle 3s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+@keyframes shootingStarTwinkle {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
