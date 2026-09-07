@@ -191,7 +191,7 @@ function WorldMap({ name, returning, onEnterLocation }) {
           fontSize="22"
           fill="#27500A"
         >
-          Rona's World
+          Rona's Corner
         </text>
 
         {locations.map(loc => (

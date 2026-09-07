@@ -5,6 +5,9 @@
 
 export const actionPrompts = {
   commons_photo_prompt: {
-    text: 'I like to send random photo updates to stay in contact with far away loved ones. My prompt for you today: Text a random recently taken photo to your family groupchat.',
+    text: 'I like to send random photo updates to stay in contact with far away loved ones. My prompt for you today: Text a random recently taken photo to your family (or friends) groupchat.',
   },
+  commons_snack_prompt: {
+    text: "Surprise a friend with their favorite snack."
+  }
 }

@@ -234,7 +234,7 @@ function CafeScreen() {
         {/* LIVE BOOKS — data driven */}
         {cafeBooks.map((book, index) => (
           <g key={book.id}>
-            {index === 0 && !bookClicked && (
+            {book.id === 'book_welcome' && !bookClicked && (
               <rect
                 x={book.svgX}
                 y={book.svgY}
@@ -254,7 +254,7 @@ function CafeScreen() {
               height={book.svgHeight}
               rx="1"
               fill={book.color}
-              className={book.id == 'book_welcome' && !bookClicked ? 'cafe-book-nudge' : undefined}
+              className={book.id === 'book_welcome' && !bookClicked ? 'cafe-book-nudge' : undefined}
               style={{
                 cursor: 'pointer',
                 filter: hoveredBook === book.id
