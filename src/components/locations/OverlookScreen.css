@@ -104,3 +104,30 @@
     opacity: 1;
   }
 }
+
+/* Moon glow, when a question is ready — three layered circles rippling
+   outward, but deliberately slow and soft: this is just an optional
+   "by the way, if you want" suggestion, not an unmissable onboarding
+   cue like the book/map nudges elsewhere, so it shouldn't compete for
+   attention the same way. Slower cycle, gentler easing, lower peak
+   opacity, and a smaller max spread than those other nudges. */
+.overlook-moon-pulse {
+  animation: moonPulse 4.5s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+.overlook-moon-pulse--1 { animation-delay: 0s; }
+.overlook-moon-pulse--2 { animation-delay: 1.2s; }
+.overlook-moon-pulse--3 { animation-delay: 2.4s; }
+
+@keyframes moonPulse {
+  0% {
+    r: 26;
+    opacity: 0.2;
+  }
+  100% {
+    r: 42;
+    opacity: 0;
+  }
+}

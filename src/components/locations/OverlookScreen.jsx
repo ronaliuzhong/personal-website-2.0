@@ -18,7 +18,7 @@ const SIMPLE_JOYS = [
   'buzzfeed-esq quizzes',
 ]
 
-const MOON_COOLDOWN_MS = 15 * 60 * 1000 //15 min
+const MOON_COOLDOWN_MS = 1.5 * 60 * 1000 //1.5 min
 
 const lightPositions = [
   { cx: 140, cy: 248 },
@@ -175,9 +175,9 @@ export default function OverlookScreen() {
         <circle cx="586" cy="63" r="20" fill="#0d0d1a" opacity="0.9"/>
         {moonGlowing && (
           <>
-            <circle cx="575" cy="68" r="32" fill="#FAC775" opacity="0.2"/>
-            <circle cx="575" cy="68" r="40" fill="#FAC775" opacity="0.1"/>
-            <circle cx="575" cy="68" r="50" fill="#FAC775" opacity="0.05"/>
+            <circle cx="575" cy="68" fill="#FAC775" className="overlook-moon-pulse overlook-moon-pulse--1"/>
+            <circle cx="575" cy="68" fill="#FAC775" className="overlook-moon-pulse overlook-moon-pulse--2"/>
+            <circle cx="575" cy="68" fill="#FAC775" className="overlook-moon-pulse overlook-moon-pulse--3"/>
           </>
         )}
         <circle
