@@ -37,7 +37,7 @@ export const textPuzzles = [
     prompt: 'What five-letter word, typed in all capital letters, reads the same upside down (a 180 degree rotation)?',
     answers: ['swims'],
     hints: [
-      'Think of a common five-letter verb related to being in water.',
+      'Think of a common five-letter word related to being in water.',
       'A few capital letters are symmetrical enough to look unchanged (or like another valid letter) upside down.',
     ],
   },

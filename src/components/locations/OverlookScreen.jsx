@@ -3,6 +3,7 @@ import { useQuestions } from '../../hooks/useQuestions'
 import { useSounds } from '../../hooks/useSounds'
 import QuestionCard from '../QuestionCard'
 import MoodChart from './overlook/MoodChart'
+import TalkToRona from './overlook/TalkToRona'
 import './OverlookScreen.css'
 
 const SIMPLE_JOYS = [
@@ -57,6 +58,7 @@ export default function OverlookScreen() {
   const [showBouquet, setShowBouquet] = useState(false)
   const [showBook, setShowBook] = useState(false)
   const [showMoodChart, setShowMoodChart] = useState(false)
+  const [showChat, setShowChat] = useState(false)
   const [moonGlowing, setMoonGlowing] = useState(false)
   const { getTriggeredQuestion, getSeenQuestions, markSeen, saveAnswer } = useQuestions()
   const { playClick, playEnter } = useSounds()
@@ -248,8 +250,8 @@ export default function OverlookScreen() {
         <rect x="266" y="321" width="5" height="28" rx="2" fill="#0d1f0d"/>
         <rect x="409" y="321" width="5" height="28" rx="2" fill="#0d1f0d"/>
 
-        {/* FIGURE */}
-        <g style={{ cursor: 'pointer' }} onClick={() => {}}>
+        {/* FIGURE — clicking opens Talk to Rona */}
+        <g style={{ cursor: 'pointer' }} onClick={() => setShowChat(true)}>
           <circle cx="300" cy="310" r="10" fill="#0a1a0a"/>
           <rect x="292" y="320" width="18" height="14" rx="3" fill="#0a1a0a"/>
           <rect x="292" y="332" width="8" height="6" rx="1" fill="#0a1a0a"/>
@@ -323,6 +325,16 @@ export default function OverlookScreen() {
             <button className="overlook-book__close" onClick={() => setShowMoodChart(false)}>×</button>
             <p className="overlook-book__title">my mood, over time</p>
             <MoodChart />
+          </div>
+        </div>
+      )}
+
+      {showChat && (
+        <div className="overlook-book-overlay" onClick={() => setShowChat(false)}>
+          <div className="overlook-book" onClick={e => e.stopPropagation()}>
+            <button className="overlook-book__close" onClick={() => setShowChat(false)}>×</button>
+            <p className="overlook-book__title">talk to rona</p>
+            <TalkToRona />
           </div>
         </div>
       )}

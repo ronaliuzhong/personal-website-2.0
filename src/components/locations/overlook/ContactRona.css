@@ -1,0 +1,80 @@
+.contact-rona {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contact-rona__intro {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #444441;
+  line-height: 1.6;
+}
+
+.contact-rona__form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.contact-rona__input,
+.contact-rona__textarea {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: 1px solid #D3D1C7;
+  border-radius: 8px;
+  resize: none;
+}
+
+.contact-rona__error {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: #B0413E;
+}
+
+.contact-rona__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.contact-rona__back {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: #888780;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.contact-rona__back:hover {
+  color: #444441;
+}
+
+.contact-rona__send {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  padding: 8px 16px;
+  background: #27500A;
+  color: #F5F0E8;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.contact-rona__send:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.contact-rona__sent {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #444441;
+  line-height: 1.6;
+  text-align: center;
+  padding: 20px 0;
+}

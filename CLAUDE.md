@@ -1,12 +1,13 @@
 # CLAUDE.md — Rona's Corner Project Documentation
-*Last updated: September 7, 2026*
+*Last updated: September 9, 2026*
 
-> **Picking this back up after a break?** Phase 1 is fully closed. The site
-> is live at `ronaliuzhong.com` under its current name, **Rona's Corner**
-> (renamed from "Rona's World" partway through Phase 1 — "World" felt too
-> grandiose/precious). Since the last doc update, a good amount of real
-> polish work happened that never got documented until now — this update
-> captures all of it. Phase 2's open list is unchanged and still below.
+> **Picking this back up after a break?** Phase 1 is fully closed, and as of
+> this update, **Phase 3's "Talk to Rona" chatbot is fully built and live**
+> (see The Overlook section) — a big single-session build covering a real
+> OpenAI-backed chatbot, two new database tables, an email-notification
+> contact form, plus a genuine 3-years-of-real-data feature (the mood
+> chart) and several real bugs found and fixed along the way. Phase 2's
+> open list is otherwise unchanged and still below.
 
 ## Project Vision
 A personal website that functions as an interactive experience rather than a traditional portfolio. Visitors are welcomed through a series of prompts, then explore "Rona's Corner" — a map of five clickable locations, each revealing a different facet of who Rona is. The overarching goal is mutual discovery: getting to know the visitor while helping them understand themselves better through thoughtful questions.
@@ -31,8 +32,11 @@ A personal website that functions as an interactive experience rather than a tra
 ### Key Libraries
 - `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities` — drag to rank (Ugly Art book), Kiss/Marry/Kill (Commons)
 - `@rive-app/react-canvas` — Commons scene animations
+- `recharts` — **added this session**, the mood history chart on Overlook (first charting library this project has used)
 - `python-dotenv` — environment variables
 - `supabase` (Python client v2.31.0) — database access
+- `openai` — **added this session**, Talk to Rona chatbot (see The Overlook section)
+- `resend` — **added this session**, email notifications for the "send a real message to Rona" contact form
 
 ---
 
@@ -92,7 +96,7 @@ personal-website-2.0/
         SchoolScreen.css
         OverlookScreen.jsx    ← full overlook interior (SVG, dusk scene)
         OverlookScreen.css
-        FieldScreen.jsx       ← placeholder, not started
+        FieldScreen.jsx       ← full sticker-sheet interior, 9 workouts (see The Field section — this was stale here, Field has been fully built for a while)
         LocationScreen.jsx    ← wrapper with fade + back button
         LocationScreen.css
         cafe/
@@ -113,6 +117,13 @@ personal-website-2.0/
           ThinkingInBetsBook.css
           WelcomeBook.jsx     ← intro/legend book, now the "start here" nudge target
           cafe-books.css
+        overlook/             ← NEW this session — Overlook's first-ever subfolder
+          MoodChart.jsx       ← real 3-years mood history, Recharts
+          MoodChart.css
+          TalkToRona.jsx      ← the site's chatbot — see The Overlook section
+          TalkToRona.css
+          ContactRona.jsx     ← "send a real message to Rona" form
+          ContactRona.css
         school/
           ResumeWindow.jsx    ← PDF iframe + download
           ResumeWindow.css
@@ -180,10 +191,22 @@ personal-website-2.0/
     App.css
     main.jsx
   backend/
-    main.py                    ← FastAPI routes, now includes /ping for keep-warm
+    main.py                    ← FastAPI routes, now includes /ping for keep-warm,
+                                  /chat and /contact (this session)
     requirements.txt
-    .env                       ← SUPABASE_URL, SUPABASE_KEY (not in git)
+    .env                       ← SUPABASE_URL, SUPABASE_KEY, OPENAI_API_KEY,
+                                  RESEND_API_KEY, NOTIFICATION_EMAIL (not in git)
     venv/                      ← not in git
+    rona_knowledge/            ← NEW this session — Talk to Rona's system prompt
+      __init__.py
+      system_prompt_intro.py
+      bio_facts.py
+      essays.py
+      conversational_style.py
+      voice_notes.py           ← the file that got the most iteration, see
+                                  The Overlook section for the full history
+      boundaries.py
+      create_system_prompt.py  ← joins everything into one SYSTEM_PROMPT string
   index.html                   ← Google Fonts loaded here
   CLAUDE.md                    ← this file
   .gitignore
@@ -451,8 +474,9 @@ Dusk/night SVG scene. Dark purple/navy sky with layered gradients, crescent moon
 - **String lights (10)** — hover reveals a simple joy. ✅ **Written** (see below).
 - **Bouquet** — triggers overlook_flower question. Colors reflect visitor's flower (café) + favorite person's flower (overlook). White if unanswered.
 - **Book (amber)** — opens "on happiness" essay modal. ✅ **Written** (see below).
-- **Moon** — glows with pulse when question ready. Triggers moon_q1/2/3 in sequence.
-- **Figure (Rona)** — Phase 3 placeholder for "talk to Rona" AI feature.
+- **Moon** — glows with pulse when question ready. Triggers moon_q1/2/3/4 in sequence.
+- **Shooting star** — ✅ **Built this session.** Opens the real mood-history chart. See below.
+- **Figure (Rona)** — ✅ **Built this session.** No longer a Phase 3 placeholder — opens "Talk to Rona," the site's full chatbot. See below.
 
 **Theme:** dark purple `#1a1235` background, amber `#FAC775` accents for question cards.
 
@@ -482,6 +506,69 @@ const SIMPLE_JOYS = [
 > My interests and activities have naturally been supporting these goals, but only recently did I concretely categorize them. I'm curious to see in what ways my theory will change—whether certain complex happiness groups take precedence over others, whether new complex happiness groups emerge, whether there are further intersections of simple and complex happinesses. This world that you're exploring reflects not only what I have figured out, but also my attempt at furthering my understanding of what I want.
 
 *(This essay is genuinely the architecture-defining piece of the whole site — the "simple happiness" vs. "complex happiness" split explains why Overlook exists in contrast to the other four locations. It deliberately includes an explicit, honest example of the categories overlapping rather than staying cleanly separate (ice cream → bonding), and deliberately leaves the four complex-happiness categories un-ranked/un-sorted as an admitted open question rather than forcing false tidiness — consistent with the site's overall voice of not overclaiming certainty.)*
+
+### Moon — tuned this session (glow visuals + cooldown)
+
+**Cooldown reduced from 15 minutes to 1.5 minutes.** Reasoning was deliberately tied to a real-world estimate: the happiness essay is 357 words, and at a typical adult reading pace (~200–250 wpm for reflective prose), that's roughly 1.5–2 minutes to actually read. Setting the cooldown at the *low* end of that range means a new question is reliably ready by the time a typical visitor finishes reading the essay, rather than making them wait afterward.
+
+**The static three-layer glow was replaced, twice, based on real feedback on how it looked.** First pass: a single expanding-and-fading circle (matching the exact `r`/`opacity` keyframe technique already proven on the WorldMap Café pulse and the Café book glow). This was rejected — it lost the layered depth the original three static circles had, reading as "a circle expanding" rather than a soft glow. Second pass, the current version: **three circles again**, each running the *same* pulse animation but with staggered `animation-delay` (0s / 1.2s / 2.4s), so they ripple outward one after another rather than moving in lockstep — restoring the layered softness while still having real motion. A third round of feedback ("too aggressive") led to slowing the cycle from 2.4s to 4.5s, switching `ease-out` to `ease-in-out` (so motion doesn't front-load into a quick burst), lowering peak opacity (0.35 → 0.2), and shrinking the max spread (52 → 42) — the reasoning being that this glow is meant to be a quiet, optional "by the way, if you want" suggestion, not an unmissable onboarding cue like the Café book glow or the map's Café-first ring, which are deliberately louder because they're solving a different problem (teaching first-time visitors the site is interactive at all).
+
+### Shooting star + real mood history chart — built this session
+
+A visitor asked for a way to surface Rona's real ~3-years-of-monthly-self-ratings data (originally posted monthly on a private finsta, rating "my month out of 10"). Considered placing this on the moon (rejected — "my questions live there," didn't want to dilute that) and on the string lights (rejected — didn't feel meaningful enough as a trigger). Landed on a **new element entirely: a shooting star**, both because it fits the night-sky scene thematically and because a streaking comet shape visually rhymes with a line chart's own trajectory-across-time shape.
+
+**Placement in the sky:** a diagonal streak from `(130, 55)` to `(184, 99)`, in open sky space clear of both the moon (`575, 68`) and the densest star clusters — confirmed by directly inspecting the static SVG's star coordinates before choosing a spot, not guessed. **Deliberately persistent, not a random appear/disappear event** — despite the "shooting star" name implying transience, making it reliably clickable mattered more than literal accuracy to the metaphor, since a visitor specifically trying to find it again would be frustrated by unpredictable timing. Styled distinctly from the plain round stars via a `<line>` with a gradient stroke (`stopOpacity` 0→0.8) plus a small bright head circle, with a gentle continuous opacity-only twinkle (`shootingStarTwinkle`, 3s, 0.7↔1) — deliberately *not* the same "look at me" pulse-ring language used for onboarding cues elsewhere, since this needed to read as ambient/findable rather than urgent.
+
+**`src/data/moodHistory.js`** — Rona's real data, one entry per month, `{ month: "Sep '23", rating: 2 }` format. Two honest details worth knowing: there's a genuine unexplained gap between July 2025 and October 2025 (no August/September 2025 entries were ever given — not fabricated, left as a real gap) rendered as an actual visible break in the line (`connectNulls={false}` on the Recharts `<Line>`); and July 2026 is explicitly `rating: null` (marked "??" by Rona, meaning not yet rated) rather than invented, which Recharts renders as a real gap in the line at that point too, rather than silently smoothing over it.
+
+**`src/components/locations/overlook/MoodChart.jsx`** — uses **Recharts**, a genuinely new dependency (`recharts` in `package.json`) — this project had never used a charting library before. Chosen over hand-building an SVG chart specifically because Rona described not wanting to hand-author more SVG paths herself; Recharts means writing declarative config (a data array + component props), never raw path coordinates. Given the site update cadence (~monthly), a live interactive chart was chosen over a matplotlib-generated static image specifically because a static-image workflow would mean manually regenerating and re-uploading a PNG every month — genuinely reasonable given the cadence, but an interactive chart needs zero regeneration at all, just appending one line to the data file. X-axis labels are angled (`angle={-60}`) given ~36 data points would otherwise overlap.
+
+**Rendering location:** `MoodChart` lives in a new `overlook/` subfolder — the *first* subfolder Overlook has ever had (Café/Commons/Field/School already had their own; Overlook was previously one flat file). Modal reuses the exact same `.overlook-book-overlay`/`.overlook-book` classes as the happiness essay, rather than introducing new modal styling.
+
+### Talk to Rona — the site's chatbot, built this session
+
+**What it is, architecturally: "long-context stuffing," not real RAG.** Real Retrieval-Augmented Generation means storing content as separate documents and, per-query, running a search step to find just the relevant pieces before sending them to the model. This deliberately skips that step — literally everything (essays, bio facts, conversational examples, voice/style rules) gets sent on *every single message*, and the model itself figures out what's relevant. This was a deliberate choice, not a shortcut taken out of laziness: real retrieval exists to solve a *scale* problem (a knowledge base too large to fit in one request), and at this site's actual content size (a few thousand words total), that problem doesn't exist — modern models can trivially read the whole thing every time. Real RAG would also introduce a genuine failure mode long-context-stuffing doesn't have (a similarity-search step can simply fail to retrieve the right chunk, even when a human would obviously see the connection). Building true retrieval (Supabase already supports `pgvector`, which would've been the natural home for it) was discussed and explicitly deferred, not ruled out — worth reconsidering if the content volume ever grows enough to make full-context-every-time impractical.
+
+**Model:** OpenAI's **`gpt-5.6-luna`**, called via the **Responses API** (`client.responses.create()` — OpenAI's own current recommendation for new projects, not the older Chat Completions API). Chosen specifically as the cheap/fast tier well-suited to conversational tasks (as opposed to the even-cheaper nano-tier models, which are better suited to classification/extraction than open conversation). **Real, known limitation worth remembering:** this model's knowledge cutoff is **February 16, 2026** — confirmed directly, not assumed. Anything after that date (recent movies, current events) is genuinely invisible to it unless retrieved live, which this doesn't do (see "Web search" below). This was discovered concretely during testing — asked about a recent movie, the bot had no idea, which is expected behavior given the cutoff, not a bug.
+
+**The system prompt — assembled from several small Python files, not one blob.** Lives in `backend/rona_knowledge/` (a real Python package, `__init__.py` present), imported directly by `main.py` (`from rona_knowledge.create_system_prompt import SYSTEM_PROMPT`):
+- `system_prompt_intro.py` — the core "you are Rona, speaking in first person" framing
+- `bio_facts.py` — real facts (Northeastern CS, Ultimate Frisbee ambitions, hometown, the 5-locations framework from the happiness essay, the mood-history habit), with an explicit instruction to say "I'm not sure" rather than invent anything not on this list
+- `essays.py` — the happiness essay and all the Café book content verbatim (real published writing, not paraphrased), specifically **because showing real writing teaches voice far better than describing it does** — this was the guiding principle for the whole system prompt, established before any content was gathered. Deliberately excludes an early "book ideas not yet implemented" list that was originally pasted in — cut because that's private roadmap content, not something a visitor asking "what other books are you working on" should be able to get the bot to reveal. Also explicitly notes the Ethics Game dilemmas / bet's scenarios / Which Life's options are site *features*, not Rona's own writing, and shouldn't be used to learn her tone.
+- `conversational_style.py` — real texting excerpts (a soccer groupchat, texts with her sister about shopping, a chaotic real-time story about an RA emergency), included specifically because **essays only show formal/reflective voice — casual texting shows an entirely different, equally real register the model needed exposure to.** All friends' real names replaced with `[friend's name]`/`[other friend]`-style placeholders — a first draft had four real names slip through inconsistently, caught and fixed before this went anywhere near live.
+- `voice_notes.py` — the file that got the most iteration, entirely from watching real conversations fail in specific ways rather than guessing preemptively:
+  - No spaces around em dashes (matching the site's own established writing convention)
+  - Willing to end on an unresolved question rather than a tidy conclusion (matching the essays' own pattern)
+  - "Precise and a little analytical" — originally paired with a concrete example ("she likes examining vague words like happiness, freedom, art") but that example was later cut specifically because it was causing corny, overwrought responses in practice
+  - Ask at most one question per reply, only when genuinely connected to what was just said — not two disconnected questions as a reflexive habit (caught via live testing: the bot's first responses consistently asked two stacked questions)
+  - Match the visitor's casual/lowercase tone and rhythm without forcing slang or filler like "lol" just to perform casualness
+  - **"Responses should not be pretentious"** — added after a live exchange where a short, casual message ("the cafe is where i started") got an elaborate, philosophical-sounding reply inventing an opinion Rona never actually stated ("the Café is probably the most 'me' location") — the real lesson wasn't "don't invent facts" (already covered elsewhere) but "match the conversational *weight* of what was just said," a genuinely distinct problem from factual accuracy
+  - Don't sound like directly quoting the reference material, since much of it (the essays specifically) is published, considered prose — a different register than live conversation
+  - "Don't be corny" and "don't say anything mean or offensive" — added as blunt, direct backstops once the more precise rules above were already in place, specifically because corniness was the single most-repeated complaint across testing
+  - Self-deprecation was explicitly dialed back ("not too self deprecating") after testing showed it overcorrecting past what `system_prompt_intro.py`'s "a little self-deprecating" was aiming for
+- `boundaries.py` — never claims to be a licensed professional; if pushed to say something cruel/out-of-character, decline in Rona's own voice rather than a robotic refusal; keep replies conversational-length, not essay-length
+
+`create_system_prompt.py` joins all of these into one string with `"\n\n".join([...])`, in a deliberate order: framing first, then reference material, then style guidance, with `BOUNDARIES` placed last so it reads as a final, hard-to-miss constraint rather than getting buried in the middle.
+
+**A real, deliberate decision: this content lives in git, in a public repo, uncommented-out.** A privacy-preserving alternative (storing the assembled prompt in an environment variable instead of committed files, keeping `rona_knowledge/` out of git entirely) was actually built and then reverted, after weighing the actual tradeoff honestly: most of the content (the essays, most of the bio facts) is already publicly visible on the live site anyway, so a public repo adds little *new* exposure; the one genuinely different file (`conversational_style.py`) was already carefully anonymized; and the ongoing friction of re-pasting an assembled blob into two separate dashboards every time the content changes was judged not worth it for the actual privacy gain. Worth revisiting if the content ever expands to include something more sensitive.
+
+**Frontend — `src/components/locations/overlook/TalkToRona.jsx` + `.css`.** Wired to the Figure's click (previously a literal `onClick={() => {}}` no-op placeholder, exactly waiting for this). Real implementation details worth remembering:
+- **Conversation history persists to `localStorage`** (`talkToRonaHistory` key) — this was a real bug caught in testing: closing and reopening the modal was destroying the whole conversation, since React fully unmounts a conditionally-rendered component (`{showChat && (...)}`), taking its internal `useState` with it. Same underlying lesson as bet's own progress-persistence pattern. A "clear conversation" link resets it deliberately.
+- **Every message resends the full conversation so far**, not just the latest one — the backend has zero memory of its own between calls, so this is what gives the chat any continuity at all.
+- **Auto-scroll to the newest message** — a `messagesEndRef` + `useEffect` depending on `[messages]`, which conveniently also handles "open already scrolled to the bottom" for free, since mounting counts as the effect's first run too.
+- **A static, always-visible disclosure line** ("An AI trained on my real writing—not literally texting me live, but built by me to sound like me.") sits above both the chat and the contact form, deliberately *not* left to the model to say for itself — a real design decision that this kind of honesty needs to be reliable regardless of what any specific conversation happens to generate, not dependent on the bot remembering to disclose itself every time.
+- **Web search was discussed and deliberately not added**, despite OpenAI's Responses API genuinely supporting a built-in `web_search` tool. The reasoning was about the character concept, not feasibility: "Talk to Rona" is scoped to represent what Rona actually knows and thinks, and giving it live internet access would be a meaningfully different thing (should *her digital voice* be doing real-time lookups about, say, current events?) — left as a real, easy-to-add option if the answer to that question changes later.
+- **"Send a real message to Rona"** — a second small link, next to "clear conversation," toggles to a separate form (`ContactRona.jsx`) instead of the chat. Added specifically as a transparency move: pairing an honestly-labeled AI simulation with an equally-clear path to reach the actual person reinforces the distinction between the two, rather than relying solely on the disclosure line.
+
+**Backend — `POST /chat` in `main.py`.** `ChatRequest` holds the whole conversation (`messages: list[ChatMessage]`) plus `visitor_id`/`visitor_name` (both optional, matching the same pattern as `AnswerCreate`). Builds `input_messages` via a list comprehension (translating Pydantic objects into the plain dicts OpenAI's library expects), calls `openai_client.responses.create(model="gpt-5.6-luna", instructions=SYSTEM_PROMPT, input=input_messages)`, and returns `response.output_text` (OpenAI's own recommended shortcut for "just the plain text reply").
+
+**`chat_messages` table** — logs every exchange, explicitly for a future phase: the Phase 3 idea of personalizing the site based on what visitors actually say needs real conversation data to draw from, which didn't exist anywhere durable before this (only ephemeral `localStorage`). **Only the newest exchange gets saved per call, not the whole resent array** — `request.messages[-1]` grabs just this turn's new user message; naively saving the whole array every time would duplicate every prior message into a new row on every single turn, since the frontend resends full history for the model's benefit. Save failures here are caught and only logged (`print(...)`), never allowed to break the actual chat reply — same "local-first, best-effort backend sync" philosophy as `saveAnswerToBackend`'s `.catch()`.
+
+**A real, non-obvious Supabase bug hit and fixed this session, worth remembering for any future new table:** both `chat_messages` and `contact_messages` initially failed every insert with `"new row violates row-level security policy"`, despite policies that looked correct and matched the exact working pattern already used successfully on `visitors`/`answers`/`journal_entries`. Root cause: Supabase's client libraries, by default, automatically try to *read back* the row immediately after inserting it (so `result.data[0]` has something to return) — and that hidden read-back requires a **SELECT** policy, not an INSERT policy, even though it's triggered by an insert. The three original tables all have public SELECT policies (deliberately, since they're meant to be publicly readable), so this was invisible there. `chat_messages`/`contact_messages` deliberately have **no** SELECT policy at all (for privacy — conversations and contact messages shouldn't be readable by just anyone with the project's public key), which meant the hidden read-back step failed every time, surfacing confusingly as if the *insert itself* were blocked. **The fix was not adding a SELECT policy** (which would've reopened the exact privacy gap the missing policy was protecting) — it was passing `returning="minimal"` to `.insert()`, telling the client not to attempt the read-back at all. This meant `/contact`'s endpoint could no longer return `result.data[0]` (nothing comes back with `returning="minimal"`) — it now returns a plain `{"success": True}` instead, which is fine since the frontend only ever checked `res.ok`, never read the response body. **A real, temporary misstep along the way, worth remembering:** RLS was briefly disabled entirely on both tables as a diagnostic step to confirm the theory, which was *correct* for diagnosis but is a meaningfully bigger exposure than intended if left that way (full public read/write/delete, not just the original "insert-only" gap) — RLS was re-enabled immediately once the real fix (`returning="minimal"`) was in place and confirmed working.
+
+**`contact_messages` table + Resend integration** — the "send a real message" form's actual destination. Unlike `chat_messages`' silent best-effort logging, **a failed save here is NOT swallowed** — if someone's genuine attempt to reach Rona fails to save, they need to actually know, rather than walking away believing it went through. Email notification (via **Resend**, chosen over SendGrid specifically because Resend's free tier is permanent — 3,000/month — versus SendGrid's free tier being only a 60-day trial) is layered on top as a separate, best-effort step: the message is already durably saved in Supabase by the time the email attempt happens, so an email hiccup doesn't affect whether the visitor's message was actually kept. Uses Resend's default `onboarding@resend.dev` sender (works without domain verification, since the only recipient is Rona's own email — sending to *other* addresses would likely require verifying `ronaliuzhong.com` with Resend first). Needs `RESEND_API_KEY` and `NOTIFICATION_EMAIL` set in both local `.env` and Render.
+
+**This is explicitly one-way, not a two-way on-site messaging system.** Getting notified just means Rona replies via a completely ordinary email, outside the site entirely — nothing about her reply touches the website at all. A genuine two-way system (visitor comes back later and sees "Rona replied") was discussed and explicitly deferred to the future accounts/login phase, since it would require reliably reconnecting a specific anonymous visitor to a specific reply later — not solvable with the current `localStorage`-only identity model (the same underlying limitation as the iMessage returning-visitor issue documented in Mobile Responsiveness below).
 
 ---
 
@@ -566,7 +653,7 @@ function handleRevealQuestion(question) {
 
 A new, separate system from the question cards — instead of asking the visitor to answer something, these prompt an actual small real-world action (currently: "text a random recently taken photo to your family groupchat").
 
-**Data:** `src/data/actionPrompts.js` — parallel to `questions.js` but with a simpler shape (just `{ text }`, no `inputType`/`answer`/schema), since these aren't Q&A.
+**Data:** `src/data/actionPrompts.js` — parallel to `questions.js` but with a simpler shape (`{ text, sequence }`, no `inputType`/`answer`/schema), since these aren't Q&A. **Now supports multiple sequenced prompts on the same hotspot**, added this session alongside a second prompt ("Surprise a friend with their favorite snack"): a `getNextActionPrompt(seenIds)` helper (exported alongside the data) sorts all prompts by their `sequence` number and returns the id of the first one not yet in `seenIds`, or `null` if all have been seen. This required two other call sites to change from a single hardcoded id to calling this helper instead — `CommonsSceneModal.jsx`'s `flower_painting` entry in `sceneComponents` now dynamically picks whichever prompt is next (rather than always rendering `commons_photo_prompt`), and `CommonsScreen.jsx`'s click-guard (which decides whether clicking the hotspot should even open the modal) now checks `getNextActionPrompt(...)` rather than only checking whether the *first* prompt specifically had been seen — the old guard would have permanently stopped opening the modal after prompt one, with no way to ever reach prompt two. Adding a third prompt later is now just one more data entry with the next `sequence` number — no further code changes needed anywhere.
 
 **Component:** `src/components/locations/commons/StaticPromptContent.jsx` — generic, reusable, parameterized by `text` + `promptId` (not a dedicated file per prompt — this was deliberately corrected mid-build, since a first pass created a one-off `CatPromptContent.jsx` for a single line of text, which was rightly flagged as unnecessary given `QuestionOnlyContent.jsx` already established the "generic component + data param" pattern for exactly this kind of reuse).
 
@@ -577,7 +664,7 @@ A new, separate system from the question cards — instead of asking the visitor
 
 **Currently wired to:** `flower_painting` hotspot in the card scene at `top: 58%, left: 53%, width: 16%, height: 10%` (still a rough estimate pending a reference image, but tuned once already from an initial guess). **Important lesson learned:** this was originally wired to the **cat**, promoted from a `cursorRegion` to a real `hotspot` — but this broke the cat's own native Rive hover reaction, since a real `<button>` hotspot sits on top of the canvas and intercepts every mouse event in that area, blocking whatever built-in animation Rive's own state machine was providing underneath. The cat was reverted back to a `cursorRegion` (cursor-only, no click) and the prompt moved to a different element instead — a good concrete example of why the hotspot/cursorRegion distinction exists at all.
 
-**Prompt text (as of this writing):** "I like to send random photo updates to stay in contact with far away loved ones. My prompt for you today: Text a random recently taken photo to your family groupchat." — softened from an earlier, more abrupt version that jumped straight to the instruction with no framing.
+**Prompt text (as of this writing):** the first prompt is "I like to send random photo updates to stay in contact with far away loved ones. My prompt for you today: Text a random recently taken photo to your family (or friends) groupchat." — softened from an earlier, more abrupt version that jumped straight to the instruction with no framing. The second is "Surprise a friend with their favorite snack."
 
 **"Done" now shows a brief completion message plus a confetti burst** before closing — visible for 2 seconds via a `completed` state + `setTimeout`, then auto-closes. The exact wording is being finalized directly by Rona (moved away from "Hope it made someone's day a little brighter" toward something shorter like "good work!" — check the live file for whatever's actually there, this doc doesn't lock in exact copy for this line). Declining ("not for me") does NOT get this treatment — it marks seen and closes immediately, no celebration, since only actually doing the thing earns the warm send-off.
 
@@ -696,6 +783,8 @@ Base URL: `http://localhost:8000`
 | GET | `/answers/{visitor_id}` | Get visitor answers |
 | POST | `/journal` | Create journal entry |
 | GET | `/journal` | Get all entries (oldest first) |
+| POST | `/chat` | **NEW, this session** — Talk to Rona. Takes full conversation history, calls OpenAI, saves the exchange to `chat_messages`, returns the reply. See The Overlook section for the full build. |
+| POST | `/contact` | **NEW, this session** — "send a real message to Rona." Saves to `contact_messages`, best-effort emails Rona via Resend. See The Overlook section. |
 
 **Sync status:** Previously only journal entries synced to the backend. **Now visitor creation and answers sync too:**
 - `handlePrompt2Submit` (in `useAppState.js`) calls `createVisitor()` in the background after the initial localStorage write, then patches the returned `id` back into localStorage once resolved. It also syncs the `happiness` answer at this point, since that answer is captured before an `id` exists and wouldn't otherwise be caught by the normal `saveAnswer` flow.
@@ -707,11 +796,13 @@ Base URL: `http://localhost:8000`
 
 ## Database (Supabase PostgreSQL)
 
-Three tables: `visitors`, `answers`, `journal_entries`.
+Five tables: `visitors`, `answers`, `journal_entries`, `chat_messages`, `contact_messages` (last two added this session — see The Overlook section for the full Talk to Rona build both belong to).
 
-**RLS (Row Level Security) is enabled** on all three tables, each with two policies: public `SELECT` (read) and public `INSERT` (create) — no `UPDATE`/`DELETE` policies exist, so those operations are blocked by default for anyone hitting Supabase's direct REST API. This matches actual app behavior (the backend never updates or deletes rows), so nothing about the app's real functionality changed — this was purely closing a gap where, previously, anyone with the project's anon key could've directly modified or deleted *any* row via Supabase's auto-generated API, bypassing the FastAPI backend entirely. The backend itself is unaffected either way, since it connects with a service-role key that bypasses RLS by design. Confirmed via Supabase's own "Advisor" security scanner — went from 3 flagged critical issues to 0 after enabling.
+**RLS (Row Level Security) is enabled** on all five tables. `visitors`/`answers`/`journal_entries` each have public `SELECT` + public `INSERT` (no `UPDATE`/`DELETE`). `chat_messages`/`contact_messages` deliberately have **only** public `INSERT`, no `SELECT` at all — conversations and contact messages shouldn't be readable by anyone with the project's public key, unlike the first three tables which are meant to be publicly readable (aggregate stats, a public community journal).
 
-**`answers` table gained a `visitor_name` column** (nullable `TEXT`, added via `ALTER TABLE public.answers ADD COLUMN visitor_name TEXT;`) — a deliberate denormalization purely for Rona's own convenience when browsing the table directly in Supabase's dashboard, so she can see who answered without needing to manually join against `visitors` by id. Wired through the whole chain: `main.py`'s `AnswerCreate` model gained an optional `visitor_name` field; `api.js`'s `saveAnswerToBackend` gained a 4th parameter for it; both real call sites (`useQuestions.js`'s `saveAnswer`, and `useAppState.js`'s two happiness-answer sync calls) were updated to actually pass `visitor.name`/`capitalized` through. Since the field is optional on the backend and the frontend function's new parameter has a safe fallback (`visitorName || null`), this shipped live with zero downtime risk — verified beforehand that Render's immutable-deploy model means a bad deploy simply fails its health check and Render keeps serving the previous working version, never taking the live site down. Answers saved before this change simply have `visitor_name` as `null` — no retroactive backfill, since there's no way to reconstruct who said what after the fact.
+**⚠️ An earlier claim in this doc — "the backend connects with a service-role key that bypasses RLS by design" — turned out to be genuinely in question, not just a formality, based on real behavior observed this session.** While building `chat_messages`/`contact_messages`, inserts failed with real RLS violations despite policies matching the exact working shape already used successfully elsewhere — and disabling RLS fixed it. The eventual real root cause (documented in full under The Overlook section) was a hidden "read the row back after inserting" step requiring a SELECT policy that was deliberately absent — **but a true service-role connection has Postgres-level `BYPASSRLS`, which skips policy evaluation entirely, including for that hidden read-back.** If the backend's key genuinely had that privilege, this failure mode shouldn't have been possible to hit at all — meaning the backend may actually be connecting with the `anon` key, not `service_role`, contradicting what's written here. **This was never conclusively confirmed** (checking Settings → API and comparing against `SUPABASE_KEY` in `.env` was suggested twice but never followed up on, since the practical bug got fixed before it became necessary) — worth actually resolving this properly at some point, since it's a real, open question about the actual security architecture, not just a documentation nitpick.
+
+**`answers` table gained a `visitor_name` column** (nullable `TEXT`, added via `ALTER TABLE public.answers ADD COLUMN visitor_name TEXT;`) — a deliberate denormalization purely for Rona's own convenience when browsing the table directly in Supabase's dashboard, so she can see who answered without needing to manually join against `visitors` by id. Wired through the whole chain: `main.py`'s `AnswerCreate` model gained an optional `visitor_name` field; `api.js`'s `saveAnswerToBackend` gained a 4th parameter for it; both real call sites (`useQuestions.js`'s `saveAnswer`, and `useAppState.js`'s two happiness-answer sync calls) were updated to actually pass `visitor.name`/`capitalized` through. Since the field is optional on the backend and the frontend function's new parameter has a safe fallback (`visitorName || null`), this shipped live with zero downtime risk — verified beforehand that Render's immutable-deploy model means a bad deploy simply fails its health check and Render keeps serving the previous working version, never taking the live site down. Answers saved before this change simply have `visitor_name` as `null` — no retroactive backfill, since there's no way to reconstruct who said what after the fact. **`chat_messages` and `contact_messages` both also have a `visitor_name` column**, same denormalization reasoning, added at the same time the tables themselves were built.
 
 **Known gotcha:** Supabase free-tier projects auto-pause after ~7 days of inactivity. Unlike Render's sleep (which self-wakes on the next request, just slowly), a paused Supabase project needs to be manually unpaused from the dashboard. The `/ping` route + a periodic external monitor is the fix (see Deployment Plan below).
 
@@ -739,7 +830,7 @@ All sounds in `src/utils/sounds.js`, mapped in `src/hooks/useSounds.js`:
 
 **Why two services:** the frontend is static files (HTML/JS/CSS) best served from Vercel's CDN; the backend is a persistent running Python process, which needs an always-on host like Render (Vercel's serverless/multi-service model doesn't fit a long-running FastAPI server — this was actually hit directly: Vercel auto-detected the `backend/` folder and defaulted into its own "Services" multi-app mode requiring a `vercel.json`, which needed to be explicitly switched off in favor of a plain single-app Vite preset, so Vercel only ever builds the frontend and never tries to run the Python backend itself).
 
-**Render setup:** Root Directory `backend`, Build Command `pip install -r requirements.txt`, Start Command `uvicorn main:app --host 0.0.0.0 --port $PORT`, env vars `SUPABASE_URL`/`SUPABASE_KEY` set directly in Render's dashboard.
+**Render setup:** Root Directory `backend`, Build Command `pip install -r requirements.txt`, Start Command `uvicorn main:app --host 0.0.0.0 --port $PORT`, env vars `SUPABASE_URL`/`SUPABASE_KEY`/`OPENAI_API_KEY`/`RESEND_API_KEY`/`NOTIFICATION_EMAIL` set directly in Render's dashboard (last three added this session, for Talk to Rona and the contact form — see The Overlook section). Same reasoning applies as always: local `.env` and Render's dashboard are two entirely separate environments with no shared access, so any new secret needs adding in both places, or the live site silently doesn't have it even though local testing works fine.
 
 **Vercel setup:** Root Directory `.` (repo root), framework auto-detected as Vite, env var `VITE_API_URL` set to the Render URL above, scope "Production and Preview."
 
@@ -759,7 +850,7 @@ All sounds in `src/utils/sounds.js`, mapped in `src/hooks/useSounds.js`:
 
 **One real mobile bug was found and fixed this session** (not deferred, since it fully broke a location): Commons' carousel arrows were computing their layout size from `85vh` (85% of *viewport height*) — which works fine on a wide desktop screen, but on a narrow/tall phone in portrait, 85% of the height computes into a *width* wider than the phone itself, pushing the arrows completely off-screen. Fixed by capping the canvas height with `min(85vh, calc((100vw - 10rem) / 0.62))`, so the canvas now also respects how much horizontal room is actually available. A second, related issue — the arrows were technically on-screen after that fix but were just a bare floating character, easy to miss/not recognize as tappable — was fixed by giving `.commons-arrow` a real circular button shape (`background`, `border-radius: 50%`, fixed `3rem × 3rem` size with `flex-shrink: 0`) instead of a lone glyph.
 
-**A second one-off mobile fix, added later:** Field's "back to the map" button was hard to read against the busy wood-texture background — plain green text with no backing had nothing to contrast against. Rather than change the shared `.back-button` style everywhere (which reads fine on every other location's flatter background), `LocationScreen.jsx` now conditionally adds a `.back-button--high-contrast` modifier class specifically when `locationId === 'field'`, giving it a solid semi-opaque cream pill behind the text. Every other location's back button is untouched.
+**A second one-off mobile fix, added later:** Field's "back to the map" button was hard to read against the busy wood-texture background — plain green text with no backing had nothing to contrast against. Rather than change the shared `.back-button` style everywhere (which reads fine on every other location's flatter background), `LocationScreen.jsx` now conditionally adds a `.back-button--high-contrast` modifier class specifically when `locationId === 'field'`, giving it a solid bright cream pill behind the text. **A third variant was added this session** for Overlook and School — both have dark backgrounds (Overlook's navy/purple night sky, School's dark starry desktop), the same underlying problem as Field but for a different reason (dark-on-dark rather than green-on-busy-wood). A separate `.back-button--high-contrast-dark` class covers both, deliberately using a dimmer version of the *same cream* (0.5 opacity, not Field's near-opaque 0.9) rather than Field's exact bright treatment — an initial attempt used a muted tan/amber tone instead of cream, which was tried and rejected as "kind of ugly" before landing on the simpler "same color family, just softer" fix. Every other location's back button remains untouched.
 
 **Real-world returning-visitor limitation found (not a code bug, no fix needed):** a friend reported having to go through the full opening prompts twice despite not switching devices. Traced to iMessage's link-preview browser — tapping the same link twice from within Messages can spin up a fresh, disposable browsing context each time rather than reusing a persistent one, meaning `localStorage` genuinely doesn't carry over between taps even on the same phone. Confirmed by direct testing: typing the URL manually into real Safari worked correctly every time; re-tapping the same iMessage link did not. This isn't fixable from the app's side — it's a platform-level behavior of how certain in-app browsers work, not a flaw in the returning-visitor detection logic (which was independently verified correct). The real, durable fix is genuine login/accounts (already on the Phase 2 list), since an account isn't tied to one specific browser context the way `localStorage` is.
 
@@ -799,9 +890,11 @@ All sounds in `src/utils/sounds.js`, mapped in `src/hooks/useSounds.js`:
 - Tiny and Big Rona's "fun little game" (Field) — still undecided
 
 ### Phase 3 — Intelligence
-- AI-generated questions based on visitor answers
-- "Talk to Rona" — RAG system, Overlook bench
-- Map personalization based on visitor answers
+- AI-generated questions based on visitor answers — this would use a genuinely different architecture than Talk to Rona (structured/constrained output the backend validates before trusting, not free-form chat text); discussed conceptually this session but not built
+- Map personalization based on visitor answers — same "structured output, backend validates before acting" architecture as above; discussed conceptually (including a real "bounded creative choice" middle ground between purely templated visuals and fully AI-generated ones) but not built
+- ✅ **"Talk to Rona" — built this session.** Long-context-stuffing chatbot (deliberately not real RAG at this content scale — see The Overlook section for the full reasoning), OpenAI's `gpt-5.6-luna` via the Responses API, opens from the Figure on the Overlook bench. Two real extensions were discussed and deliberately deferred, not built:
+  - **Web search** — genuinely easy to add (OpenAI's Responses API supports a built-in `web_search` tool), held back on purpose over a character question: should Rona's digital voice do live internet lookups, or stay scoped to what she actually knows/thinks? Worth revisiting if that answer changes.
+  - **A true two-way on-site reply system** for the "send a real message to Rona" contact form (visitor comes back later and sees "Rona replied") — needs reliable identity to reconnect a specific anonymous visitor to a specific reply later, which the current `localStorage`-only model can't do. Explicitly deferred to whenever real accounts/login gets built (already on the Phase 2 list, now with a second concrete reason to build it).
 - Workout completion history + weight/rep progression tracking (combined ticket, Field)
 
 ### Phase 4

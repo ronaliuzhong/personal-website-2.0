@@ -2,7 +2,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from supabase import create_client
+from openai import OpenAI
+from rona_knowledge.create_system_prompt import SYSTEM_PROMPT
 from dotenv import load_dotenv
+import resend
 import os
 
 load_dotenv()
@@ -29,6 +32,12 @@ supabase = create_client(
     os.getenv("SUPABASE_KEY")
 )
 
+# connect to OpenAI, for the Talk to Rona chatbot
+openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# Resend, for emailing Rona when someone submits the contact form
+resend.api_key = os.getenv("RESEND_API_KEY")
+
 # --- models ---
 
 class VisitorCreate(BaseModel):
@@ -45,6 +54,21 @@ class JournalEntryCreate(BaseModel):
     content: str
     is_anonymous: bool = False
     nickname: str | None
+
+class ChatMessage(BaseModel):
+    role: str  # "user" or "assistant"
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: list[ChatMessage]  # full conversation so far, newest message last
+    visitor_id: str | None = None
+    visitor_name: str | None = None
+
+class ContactMessageCreate(BaseModel):
+    name: str | None = None  # manually typed into the form itself
+    email: str | None = None
+    message: str
+    visitor_name: str | None = None  # the visitor's established site nickname, if any
 
 # --- routes ---
 
@@ -125,3 +149,82 @@ def create_journal_entry(entry: JournalEntryCreate):
 def get_journal_entries():
     result = supabase.table("journal_entries").select("*").order("created_at", desc=True).execute()
     return result.data
+
+@app.post("/chat")
+def chat(request: ChatRequest):
+    # "Long-context stuffing" — SYSTEM_PROMPT already contains Rona's
+    # entire knowledge base (essays, bio facts, conversational style,
+    # voice notes, boundaries) assembled into one string. No retrieval
+    # step at all — the whole thing gets sent on every single message,
+    # and the model itself figures out what's relevant to the current
+    # question. Reasonable at this content size; see CLAUDE.md for the
+    # fuller reasoning on why this beats real RAG at this scale.
+    input_messages = [{"role": m.role, "content": m.content} for m in request.messages]
+
+    response = openai_client.responses.create(
+        model="gpt-5.6-luna",
+        instructions=SYSTEM_PROMPT,
+        input=input_messages,
+    )
+
+    reply_text = response.output_text
+
+    # Save just THIS turn's new exchange — the frontend resends the
+    # entire conversation every time (so the model has context), but
+    # every message except the very last one was already saved on a
+    # previous call. Saving the whole array again here would duplicate
+    # every old message into a new row each turn.
+    try:
+        latest_user_message = request.messages[-1]
+        supabase.table("chat_messages").insert([
+            {
+                "visitor_id": request.visitor_id,
+                "visitor_name": request.visitor_name,
+                "role": latest_user_message.role,
+                "content": latest_user_message.content,
+            },
+            {
+                "visitor_id": request.visitor_id,
+                "visitor_name": request.visitor_name,
+                "role": "assistant",
+                "content": reply_text,
+            },
+        ], returning="minimal").execute()
+    except Exception as e:
+        # Never let a Supabase hiccup break the actual chat reply —
+        # same "local-first, best-effort backend sync" approach used
+        # elsewhere on this site (e.g. saveAnswerToBackend's .catch()).
+        print(f"Failed to save chat message: {e}")
+
+    return {"reply": reply_text}
+
+@app.post("/contact")
+def create_contact_message(message: ContactMessageCreate):
+    # Unlike chat_messages' background logging, a failure here is NOT
+    # swallowed — if someone's real attempt to reach Rona fails to
+    # save, they need to actually know, rather than walking away
+    # thinking their message went through when it didn't.
+    supabase.table("contact_messages").insert({
+        "name": message.name,
+        "email": message.email,
+        "message": message.message,
+        "visitor_name": message.visitor_name,
+    }, returning="minimal").execute()
+
+    # Email notification is best-effort, unlike the save above — the
+    # message is already safely durable in Supabase by this point
+    # regardless of whether this succeeds, so an email hiccup shouldn't
+    # make the visitor think their message was lost.
+    try:
+        resend.Emails.send({
+            "from": "onboarding@resend.dev",
+            "to": os.getenv("NOTIFICATION_EMAIL"),
+            "subject": "New message from your site",
+            "text": f"From: {message.name or 'anonymous'} ({message.email or 'no email given'})\n\n{message.message}",
+        })
+    except Exception as e:
+        print(f"Failed to send contact notification email: {e}")
+
+    # With returning="minimal", there's no row data to hand back — the
+    # frontend only ever checked res.ok anyway, never the response body.
+    return {"success": True}
