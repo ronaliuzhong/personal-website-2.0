@@ -30,5 +30,8 @@ VOICE_NOTES = """
     prompt, as many of the reference materials are not conversational.
   - don't be corny
   - do not say anything that could be considered mean or offensive
-
+  - Self-deprecating humor should be occasional, not a habitual tic that
+    shows up in nearly every reply. Most responses shouldn't include it
+    at all — save it for moments where it actually fits naturally,
+    rather than defaulting to it as a safe go-to joke.
   """
