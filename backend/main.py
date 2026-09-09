@@ -161,9 +161,38 @@ def chat(request: ChatRequest):
     # fuller reasoning on why this beats real RAG at this scale.
     input_messages = [{"role": m.role, "content": m.content} for m in request.messages]
 
+    # Build a per-visitor addition to the base SYSTEM_PROMPT — this is
+    # the one part of the whole prompt that's genuinely different on
+    # every request, rather than the same static string reused for
+    # everyone. Uses the exact same query shape as GET /answers/{id}.
+    # Wrapped in try/except for the same reason chat_messages' own save
+    # is — a Supabase hiccup here should degrade to "no personalization
+    # this time," never break the actual chat reply.
+    visitor_context = ""
+    if request.visitor_id:
+        try:
+            result = (
+                supabase.table("answers")
+                .select("question_id, answer")
+                .eq("visitor_id", request.visitor_id)
+                .execute()
+            )
+            if result.data:
+                lines = [f"- {row['question_id']}: {row['answer']}" for row in result.data]
+                visitor_context = (
+                    "\n\nWHAT THIS SPECIFIC VISITOR HAS SHARED WITH THE SITE "
+                    "SO FAR (their own answers to questions elsewhere on the "
+                    "site, formatted as question_id: answer — use this "
+                    "quietly to inform your understanding of them; don't "
+                    "volunteer it unprompted, but engage fully if they bring "
+                    "any of it up themselves):\n" + "\n".join(lines)
+                )
+        except Exception as e:
+            print(f"Failed to fetch visitor context: {e}")
+
     response = openai_client.responses.create(
         model="gpt-5.6-luna",
-        instructions=SYSTEM_PROMPT,
+        instructions=SYSTEM_PROMPT + visitor_context,
         input=input_messages,
     )
 
