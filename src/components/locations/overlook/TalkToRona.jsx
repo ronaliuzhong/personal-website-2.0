@@ -89,7 +89,7 @@ function TalkToRona() {
   return (
     <div className="talk-to-rona">
       <p className="talk-to-rona__disclaimer">
-        An AI trained on my real writing—not literally texting me live, but built by me to sound like me.
+        An AI trained on my real writing—not literally me texting live, but built by me to sound like me.
       </p>
       <div className="talk-to-rona__messages">
         {messages.length === 0 && (
