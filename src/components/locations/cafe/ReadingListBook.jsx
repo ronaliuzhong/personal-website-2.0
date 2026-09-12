@@ -2,7 +2,7 @@ import './cafe-books.css'
 
 function ReadingListBook() {
   const books = [
-    { title: 'Tuesdays with Morrie', author: 'Mitch Albom', status: 'in progress' },
+    { title: 'Hidden Systems: Water, Electricity, the Internet, and the Secrets Behind the Systems We Use Every Day', author: 'Dan Nott', status: 'in progress' },
     { title: 'Eleanor Oliphant is Completely Fine', author: 'Gail Honeyman' },
     { title: 'Freakonomics', author: 'Steven Levitt & Stephen J. Dubner' },
     { title: 'Funny Story', author: 'Emily Henry' },
