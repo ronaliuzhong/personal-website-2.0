@@ -65,7 +65,7 @@ function LocationScreen({ locationId, onExit }) {
       >
         ← back to the map
       </button>
-      {Interior && <Interior />}
+      {Interior && <Interior onExit={handleExit} />}
       {showHint && (
         <div className="location-hint">
           this world is interactive—click around to explore

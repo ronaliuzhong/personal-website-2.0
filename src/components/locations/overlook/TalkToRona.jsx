@@ -1,11 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
-import ContactRona from './ContactRona'
 import './TalkToRona.css'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 const STORAGE_KEY = 'talkToRonaHistory'
 
-function TalkToRona() {
+function TalkToRona({ onExit }) {
   // Loaded once, on first mount — this is what lets the conversation
   // survive closing and reopening the modal (even a full page refresh),
   // instead of resetting every time, same pattern as "bet"'s progress.
@@ -16,7 +15,6 @@ function TalkToRona() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const messagesEndRef = useRef(null)
-  const [showContact, setShowContact] = useState(false)
 
   // Runs every time `messages` changes — which covers both cases at
   // once: a new message arriving mid-conversation, AND the very first
@@ -68,6 +66,18 @@ function TalkToRona() {
     saveMessages([])
   }
 
+  // Sets a one-time flag the map checks on its next mount, then
+  // triggers the same exit-to-map transition the visible "back to
+  // map" button uses — this is a genuinely different mechanism from
+  // just showing ContactRona inline, since it has to survive an
+  // actual screen change (Overlook unmounting, WorldMap mounting
+  // fresh) rather than just toggling local state within one component.
+  function handleGoToContact() {
+    const visitor = JSON.parse(localStorage.getItem('visitor')) || {}
+    localStorage.setItem('visitor', JSON.stringify({ ...visitor, pendingContactOpen: true }))
+    onExit?.()
+  }
+
   function handleKeyDown(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -75,21 +85,10 @@ function TalkToRona() {
     }
   }
 
-  if (showContact) {
-    return (
-      <div className="talk-to-rona">
-        <p className="talk-to-rona__disclaimer">
-          An AI trained on my real writing—not literally texting me live, but built by me to sound like me.
-        </p>
-        <ContactRona onBack={() => setShowContact(false)} />
-      </div>
-    )
-  }
-
   return (
     <div className="talk-to-rona">
       <p className="talk-to-rona__disclaimer">
-        An AI trained on my real writing—not literally me texting live, but built by me to sound like me.
+        An AI trained on my real writing—not literally texting me live, but built by me to sound like me.
       </p>
       <div className="talk-to-rona__messages">
         {messages.length === 0 && (
@@ -130,8 +129,8 @@ function TalkToRona() {
             clear conversation
           </button>
         )}
-        <button className="talk-to-rona__clear" onClick={() => setShowContact(true)}>
-          send a real message to rona
+        <button className="talk-to-rona__clear" onClick={handleGoToContact}>
+          reach the real me
         </button>
       </div>
     </div>

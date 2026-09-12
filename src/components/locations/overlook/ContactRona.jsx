@@ -3,7 +3,7 @@ import './ContactRona.css'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
-function ContactRona({ onBack }) {
+function ContactRona({ onBack, backLabel = 'back to chat' }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
@@ -43,7 +43,7 @@ function ContactRona({ onBack }) {
           Got it—thank you for actually reaching out. I'll see this soon.
         </p>
         <button className="contact-rona__back" onClick={onBack}>
-          ← back to chat
+          ← {backLabel}
         </button>
       </div>
     )
@@ -52,20 +52,20 @@ function ContactRona({ onBack }) {
   return (
     <div className="contact-rona">
       <p className="contact-rona__intro">
-        Want to reach the real me instead? Leave a message below.
+        Want to reach me? Leave a message below.
       </p>
       <form className="contact-rona__form" onSubmit={handleSubmit}>
         <input
           className="contact-rona__input"
           type="text"
-          placeholder="Name (optional)"
+          placeholder="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
         <input
           className="contact-rona__input"
           type="email"
-          placeholder="Email (optional, if you want a reply)"
+          placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -84,7 +84,7 @@ function ContactRona({ onBack }) {
         )}
         <div className="contact-rona__actions">
           <button type="button" className="contact-rona__back" onClick={onBack}>
-            ← back to chat
+            ← {backLabel}
           </button>
           <button
             type="submit"

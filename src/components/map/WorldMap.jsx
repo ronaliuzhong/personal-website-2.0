@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSounds } from '../../hooks/useSounds'
+import ContactRona from '../locations/overlook/ContactRona'
 import Ground from './Ground'
 import Beach from './Beach'
 import Bluff from './Bluff'
@@ -141,6 +142,17 @@ function LocationMarker({ loc, hovered, onHover, onLeave, onClick, pulse }) {
 
 function WorldMap({ name, returning, onEnterLocation }) {
   const [hovered, setHovered] = useState(null)
+  // Checks for the flag TalkToRona's "reach the real me" button sets
+  // right before navigating here — same lazy-initializer-checks-and-
+  // clears-a-flag pattern LocationScreen's showHint already uses.
+  const [showContact, setShowContact] = useState(() => {
+    const visitor = JSON.parse(localStorage.getItem('visitor')) || {}
+    if (visitor.pendingContactOpen) {
+      localStorage.setItem('visitor', JSON.stringify({ ...visitor, pendingContactOpen: false }))
+      return true
+    }
+    return false
+  })
   const { playTransition } = useSounds()
 
   // Tracks whether Café has ever actually been visited — separate from
@@ -166,12 +178,12 @@ function WorldMap({ name, returning, onEnterLocation }) {
   return (
     <div className="worldmap-container">
       <svg
-        viewBox="0 0 680 580"
+        viewBox="-150 0 980 580"
         className="worldmap-svg"
         xmlns="http://www.w3.org/2000/svg"
         
       >
-        <rect width="680" height="580" fill="#F5F0E8"/>
+        <rect x="-150" width="980" height="580" fill="#F5F0E8"/>
 
         <Ground />
         <Beach />
@@ -205,7 +217,41 @@ function WorldMap({ name, returning, onEnterLocation }) {
             pulse={loc.id === 'cafe' && !returning && !cafeVisited}
           />
         ))}
+
+        {/* Quiet site utility, deliberately NOT styled like a 6th
+            location — no glow, no connecting path, tucked into open
+            space away from the constellation of circles entirely, so
+            it reads as "a way to reach me" rather than "a place in
+            Rona's life." Same font family as the title/labels, just
+            much smaller and more muted, so it feels like part of the
+            considered layout rather than a bolted-on UI element. */}
+        <g
+          style={{ cursor: 'pointer' }}
+          onClick={() => setShowContact(true)}
+        >
+          <circle cx="812" cy="558" r="3" fill="#888780" opacity="0.6"/>
+          <text
+            x="804"
+            y="562"
+            textAnchor="end"
+            fontFamily="'Caveat Brush', cursive"
+            fontSize="19"
+            fill="#888780"
+          >
+            contact me
+          </text>
+        </g>
       </svg>
+
+      {showContact && (
+        <div className="worldmap-contact-overlay" onClick={() => setShowContact(false)}>
+          <div className="worldmap-contact-modal" onClick={e => e.stopPropagation()}>
+            <button className="worldmap-contact-modal__close" onClick={() => setShowContact(false)}>×</button>
+            <p className="worldmap-contact-modal__title">contact me</p>
+            <ContactRona onBack={() => setShowContact(false)} backLabel="close" />
+          </div>
+        </div>
+      )}
 
       {returning && (
         <div className="worldmap-greeting">

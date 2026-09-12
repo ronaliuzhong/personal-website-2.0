@@ -52,7 +52,7 @@ const flowerColors = {
   daisy: '#FAC775',
 }
 
-export default function OverlookScreen() {
+export default function OverlookScreen({ onExit }) {
   const [hoveredLight, setHoveredLight] = useState(null)
   const [activeQuestion, setActiveQuestion] = useState(null)
   const [showBouquet, setShowBouquet] = useState(false)
@@ -334,7 +334,7 @@ export default function OverlookScreen() {
           <div className="overlook-book" onClick={e => e.stopPropagation()}>
             <button className="overlook-book__close" onClick={() => setShowChat(false)}>×</button>
             <p className="overlook-book__title">talk to rona</p>
-            <TalkToRona />
+            <TalkToRona onExit={onExit} />
           </div>
         </div>
       )}

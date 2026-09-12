@@ -66,3 +66,47 @@
     opacity: 0;
   }
 }
+/* "contact me" modal — a plain, honestly-scaled site utility, not a
+   themed location. Deliberately simple: solid cream card, no glow,
+   no illustration, matching the fact that this isn't part of the
+   explorable world, just a way to actually reach Rona. */
+.worldmap-contact-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.worldmap-contact-modal {
+  position: relative;
+  background: #F5F0E8;
+  border-radius: 12px;
+  padding: 32px;
+  width: 480px;
+  max-width: 90vw;
+}
+
+.worldmap-contact-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #888780;
+  cursor: pointer;
+}
+
+.worldmap-contact-modal__close:hover {
+  color: #444441;
+}
+
+.worldmap-contact-modal__title {
+  font-family: 'Caveat Brush', cursive;
+  font-size: 24px;
+  color: #27500A;
+  margin-bottom: 16px;
+}
