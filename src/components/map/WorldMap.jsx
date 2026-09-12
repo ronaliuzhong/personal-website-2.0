@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useSounds } from '../../hooks/useSounds'
 import ContactRona from '../locations/overlook/ContactRona'
 import Ground from './Ground'
-import Beach from './Beach'
+import Flowers from './Flowers'
 import Bluff from './Bluff'
 import Forest from './Forest'
 import Stream from './Stream'
@@ -178,20 +178,20 @@ function WorldMap({ name, returning, onEnterLocation }) {
   return (
     <div className="worldmap-container">
       <svg
-        viewBox="-150 0 980 580"
+        viewBox="0 0 680 580"
         className="worldmap-svg"
         xmlns="http://www.w3.org/2000/svg"
         
       >
-        <rect x="-150" width="980" height="580" fill="#F5F0E8"/>
+        <rect width="680" height="580" fill="#F5F0E8"/>
 
         <Ground />
-        <Beach />
         <Bluff />
         <Forest />
         <Stream />
         <Paths />
         <Trees />
+        <Flowers />
         <TownDetails />
         <FieldDetails />
 
@@ -229,9 +229,9 @@ function WorldMap({ name, returning, onEnterLocation }) {
           style={{ cursor: 'pointer' }}
           onClick={() => setShowContact(true)}
         >
-          <circle cx="812" cy="558" r="3" fill="#888780" opacity="0.6"/>
+          <circle cx="662" cy="558" r="3" fill="#888780" opacity="0.6"/>
           <text
-            x="804"
+            x="654"
             y="562"
             textAnchor="end"
             fontFamily="'Caveat Brush', cursive"
